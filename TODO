@@ -1,0 +1,19 @@
+TODO
+====
+
+ - GL
+   = Pass sorting
+     + Sorting
+     - Sort caching/list-dirty
+   - Reset message?
+   - Static/stored VAOs
+   - More other stuff
+   - Clean up impl_data for GL3
+   - GL2
+ - NanoVG
+   - More primitives
+ - Box2D?
+ - Transforms
+   - More
+ - Misc
+   - RTT

@@ -1,0 +1,7 @@
+Author:  Clint Bellanger
+License: CC-BY 3.0 (http://creativecommons.org/licenses/by/3.0/)
+Source:  http://opengameart.org/content/platformer-animations
+
+Notes:   The original spritesheet was cut by ImageMagick's convert,
+         frames renamed by animation sequence, and repackaged using
+         TexturePacker.
