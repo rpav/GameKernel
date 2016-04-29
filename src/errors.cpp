@@ -12,7 +12,7 @@ const char *gk_error_strings[] = {
     "Pass list index out of range", // GK_ERROR_PASS_BADLIST
 
     // Commands
-    "Unknown or invalid commands" // GK_ERROR_CMD_UNKNOWN
+    "Unknown or invalid commands", // GK_ERROR_CMD_UNKNOWN
 
     // Sprites
     "Sprite sheet format unknown", // GK_ERROR_SSF_UNKNOWN
