@@ -106,6 +106,7 @@ void gk_process_nvg_image_create(gk_context *gk, gk_cmd_image_create *cmd) {
     int flags = cmd->flags & GK_IMAGE_FLAGS_NANOVG_MASK;
         
     cmd->id = nvgCreateImage(nvg, cmd->filename, flags);
+    glBindTexture(GL_TEXTURE_2D, cmd->id);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter2gl[cmd->min_filter]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter2gl[cmd->mag_filter]);
 }

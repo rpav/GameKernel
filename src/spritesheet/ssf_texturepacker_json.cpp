@@ -102,25 +102,35 @@ void gk_load_ssf_texturepacker_json(gk_context *gk, gk_cmd_spritesheet_create *c
     auto &frames = j["frames"];
     auto &meta = j["meta"];
     auto imagefile = path + "/" + meta["image"].get<std::string>();
+    int i = 0;
 
     sheet->tex = nvgCreateImage(gk->nvg, imagefile.c_str(), 0);
+    glBindTexture(GL_TEXTURE_2D, sheet->tex);
     if(cmd->flags & GK_SCF_MIN_NEAREST)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
     else
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
 
     if(cmd->flags & GK_SCF_MAG_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     else
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 
     sheet->nsprites = j["frames"].size();
     sheet->sprites  = (gk_sprite*)malloc(sizeof(gk_sprite) * sheet->nsprites);
     sheet->names    = (char**)malloc(sizeof(char*) * sheet->nsprites);
 
-    int i = 0;
+    i = 0;
     for(auto it = frames.begin(); it != frames.end(); ++it, ++i) {
         parse_texturepacker_frame(meta, it.value(), &sheet->sprites[i], cmd->flags);
         sheet->names[i] = strdup(it.key().c_str());
     }
+
+    return;
+
+ gl_error:
+    if(sheet->tex)
+        glDeleteTextures(1, &sheet->tex);
+
+    return;
 }
