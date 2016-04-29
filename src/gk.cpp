@@ -124,6 +124,10 @@ bool gk_process_cmd_general(const char *listname, gk_context *gk, gk_bundle *b, 
             gk_process_cmd_tf_ortho(gk, (gk_cmd_tf_ortho*)cmd);
             break;
 
+        case GK_CMD_PASS:
+            gk_process_pass(gk, b, (gk_pass*)cmd);
+            break;
+
         case GK_CMD_IMAGE_CREATE:
             gk_process_nvg_image_create(gk, (gk_cmd_image_create*)cmd);
             break;
