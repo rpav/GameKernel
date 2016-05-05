@@ -3,6 +3,7 @@
 
 #include "nanovg.h"
 #include "gk/gk.hpp"
+#include "gk/gl.hpp"
 #include "gk/nvg.hpp"
 #include "gk/log.hpp"
 
@@ -23,12 +24,15 @@ void gk_process_nvg(gk_context *gk, gk_bundle *bundle, gk_list_nvg *list_nvg) {
         switch(GK_CMD_TYPE(cmd)) {
             case GK_CMD_PATH:
                 gk_process_nvg_path(gk, bundle, (gk_cmd_path*)cmd);
+                gk_gl_reset_state(gk);
                 break;
             case GK_CMD_FONT_STYLE:
                 gk_process_nvg_font_style(gk, (gk_cmd_font_style*)cmd);
+                gk_gl_reset_state(gk);
                 break;
             case GK_CMD_TEXT:
                 gk_process_nvg_text(gk, (gk_cmd_text*)cmd);
+                gk_gl_reset_state(gk);
                 break;
             default:
                 gk_process_cmd_general("GK_LIST_NVG", gk, bundle, cmd);

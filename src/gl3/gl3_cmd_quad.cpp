@@ -141,9 +141,11 @@ void gl3_render_quads(gk_context *gk) {
 void gl3_begin_quad(gk_context *gk, gk_bundle *b, gk_cmd_quad *q) {
     auto gl3 = (gl3_impl*)gk->impl_data;
     gl3->quadcount = 0;
+    gl3->tex = 0;
 
     GL_CHECK(gk_glUseProgram(gk, gl3->prog_quad));
     GL_CHECK(gk_glBindVertexArray(gk, gl3->quadvao));
+    GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, gl3->quadvbo));
     GL_CHECK(glUniform1i(gl3->quad_uTEX, 0));
 
     GL_CHECK(glEnable(GL_BLEND));
