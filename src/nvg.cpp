@@ -8,7 +8,6 @@
 #include "gk/log.hpp"
 
 static void gk_process_nvg_path(gk_context *gk, gk_bundle *bundle, gk_cmd_path *cmd);
-static void gk_process_nvg_font_style(gk_context *gk, gk_cmd_font_style *cmd);
 static void gk_process_nvg_text(gk_context *gk, gk_cmd_text *cmd);
 
 void gk_process_nvg(gk_context *gk, gk_bundle *bundle, gk_list_nvg *list_nvg) {
@@ -24,10 +23,6 @@ void gk_process_nvg(gk_context *gk, gk_bundle *bundle, gk_list_nvg *list_nvg) {
         switch(GK_CMD_TYPE(cmd)) {
             case GK_CMD_PATH:
                 gk_process_nvg_path(gk, bundle, (gk_cmd_path*)cmd);
-                gk_gl_reset_state(gk);
-                break;
-            case GK_CMD_FONT_STYLE:
-                gk_process_nvg_font_style(gk, (gk_cmd_font_style*)cmd);
                 gk_gl_reset_state(gk);
                 break;
             case GK_CMD_TEXT:
@@ -70,6 +65,36 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle *bundle, gk_cmd_path *cmd) {
                 def++;
                 break;
 
+            case GK_PATH_STROKE_COLOR_RGBA:
+                nvgStrokeColor(nvg, nvgRGBA(def[1], def[2], def[3], def[4]));
+                def += 4;
+                break;
+
+            case GK_PATH_STROKE_COLOR_RGBAF:
+                nvgStrokeColor(nvg, nvgRGBAf(def[1], def[2], def[3], def[4]));
+                def += 4;
+                break;
+
+            case GK_PATH_MITER_LIMIT:
+                nvgMiterLimit(nvg, def[1]);
+                def++;
+                break;
+
+            case GK_PATH_STROKE_WIDTH:
+                nvgStrokeWidth(nvg, def[1]);
+                def++;
+                break;
+
+            case GK_PATH_LINE_CAP:
+                nvgLineCap(nvg, def[1]);
+                def++;
+                break;
+
+            case GK_PATH_LINE_JOIN:
+                nvgLineJoin(nvg, def[1]);
+                def++;
+                break;
+
             case GK_PATH_FILL_COLOR_RGBA:
                 nvgFillColor(nvg, nvgRGBA(def[1], def[2], def[3], def[4]));
                 def += 4;
@@ -78,6 +103,10 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle *bundle, gk_cmd_path *cmd) {
             case GK_PATH_FILL_COLOR_RGBAF:
                 nvgFillColor(nvg, nvgRGBAf(def[1], def[2], def[3], def[4]));
                 def += 4;
+                break;
+
+            case GK_PATH_STROKE:
+                nvgStroke(nvg);
                 break;
 
             case GK_PATH_FILL:
@@ -94,6 +123,20 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle *bundle, gk_cmd_path *cmd) {
 void gk_process_nvg_font_create(gk_context *gk, gk_cmd_font_create *cmd) {
     auto nvg = gk->nvg;
     cmd->id = nvgCreateFont(nvg, cmd->name, cmd->filename);
+}
+
+void gk_process_nvg_font_face(gk_context *gk, gk_cmd_font_face* cmd) {
+    auto nvg = gk->nvg;
+
+    switch(cmd->type) {
+        case GK_FONT_FACE_ID:
+            nvgFontFaceId(nvg, cmd->face.id);
+            break;
+
+        case GK_FONT_FACE_NAME:
+            nvgFontFace(nvg, cmd->face.name);
+            break;
+    }
 }
 
 void gk_process_nvg_image_create(gk_context *gk, gk_cmd_image_create *cmd) {
@@ -117,14 +160,20 @@ void gk_process_nvg_image_create(gk_context *gk, gk_cmd_image_create *cmd) {
 
 void gk_process_nvg_font_style(gk_context *gk, gk_cmd_font_style *cmd) {
     auto nvg = gk->nvg;
-    nvgFontSize(nvg, cmd->size);
-    nvgFontBlur(nvg, cmd->blur);
-    nvgTextLetterSpacing(nvg, cmd->spacing);
-    nvgTextLineHeight(nvg, cmd->line_height);
-    nvgTextAlign(nvg, cmd->align);
+    if(cmd->size > 0)        nvgFontSize(nvg, cmd->size);
+    if(cmd->blur >= 0)       nvgFontBlur(nvg, cmd->blur);
+    if(cmd->spacing > 0)     nvgTextLetterSpacing(nvg, cmd->spacing);
+    if(cmd->line_height > 0) nvgTextLineHeight(nvg, cmd->line_height);
+    if(cmd->align > 0)       nvgTextAlign(nvg, cmd->align);
 }
 
 void gk_process_nvg_text(gk_context *gk, gk_cmd_text *cmd) {
     auto nvg = gk->nvg;
-    nvgText(nvg, cmd->pos.x, cmd->pos.y, cmd->str, cmd->end);
+
+    if(cmd->break_width > 0.0) {
+        nvgTextBox(nvg, cmd->pos.x, cmd->pos.y,
+                   cmd->break_width, cmd->str, cmd->end);
+    } else {
+        nvgText(nvg, cmd->pos.x, cmd->pos.y, cmd->str, cmd->end);
+    }
 }

@@ -30,7 +30,7 @@ typedef enum gk_cmd_type {
     GK_CMD_PATH,
     GK_CMD_FONT_CREATE,
     GK_CMD_FONT_STYLE,
-    GK_CMD_FONT_SET,
+    GK_CMD_FONT_FACE,
     GK_CMD_TEXT,
     GK_CMD_IMAGE_CREATE,
 
@@ -205,6 +205,12 @@ typedef enum gk_pathdef_cmds {
     GK_PATH_RECT,
     GK_PATH_CIRCLE,
     GK_PATH_WINDING,
+    GK_PATH_STROKE_COLOR_RGBA,
+    GK_PATH_STROKE_COLOR_RGBAF,
+    GK_PATH_MITER_LIMIT,
+    GK_PATH_STROKE_WIDTH,
+    GK_PATH_LINE_CAP,
+    GK_PATH_LINE_JOIN,
     GK_PATH_FILL_COLOR_RGBA,
     GK_PATH_FILL_COLOR_RGBAF,
     GK_PATH_FILL,
@@ -219,6 +225,15 @@ typedef enum gk_pathdef_winding {
     GK_WINDING_CW = 2,
     GK_WINDING_HOLE = 2
 } gk_pathdef_winding;
+
+/* This should correspond to NanoVG */
+typedef enum gk_pathdef_linecap {
+    GK_LINECAP_BUTT,
+    GK_LINECAP_ROUND,
+    GK_LINECAP_SQUARE,
+    GK_LINECAP_BEVEL,
+    GK_LINECAP_MITER
+} gk_pathdef_linecap;
 
 typedef enum gk_image_flags {
     /* These should correspond to NanoVG */
@@ -322,10 +337,12 @@ typedef struct gk_cmd_text {
     gk_cmd parent;
 
     gk_vec2 pos;
+
+    /* If this is zero or negative, lines will not be broken */
+    float break_width;
     const char *str;
     const char *end;
 } gk_cmd_text;
-
 
 /******************************************************************
  * Transforms

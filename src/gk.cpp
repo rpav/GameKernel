@@ -134,6 +134,12 @@ bool gk_process_cmd_general(const char *listname, gk_context *gk, gk_bundle *b, 
         case GK_CMD_FONT_CREATE:
             gk_process_nvg_font_create(gk, (gk_cmd_font_create*)cmd);
             break;
+        case GK_CMD_FONT_FACE:
+            gk_process_nvg_font_face(gk, (gk_cmd_font_face*)cmd);
+            break;
+        case GK_CMD_FONT_STYLE:
+            gk_process_nvg_font_style(gk, (gk_cmd_font_style*)cmd);
+            break;
 
         case GK_CMD_SPRITESHEET_CREATE:
             gk_process_spritesheet_create(gk, (gk_cmd_spritesheet_create*)cmd);
