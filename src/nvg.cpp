@@ -113,6 +113,30 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle *bundle, gk_cmd_path *cmd) {
                 nvgFill(nvg);
                 break;
 
+            case GK_PATH_TF_IDENTITY:
+                nvgResetTransform(nvg);
+                break;
+
+            case GK_PATH_TF_TRANSLATE:
+                nvgTranslate(nvg, def[1], def[2]);
+                def += 2;
+                break;
+
+            case GK_PATH_TF_ROTATE:
+                nvgRotate(nvg, def[1]);
+                ++def;
+                break;
+
+            case GK_PATH_TF_SKEW_X:
+                nvgSkewX(nvg, def[1]);
+                ++def;
+                break;
+
+            case GK_PATH_TF_SKEW_Y:
+                nvgSkewY(nvg, def[1]);
+                ++def;
+                break;
+
             default:
                 LOG("GK_NVG: Don't know how to handle path command ", id);
                 return;

@@ -202,9 +202,13 @@ void gk_process(gk_context *gk, gk_bundle *bundle);
 typedef enum gk_pathdef_cmds {
     GK_PATH_BEGIN,
     GK_PATH_END,
+
+    /* Path */
     GK_PATH_RECT,
     GK_PATH_CIRCLE,
     GK_PATH_WINDING,
+
+    /* Stroke & Fill */
     GK_PATH_STROKE_COLOR_RGBA,
     GK_PATH_STROKE_COLOR_RGBAF,
     GK_PATH_MITER_LIMIT,
@@ -214,7 +218,15 @@ typedef enum gk_pathdef_cmds {
     GK_PATH_FILL_COLOR_RGBA,
     GK_PATH_FILL_COLOR_RGBAF,
     GK_PATH_FILL,
-    GK_PATH_STROKE
+    GK_PATH_STROKE,
+
+    /* Transforms */
+    GK_PATH_TF_IDENTITY,
+    GK_PATH_TF_TRANSLATE,
+    GK_PATH_TF_ROTATE,
+    GK_PATH_TF_SCALE,
+    GK_PATH_TF_SKEW_X,
+    GK_PATH_TF_SKEW_Y
 } gk_pathdef_cmds;
 
 /* These should correspond to NanoVG */
