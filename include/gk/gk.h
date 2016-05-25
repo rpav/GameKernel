@@ -66,7 +66,7 @@ typedef enum gk_subsystem {
  * Basic structures
  ******************************************************************/
 #ifdef __cplusplus
-#define CXX_SET(...) void set(__VA_ARGS__)
+#define CXX_SET(...) void set(__VA_ARGS__);
 #else
 #define CXX_SET(...)
 #endif
@@ -74,22 +74,22 @@ typedef enum gk_subsystem {
 typedef struct gk_vec2 {
     float x, y;
 
-    CXX_SET(float x, float y);
-    CXX_SET(float*);
+    CXX_SET(float x, float y)
+    CXX_SET(float*)
 } gk_vec2;
 
 typedef struct gk_vec3 {
     float x, y, z;
 
-    CXX_SET(float x, float y, float z);
-    CXX_SET(float*);
+    CXX_SET(float x, float y, float z)
+    CXX_SET(float*)
 } gk_vec3;
 
 typedef struct gk_vec4 {
     float x, y, z, w;
 
-    CXX_SET(float x, float y, float z, float w);
-    CXX_SET(float*);
+    CXX_SET(float x, float y, float z, float w)
+    CXX_SET(float*)
 } gk_vec4;
 
 typedef union gk_mat4 {
@@ -102,7 +102,7 @@ typedef union gk_mat4 {
         float a30, a31, a32, a33;
     } v;
 
-    CXX_SET(float*);
+    CXX_SET(float*)
 } gk_mat4;
 
 typedef struct gk_cmd {
@@ -453,7 +453,7 @@ typedef struct gk_b2d_world {
 
     /* Internal data */
     void *data;
-} gk_cmd_b2d_world;
+} gk_b2d_world;
 
 typedef struct gk_cmd_b2d_world_create {
     gk_cmd parent;
