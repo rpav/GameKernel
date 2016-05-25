@@ -43,11 +43,15 @@ typedef enum gk_cmd_type {
     GK_CMD_QUADSPRITE,
 
     /* Physics */
-    GK_CMD_B2D_WORLD,
+    GK_CMD_B2D_WORLD_CREATE,
+    GK_CMD_B2D_WORLD_DESTROY,
 
     /* Misc */
     GK_CMD_SPRITESHEET_CREATE,
-    GK_CMD_SPRITESHEET_DESTROY
+    GK_CMD_SPRITESHEET_DESTROY,
+
+    /* The last core command ID */
+    GK_CMD_MAX
 } gk_cmd_type;
 
 typedef enum gk_subsystem {
@@ -442,14 +446,32 @@ typedef struct gk_cmd_quadsprite {
 /******************************************************************
  * Box2D
  ******************************************************************/
-typedef struct gk_cmd_b2d_world {
-    gk_cmd parent;
-
+typedef struct gk_b2d_world {
     float timestep;
+    int velocity_iterations;
+    int position_iterations;
 
     /* Internal data */
     void *data;
 } gk_cmd_b2d_world;
+
+typedef struct gk_cmd_b2d_world_create {
+    gk_cmd parent;
+
+    /* Provide this */
+    gk_b2d_world *world;
+
+    /* Settings */
+    float gravity;
+    char do_sleep;
+} gk_cmd_b2d_world_create;
+
+typedef struct gk_cmd_b2d_world_destroy {
+    gk_cmd parent;
+
+    /* Provide this */
+    gk_b2d_world *world;
+} gk_cmd_b2d_world_destroy;
 
 
 /******************************************************************

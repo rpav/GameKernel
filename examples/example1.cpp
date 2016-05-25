@@ -55,6 +55,7 @@ void example_main() {
     GK_CMD_TYPE(&text) = GK_CMD_TEXT;
     text.pos.x = 100;
     text.pos.y = 200;
+    text.break_width = 0;
     text.str = "hello world";
     text.end = nullptr;
 
