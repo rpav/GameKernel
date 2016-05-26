@@ -12,13 +12,17 @@ void example_main() {
 
     gk::Bundle bundle(0);
     gk::List passes;
-    gk::CmdPass draw(1);
+    gk::CmdPass pass_config(1);
+    gk::CmdPass pass_draw(2);
 
     gk::ListNvg nvg(1280, 720, 1.0);
     gk::CmdPath path;
 
+    gk::List config;
+
     gk_b2d_world world;
-    gk::CmdB2DWorldCreate createWorld(world, 9.8, true);
+    gk::vec2 gravity(0, -9.8);
+    gk::CmdB2DWorldCreate createWorld(world, gravity, true);
     gk::CmdB2DWorldDestroy destroyWorld(world);
 
     gk::PathDef pathdef = {
@@ -29,8 +33,14 @@ void example_main() {
         GK_PATH_FILL_COLOR_RGBA, 0, 0, 255, 255
     };
 
-    bundle.add(passes, nvg);
-    passes.add(draw);
+    bundle.add(passes,
+               config,
+               nvg);
+
+    passes.add(pass_config,
+               pass_draw);
+
+    config.add(createWorld, destroyWorld);
 
     path.setPath(pathdef);
     nvg.add(path);

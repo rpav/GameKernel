@@ -62,7 +62,7 @@ namespace gk {
     /* gk::CmdB2DWorldCreate */
     class CmdB2DWorldCreate : public CmdTmpl<gk_cmd_b2d_world_create, GK_CMD_B2D_WORLD_CREATE> {
     public:
-        CmdB2DWorldCreate(gk_b2d_world &world, float gravity, bool doSleep)
+        CmdB2DWorldCreate(gk_b2d_world &world, vec2 &gravity, bool doSleep)
             : CmdTmpl() {
             cmd.world = &world;
             cmd.gravity = gravity;

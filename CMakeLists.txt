@@ -7,7 +7,7 @@ option(GK_BUILD_SHARED "Build shared library" ON)
 option(GK_BUILD_GKPP "Build GK++ library (required for some examples)" ON)
 
 # Optional functionality
-option(GK_USE_BOX2D "Compile in Box2D support" OFF)
+option(GK_USE_BOX2D "Compile in Box2D support" ON)
 option(GK_USE_TEXTUREPACKER "Compile in generic TexturePacker JSON support" ON)
 
 ## Everything
@@ -22,7 +22,7 @@ endif()
 
 if(GK_USE_BOX2D)
   set(BOX2D_BUILD_EXAMPLES OFF CACHE BOOL "turn off Box2D examples")
-  set(BOX2D_BUILD_SHARED OFF CACHE BOOL "turn off Box2D shared")
+  set(BOX2D_BUILD_SHARED ON CACHE BOOL "turn off Box2D shared")
   set(BOX2D_BUILD_STATIC ON CACHE BOOL "turn on Box2D static")
   set(BOX2D_INSTALL OFF CACHE BOOL "don't install Box2D")
   add_subdirectory(${PROJ_ROOT}/third-party/Box2D/Box2D)
@@ -31,7 +31,8 @@ if(GK_USE_BOX2D)
   include_directories(
     ${PROJ_ROOT}/third-party/Box2D/Box2D
     )
-  set(GK_LIBS ${GK_LIBS} Box2D)
+  set(GK_LIBS_STATIC ${GK_LIBS_STATIC} Box2D)
+  set(GK_LIBS_SHARED ${GK_LIBS_SHARED} Box2D_shared)
 endif()
 
 if(GK_USE_TEXTUREPACKER)

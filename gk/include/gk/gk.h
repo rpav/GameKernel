@@ -461,7 +461,7 @@ typedef struct gk_cmd_b2d_world_create {
     gk_b2d_world *world;
 
     /* Settings */
-    float gravity;
+    gk_vec2 gravity;
     char do_sleep;
 } gk_cmd_b2d_world_create;
 

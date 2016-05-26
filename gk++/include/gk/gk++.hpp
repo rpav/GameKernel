@@ -10,6 +10,7 @@
 #include <vector>
 #include "gk/log.hpp"
 #include "gk/gk.h"
+#include "gk/gk++util.hpp"
 #include "gk/gk++cmd.hpp"
 #include "gk/gk++list.hpp"
 

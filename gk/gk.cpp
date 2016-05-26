@@ -4,6 +4,7 @@
 #include "gk/gl.hpp"
 #include "gk/nvg.hpp"
 #include "gk/spritesheet.hpp"
+#include "gk/b2d.hpp"
 #include "gk/log.hpp"
 
 bool gk_mark(gk_context *gk, gk_list *list) {
@@ -146,6 +147,14 @@ bool gk_process_cmd_general(const char *listname, gk_context *gk, gk_bundle *b, 
             break;
         case GK_CMD_SPRITESHEET_DESTROY:
             gk_process_spritesheet_destroy(gk, (gk_cmd_spritesheet_destroy*)cmd);
+            break;
+
+        case GK_CMD_B2D_WORLD_CREATE:
+            gk_process_b2d_world_create(gk, (gk_cmd_b2d_world_create*)cmd);
+            break;
+
+        case GK_CMD_B2D_WORLD_DESTROY:
+            gk_process_b2d_world_destroy(gk, (gk_cmd_b2d_world_destroy*)cmd);
             break;
 
         default:
