@@ -10,3 +10,6 @@ target_link_libraries(example2 SDL2 GL gk_static)
 
 add_executable(example3 example3.cpp main.cpp)
 target_link_libraries(example3 SDL2 GL gk_static)
+
+add_executable(example4 example4.cpp main.cpp)
+target_link_libraries(example4 SDL2 GL gk_static)

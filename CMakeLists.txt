@@ -54,28 +54,28 @@ include_directories(
   ${SOURCE_ROOT}/third-party/json/src
   )
 
-file(GLOB_RECURSE SOURCE_GLOB
+file(GLOB_RECURSE GK_SOURCE_GLOB
   ${SOURCE_ROOT}/src/*.cpp
   ${SOURCE_ROOT}/src/*.c
   )
 
-file(GLOB HEADER_GLOB
+file(GLOB GK_HEADER_GLOB
   ${SOURCE_ROOT}/include/gk/*.hpp
   ${SOURCE_ROOT}/include/gk/*.h
   )
 
-set(SOURCE_FILES
-  ${SOURCE_GLOB}
+set(GK_SOURCE_FILES
+  ${GK_SOURCE_GLOB}
 
   ${SOURCE_ROOT}/third-party/nanovg/src/nanovg.c
   )
 
-set(HEADER_FILES
-  ${HEADER_GLOB}
+set(GK_HEADER_FILES
+  ${GK_HEADER_GLOB}
   )
 
 if(GK_BUILD_SHARED)
-  add_library(${LIB_NAME}_shared SHARED ${SOURCE_FILES})
+  add_library(${LIB_NAME}_shared SHARED ${GK_SOURCE_FILES})
   set_target_properties(${LIB_NAME}_shared PROPERTIES OUTPUT_NAME ${LIB_NAME})
   target_link_libraries(${LIB_NAME}_shared ${GK_LIBS})
 
@@ -85,7 +85,7 @@ if(GK_BUILD_SHARED)
 endif()
 
 if(GK_BUILD_STATIC)
-  add_library(${LIB_NAME}_static STATIC ${SOURCE_FILES})
+  add_library(${LIB_NAME}_static STATIC ${GK_SOURCE_FILES})
   set_target_properties(${LIB_NAME}_static PROPERTIES OUTPUT_NAME ${LIB_NAME})
   target_link_libraries(${LIB_NAME}_static ${GK_LIBS})
 
