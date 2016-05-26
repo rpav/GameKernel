@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.2)
 option(GK_INSTALL "Install GK (or not)" ON)
 option(GK_BUILD_STATIC "Build static library" ON)
 option(GK_BUILD_SHARED "Build shared library" ON)
+option(GK_BUILD_GKPP "Build GK++ library (required for some examples)" ON)
 
 # Optional functionality
 option(GK_USE_BOX2D "Compile in Box2D support" OFF)
@@ -45,5 +46,9 @@ include_directories(
   )
 
 add_subdirectory(gk)
-add_subdirectory(gk++)
+
+if(GK_BUILD_GKPP)
+  add_subdirectory(gk++)
+endif()
+
 add_subdirectory(examples)
