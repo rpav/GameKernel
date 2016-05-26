@@ -25,7 +25,6 @@ typedef enum gk_impl {
 
 typedef enum gk_cmd_type {
     GK_CMD_NULL,
-    GK_CMD_LIST,
     GK_CMD_PASS,
     GK_CMD_PATH,
     GK_CMD_FONT_CREATE,

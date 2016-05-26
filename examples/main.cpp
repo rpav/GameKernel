@@ -88,7 +88,6 @@ void free_bundle(gk_bundle *bundle) {
 }
 
 void init_list(gk_list *list, gk_subsystem sub, int ncmds, gk_cmd **cmds) {
-    GK_CMD_TYPE(list) = GK_CMD_LIST;
     list->sub = sub;
     list->ncmds = ncmds;
     list->in_use = 0;

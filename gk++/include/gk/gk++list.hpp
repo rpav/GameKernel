@@ -16,6 +16,8 @@ namespace gk {
         CmdVector cmds;
 
     public:
+        T list;
+
         ListTmpl() {
             memset(&list, 0, sizeof(T));
             gk_list *l = (gk_list*)&list;
@@ -24,17 +26,9 @@ namespace gk {
         virtual ~ListTmpl() { }
         virtual gk_list* listPtr() { return (gk_list*)&list; }
 
-        T list;
-
         template<typename...Rest>
-        inline void add(CmdBase &cmd, Rest...args) {
+        inline void add(CmdBase &cmd, Rest&...args) {
             cmds.push_back(cmd.cmdPtr());
-            add(args...);
-        }
-
-        template<typename...Rest>
-        inline void add(CmdBase *cmd, Rest...args) {
-            cmds.push_back(cmd->cmdPtr());
             add(args...);
         }
 
