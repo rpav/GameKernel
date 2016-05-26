@@ -45,4 +45,5 @@ include_directories(
   )
 
 add_subdirectory(gk)
+add_subdirectory(gk++)
 add_subdirectory(examples)
