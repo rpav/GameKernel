@@ -460,9 +460,25 @@ typedef enum gk_b2_body_type {
     GK_B2_BODY_TYPE_KINEMATIC,
 } gk_b2_body_type;
 
-typedef struct gk_b2_body {
-    char c;
-} gk_b2_body;
+typedef struct gk_b2_bodydef {
+    gk_b2_body_type type;
+
+    gk_vec2 position;
+    float linear_damping;
+    float linear_velocity;
+
+    float angle;
+    float angular_damping;
+    float angular_velocity;
+
+    float gravity_scale;
+
+    char active;
+    char awake;
+    char bullet;
+    char fixed_rotation;
+    char no_sleep;              /* Opposite of b2BodyDef.allowSleep */
+} gk_b2_bodydef;
 
 typedef struct gk_cmd_b2_world_create {
     gk_cmd parent;
@@ -482,7 +498,7 @@ typedef struct gk_cmd_b2_world_destroy {
     gk_b2_world *world;
 } gk_cmd_b2_world_destroy;
 
-
+typedef struct gk_b2_body_
 
 
 /******************************************************************
