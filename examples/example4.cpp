@@ -17,10 +17,10 @@ void example_main() {
 
     gk::List config;
 
-    gk_b2d_world world;
+    gk_b2_world world;
     gk::vec2 gravity(0, -9.8);
-    gk::CmdB2DWorldCreate createWorld(world, gravity, true);
-    gk::CmdB2DWorldDestroy destroyWorld(world);
+    gk::CmdB2WorldCreate createWorld(world, gravity, true);
+    gk::CmdB2WorldDestroy destroyWorld(world);
 
     bundle.add(passes,
                config);

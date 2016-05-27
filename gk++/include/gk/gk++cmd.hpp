@@ -59,10 +59,10 @@ namespace gk {
         }
     };
 
-    /* gk::CmdB2DWorldCreate */
-    class CmdB2DWorldCreate : public CmdTmpl<gk_cmd_b2d_world_create, GK_CMD_B2D_WORLD_CREATE> {
+    /* gk::CmdB2WorldCreate */
+    class CmdB2WorldCreate : public CmdTmpl<gk_cmd_b2_world_create, GK_CMD_B2_WORLD_CREATE> {
     public:
-        CmdB2DWorldCreate(gk_b2d_world &world, vec2 &gravity, bool doSleep)
+        CmdB2WorldCreate(gk_b2_world &world, vec2 &gravity, bool doSleep)
             : CmdTmpl() {
             cmd.world = &world;
             cmd.gravity = gravity;
@@ -70,10 +70,10 @@ namespace gk {
         }
     };
 
-    /* gk::CmdB2DWorldDestroy */
-    class CmdB2DWorldDestroy : public CmdTmpl<gk_cmd_b2d_world_create, GK_CMD_B2D_WORLD_CREATE> {
+    /* gk::CmdB2WorldDestroy */
+    class CmdB2WorldDestroy : public CmdTmpl<gk_cmd_b2_world_create, GK_CMD_B2_WORLD_CREATE> {
     public:
-        CmdB2DWorldDestroy(gk_b2d_world &world) : CmdTmpl() {
+        CmdB2WorldDestroy(gk_b2_world &world) : CmdTmpl() {
             cmd.world = &world;
         }
     };

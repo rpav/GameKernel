@@ -42,8 +42,8 @@ typedef enum gk_cmd_type {
     GK_CMD_QUADSPRITE,
 
     /* Physics */
-    GK_CMD_B2D_WORLD_CREATE,
-    GK_CMD_B2D_WORLD_DESTROY,
+    GK_CMD_B2_WORLD_CREATE,
+    GK_CMD_B2_WORLD_DESTROY,
 
     /* Misc */
     GK_CMD_SPRITESHEET_CREATE,
@@ -426,7 +426,7 @@ typedef struct gk_sprite {
 
 typedef struct gk_spritesheet {
     unsigned int tex;           /* Texture for the sprites */
-    
+
     unsigned int nsprites;
     gk_sprite *sprites;
     char **names;               /* Array of (nsprites) strings naming
@@ -445,42 +445,42 @@ typedef struct gk_cmd_quadsprite {
 /******************************************************************
  * Box2D
  ******************************************************************/
-typedef struct gk_b2d_world {
+typedef struct gk_b2_world {
     float timestep;
     int velocity_iterations;
     int position_iterations;
 
     /* Internal data */
     void *data;
-} gk_b2d_world;
+} gk_b2_world;
 
-typedef enum gk_b2d_body_type {
-    GK_B2D_BODY_TYPE_STATIC,
-    GK_B2D_BODY_TYPE_DYNAMIC,
-    GK_B2D_BODY_TYPE_KINEMATIC,
-} gk_b2d_body_type;
+typedef enum gk_b2_body_type {
+    GK_B2_BODY_TYPE_STATIC,
+    GK_B2_BODY_TYPE_DYNAMIC,
+    GK_B2_BODY_TYPE_KINEMATIC,
+} gk_b2_body_type;
 
-typedef struct gk_b2d_body {
+typedef struct gk_b2_body {
+    char c;
+} gk_b2_body;
 
-};
-
-typedef struct gk_cmd_b2d_world_create {
+typedef struct gk_cmd_b2_world_create {
     gk_cmd parent;
 
     /* Provide this */
-    gk_b2d_world *world;
+    gk_b2_world *world;
 
     /* Settings */
     gk_vec2 gravity;
     char do_sleep;
-} gk_cmd_b2d_world_create;
+} gk_cmd_b2_world_create;
 
-typedef struct gk_cmd_b2d_world_destroy {
+typedef struct gk_cmd_b2_world_destroy {
     gk_cmd parent;
 
     /* Provide this */
-    gk_b2d_world *world;
-} gk_cmd_b2d_world_destroy;
+    gk_b2_world *world;
+} gk_cmd_b2_world_destroy;
 
 
 
