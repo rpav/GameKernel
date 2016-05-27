@@ -454,6 +454,16 @@ typedef struct gk_b2d_world {
     void *data;
 } gk_b2d_world;
 
+typedef enum gk_b2d_body_type {
+    GK_B2D_BODY_TYPE_STATIC,
+    GK_B2D_BODY_TYPE_DYNAMIC,
+    GK_B2D_BODY_TYPE_KINEMATIC,
+} gk_b2d_body_type;
+
+typedef struct gk_b2d_body {
+
+};
+
 typedef struct gk_cmd_b2d_world_create {
     gk_cmd parent;
 
@@ -471,6 +481,8 @@ typedef struct gk_cmd_b2d_world_destroy {
     /* Provide this */
     gk_b2d_world *world;
 } gk_cmd_b2d_world_destroy;
+
+
 
 
 /******************************************************************
