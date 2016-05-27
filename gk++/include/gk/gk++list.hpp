@@ -61,4 +61,9 @@ namespace gk {
         void height(unsigned int h) { list.height = h; }
         void ration(float r) { list.ratio = r; }
     };
+
+    class ListB2 : public ListTmpl<gk_list, GK_SUB_BOX2D> {
+    public:
+        ListB2() : ListTmpl() { }
+    };
 }

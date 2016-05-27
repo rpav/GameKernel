@@ -47,5 +47,3 @@ namespace gk {
 
 #define BEGIN_NS_GK namespace gk {
 #define END_NS_GK }
-
-

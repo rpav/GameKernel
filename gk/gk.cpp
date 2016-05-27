@@ -94,6 +94,9 @@ bool gk_process_list(gk_context *gk, gk_bundle *b, gk_list *list) {
         case GK_SUB_NVG:
             gk_process_nvg(gk, b, (gk_list_nvg*)list);
             break;
+        case GK_SUB_BOX2D:
+            gk_process_box2d(gk, b, list);
+            break;
         case GK_SUB_CONFIG:
             gk_process_config(gk, b, list);
             break;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string.h>
+
 namespace gk {
     typedef std::vector<gk_cmd*> CmdVector;
 
@@ -59,6 +61,11 @@ namespace gk {
         }
     };
 
+    // gk::B2World
+    struct B2World : public gk_b2_world {
+        B2World() { memset(this, 0, sizeof(*this)); }
+    };
+
     /* gk::CmdB2WorldCreate */
     class CmdB2WorldCreate : public CmdTmpl<gk_cmd_b2_world_create, GK_CMD_B2_WORLD_CREATE> {
     public:
@@ -75,6 +82,41 @@ namespace gk {
     public:
         CmdB2WorldDestroy(gk_b2_world &world) : CmdTmpl() {
             cmd.world = &world;
+        }
+    };
+
+    // gk::B2Body
+    struct B2Body : public gk_b2_body {
+        B2Body() { memset(this, 0, sizeof(*this)); }
+    };
+
+    struct B2BodyDef : public gk_b2_bodydef {
+        B2BodyDef(B2Body &b) {
+            memset(this, 0, sizeof(*this));
+            this->body = &b;
+        }
+    };
+
+    // gk::CmdB2BodyDef
+    typedef std::vector<gk_b2_bodydef*> BodydefVector;
+    class CmdB2BodyCreate : public CmdTmpl<gk_cmd_b2_body_create, GK_CMD_B2_BODY_CREATE> {
+        BodydefVector defs;
+
+    public:
+        CmdB2BodyCreate(gk_b2_world &world)
+            : CmdTmpl() {
+            cmd.world = &world;
+        }
+
+        template<typename...Rest>
+        inline void add(B2BodyDef &bd, Rest&...args) {
+            defs.push_back(&bd);
+            add(args...);
+        }
+
+        inline void add() {
+            cmd.ndefs = defs.size();
+            cmd.defs = defs.data();
         }
     };
 }

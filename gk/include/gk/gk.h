@@ -44,6 +44,7 @@ typedef enum gk_cmd_type {
     /* Physics */
     GK_CMD_B2_WORLD_CREATE,
     GK_CMD_B2_WORLD_DESTROY,
+    GK_CMD_B2_BODY_CREATE,
 
     /* Misc */
     GK_CMD_SPRITESHEET_CREATE,
@@ -57,7 +58,11 @@ typedef enum gk_subsystem {
     GK_SUB_NULL,
     GK_SUB_CONFIG,
     GK_SUB_GL,
-    GK_SUB_NVG
+    GK_SUB_NVG,
+    GK_SUB_BOX2D,
+
+    /* Last core subsystem ID */
+    GK_SUB_MAX
 } gk_subsystem;
 
 
@@ -454,22 +459,28 @@ typedef struct gk_b2_world {
     void *data;
 } gk_b2_world;
 
+/* These should correspond to b2BodyType */
 typedef enum gk_b2_body_type {
-    GK_B2_BODY_TYPE_STATIC,
-    GK_B2_BODY_TYPE_DYNAMIC,
+    GK_B2_BODY_TYPE_STATIC = 0,
     GK_B2_BODY_TYPE_KINEMATIC,
+    GK_B2_BODY_TYPE_DYNAMIC
 } gk_b2_body_type;
+
+typedef struct gk_b2_body {
+    /* Internal */
+    void *data;
+} gk_b2_body;
 
 typedef struct gk_b2_bodydef {
     gk_b2_body_type type;
 
     gk_vec2 position;
+    gk_vec2 linear_velocity;
     float linear_damping;
-    float linear_velocity;
 
     float angle;
-    float angular_damping;
     float angular_velocity;
+    float angular_damping;
 
     float gravity_scale;
 
@@ -478,6 +489,9 @@ typedef struct gk_b2_bodydef {
     char bullet;
     char fixed_rotation;
     char no_sleep;              /* Opposite of b2BodyDef.allowSleep */
+
+    /* Provide this */
+    gk_b2_body *body;
 } gk_b2_bodydef;
 
 typedef struct gk_cmd_b2_world_create {
@@ -498,7 +512,14 @@ typedef struct gk_cmd_b2_world_destroy {
     gk_b2_world *world;
 } gk_cmd_b2_world_destroy;
 
-typedef struct gk_b2_body_
+typedef struct gk_cmd_b2_body_create {
+    gk_cmd parent;
+
+    gk_b2_world *world;
+
+    unsigned int ndefs;
+    gk_b2_bodydef **defs;
+} gk_cmd_b2_body_create;
 
 
 /******************************************************************

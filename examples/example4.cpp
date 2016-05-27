@@ -15,20 +15,28 @@ void example_main() {
     gk::CmdPass pass_config(1);
     gk::CmdPass pass_draw(2);
 
-    gk::List config;
+    gk::ListB2 physConfig;
 
-    gk_b2_world world;
+    gk::B2World world;
+
+    gk::B2Body body;
+    gk::B2BodyDef bdef(body);
+
     gk::vec2 gravity(0, -9.8);
     gk::CmdB2WorldCreate createWorld(world, gravity, true);
     gk::CmdB2WorldDestroy destroyWorld(world);
+    gk::CmdB2BodyCreate bodyCreate(world);
 
     bundle.add(passes,
-               config);
+               physConfig);
 
     passes.add(pass_config);
 
-    config.add(createWorld,
+    physConfig.add(createWorld,
+               bodyCreate,
                destroyWorld);
+
+    bodyCreate.add(bdef);
 
     gk::process(gk, bundle);
     swap();
