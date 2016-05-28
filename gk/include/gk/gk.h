@@ -11,6 +11,10 @@
 #ifndef __GAMEKERNEL_CAPI_H__
 #define __GAMEKERNEL_CAPI_H__
 
+#include <stddef.h>
+#include <stdbool.h>
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -111,7 +115,7 @@ typedef union gk_mat4 {
 
 typedef struct gk_cmd {
     gk_cmd_type type;
-    int key;
+    int32_t key;
 } gk_cmd;
 
 #define GK_CMD(x) ((gk_cmd*)(x))
@@ -121,11 +125,11 @@ typedef struct gk_cmd {
 typedef struct gk_list {
     gk_subsystem sub;
 
-    unsigned int ncmds;
+    size_t ncmds;
     gk_cmd **cmds;
 
     /* Internal */
-    char in_use;
+    bool in_use;
 } gk_list;
 
 #define GK_LIST(x) ((gk_list*)(x))
@@ -141,7 +145,7 @@ typedef enum gk_pass_sorting {
 typedef struct gk_pass {
     gk_cmd parent;
     gk_pass_sorting sort;
-    unsigned int list_index;
+    size_t list_index;
 } gk_pass;
 
 #define GK_PASS(x) ((gk_pass*)(x))
@@ -176,7 +180,7 @@ typedef struct gk_error {
 typedef struct gk_bundle {
     gk_pass start;
     gk_list **lists;
-    unsigned int nlists;
+    size_t nlists;
 
     gk_error error;
 } gk_bundle;
@@ -281,7 +285,7 @@ typedef struct gk_cmd_path {
     gk_cmd parent;
 
     float *pathdef;
-    unsigned int pathlen;
+    size_t pathlen;
 } gk_cmd_path;
 
 /******************************************************************
@@ -309,7 +313,7 @@ typedef struct gk_cmd_image_create {
     gk_cmd parent;
 
     const char *filename;
-    unsigned int flags;
+    uint32_t flags;
     gk_image_filter min_filter;
     gk_image_filter mag_filter;
 
@@ -382,7 +386,7 @@ typedef enum gk_trs_flags {
 typedef struct gk_cmd_tf_trs {
     gk_cmd_tf parent;
 
-    unsigned int flags;
+    uint32_t flags;
 
     gk_vec3 translate;
     gk_vec3 scale;
@@ -432,7 +436,7 @@ typedef struct gk_sprite {
 typedef struct gk_spritesheet {
     unsigned int tex;           /* Texture for the sprites */
 
-    unsigned int nsprites;
+    size_t nsprites;
     gk_sprite *sprites;
     char **names;               /* Array of (nsprites) strings naming
                                    each correspondingly-indexed sprite */
@@ -484,11 +488,11 @@ typedef struct gk_b2_bodydef {
 
     float gravity_scale;
 
-    char active;
-    char awake;
-    char bullet;
-    char fixed_rotation;
-    char no_sleep;              /* Opposite of b2BodyDef.allowSleep */
+    bool active;
+    bool awake;
+    bool bullet;
+    bool fixed_rotation;
+    bool no_sleep;              /* Opposite of b2BodyDef.allowSleep */
 
     /* Provide this */
     gk_b2_body *body;
@@ -517,7 +521,7 @@ typedef struct gk_cmd_b2_body_create {
 
     gk_b2_world *world;
 
-    unsigned int ndefs;
+    size_t ndefs;
     gk_b2_bodydef **defs;
 } gk_cmd_b2_body_create;
 
@@ -554,7 +558,7 @@ typedef struct gk_cmd_spritesheet_create {
     const char *path;
     const char *filename;
 
-    unsigned int flags;
+    uint32_t flags;
 
     /* Output; the returned pointer should be provided to a
        gk_cmd_spritesheet_destroy to free. */

@@ -33,8 +33,8 @@ void example_main() {
     passes.add(pass_config);
 
     physConfig.add(createWorld,
-               bodyCreate,
-               destroyWorld);
+                   bodyCreate,
+                   destroyWorld);
 
     bodyCreate.add(bdef);
 
