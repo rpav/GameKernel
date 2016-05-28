@@ -105,6 +105,10 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle *bundle, gk_cmd_path *cmd) {
                 def += 4;
                 break;
 
+            case GK_PATH_CLOSE:
+                nvgClosePath(nvg);
+                break;
+
             case GK_PATH_STROKE:
                 nvgStroke(nvg);
                 break;

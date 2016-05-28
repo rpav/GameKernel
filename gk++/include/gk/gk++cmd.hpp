@@ -61,6 +61,42 @@ namespace gk {
         }
     };
 
+    // gk::CmdFontCreate
+    class CmdFontCreate : public CmdTmpl<gk_cmd_font_create, GK_CMD_FONT_CREATE> {
+    public:
+        CmdFontCreate(const char *name, const char *filename)
+            : CmdTmpl() {
+            cmd.name = name;
+            cmd.filename = filename;
+        }
+    };
+
+    // gk::CmdFontStyle
+    class CmdFontStyle : public CmdTmpl<gk_cmd_font_style, GK_CMD_FONT_STYLE> {
+    public:
+        CmdFontStyle(float size = 0.0) : CmdTmpl() {
+            cmd.size = size;
+            cmd.spacing = 1.0;
+            cmd.line_height = 1.0;
+            cmd.align = GK_ALIGN_LEFT | GK_ALIGN_BASELINE;
+        }
+    };
+
+    // gk::CmdText
+    class CmdText : public CmdTmpl<gk_cmd_text, GK_CMD_TEXT> {
+    public:
+        CmdText(const char *string = nullptr, float x = 0.0, float y = 0.0) : CmdTmpl() {
+            cmd.str = string;
+            cmd.pos.x = x;
+            cmd.pos.y = y;
+        }
+
+        CmdText(const char *string, gk_vec2 &pos) {
+            cmd.str = string;
+            cmd.pos = pos;
+        }
+    };
+
     // gk::B2World
     struct B2World : public gk_b2_world {
         B2World() { memset(this, 0, sizeof(*this)); }

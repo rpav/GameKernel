@@ -5,6 +5,11 @@ project(gk_examples)
 add_executable(example1 example1.cpp main.cpp)
 target_link_libraries(example1 SDL2 GL gk-static)
 
+if(GK_BUILD_GKPP)
+  add_executable(example1a example1a.cpp main.cpp)
+  target_link_libraries(example1a SDL2 GL gk-static gk++-static)
+endif()
+
 add_executable(example2 example2.cpp main.cpp)
 target_link_libraries(example2 SDL2 GL gk-static)
 

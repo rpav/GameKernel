@@ -152,6 +152,7 @@ bool gk_process_cmd_general(const char *listname, gk_context *gk, gk_bundle *b, 
             gk_process_spritesheet_destroy(gk, (gk_cmd_spritesheet_destroy*)cmd);
             break;
 
+#ifdef GK_USE_BOX2D
         case GK_CMD_B2_WORLD_CREATE:
             gk_process_b2_world_create(gk, (gk_cmd_b2_world_create*)cmd);
             break;
@@ -159,6 +160,7 @@ bool gk_process_cmd_general(const char *listname, gk_context *gk, gk_bundle *b, 
         case GK_CMD_B2_WORLD_DESTROY:
             gk_process_b2_world_destroy(gk, (gk_cmd_b2_world_destroy*)cmd);
             break;
+#endif // GK_USE_BOX2D
 
         default:
             LOG("Unknown or invalid command type for ", listname, ": ",

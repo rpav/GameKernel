@@ -45,10 +45,11 @@ typedef enum gk_cmd_type {
     GK_CMD_QUAD,
     GK_CMD_QUADSPRITE,
 
-    /* Physics */
+    /* Box2D physics */
     GK_CMD_B2_WORLD_CREATE,
     GK_CMD_B2_WORLD_DESTROY,
     GK_CMD_B2_BODY_CREATE,
+    GK_CMD_B2_FIXTURE_CREATE,
 
     /* Misc */
     GK_CMD_SPRITESHEET_CREATE,
@@ -213,11 +214,21 @@ void gk_process(gk_context *gk, gk_bundle *bundle);
  ******************************************************************/
 typedef enum gk_pathdef_cmds {
     GK_PATH_BEGIN,
-    GK_PATH_END,
 
     /* Path */
+    GK_PATH_MOVE_TO,
+    GK_PATH_LINE_TO,
+    GK_PATH_BEZIER_TO,
+    GK_PATH_QUAD_TO,
+    GK_PATH_ARC_TO,
+    GK_PATH_CLOSE,
+
+    GK_PATH_ARC,
     GK_PATH_RECT,
+    GK_PATH_ROUNDED_RECT,
+    GK_PATH_ELLIPSE,
     GK_PATH_CIRCLE,
+
     GK_PATH_WINDING,
 
     /* Stroke & Fill */
@@ -229,6 +240,7 @@ typedef enum gk_pathdef_cmds {
     GK_PATH_LINE_JOIN,
     GK_PATH_FILL_COLOR_RGBA,
     GK_PATH_FILL_COLOR_RGBAF,
+
     GK_PATH_FILL,
     GK_PATH_STROKE,
 
@@ -524,6 +536,25 @@ typedef struct gk_cmd_b2_body_create {
     size_t ndefs;
     gk_b2_bodydef **defs;
 } gk_cmd_b2_body_create;
+
+typedef struct gk_cmd_b2_fixture_create {
+    gk_cmd parent;
+
+    gk_b2_body *body;
+
+    /* Fixtures are created by specifying paths; e.g., GK_PATH_RECT
+       makes a b2PolygonShape, GK_PATH_CIRCLE makes a b2CircleShape,
+       etc. Arcs, bezier curves, etc are not supported at all.
+
+       End shapes with GK_PATH_FILL.
+
+       Ending a shape with GK_PATH_STROKE will create a b2ChainShape;
+       note that only GK_PATH_LINE_TO is supported for this.
+       GK_PATH_CLOSE will produce a closed chain.
+    */
+    size_t pathlen;
+    float *pathdef;
+} gk_cmd_b2_fixture_create;
 
 
 /******************************************************************

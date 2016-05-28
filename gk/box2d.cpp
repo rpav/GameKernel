@@ -43,6 +43,10 @@ void gk_process_b2_body_create(gk_context *gk, gk_cmd_b2_body_create *cmd) {
     }
 }
 
+void gk_process_b2_fixture_create(gk_context *gk, gk_cmd_b2_fixture_create *cmd) {
+
+}
+
 void gk_process_box2d(gk_context *gk, gk_bundle *bundle, gk_list *list) {
     for(int j = 0; j < list->ncmds; ++j) {
         auto cmd = list->cmds[j];
@@ -51,6 +55,10 @@ void gk_process_box2d(gk_context *gk, gk_bundle *bundle, gk_list *list) {
         switch(type) {
             case GK_CMD_B2_BODY_CREATE:
                 gk_process_b2_body_create(gk, (gk_cmd_b2_body_create*)cmd);
+                break;
+
+            case GK_CMD_B2_FIXTURE_CREATE:
+                gk_process_b2_fixture_create(gk, (gk_cmd_b2_fixture_create*)cmd);
                 break;
 
             default:
