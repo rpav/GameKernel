@@ -8,7 +8,6 @@
  */
 
 #include <vector>
-#include "gk/log.hpp"
 #include "gk/gk.h"
 #include "gk/gk++util.hpp"
 #include "gk/gk++cmd.hpp"
@@ -33,6 +32,12 @@ namespace gk {
         inline void add() {
             bundle.nlists = lists.size();
             bundle.lists = lists.data();
+        }
+
+        inline void clear() {
+            lists.clear();
+            bundle.nlists = 0;
+            bundle.lists = nullptr;
         }
     };
 

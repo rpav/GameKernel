@@ -11,9 +11,6 @@
 
 using mat4 = glm::mat4;
 
-#define checkrc(x) if((x)!=0) { printf("Error: '%s'\n", SDL_GetError()); exit(1); }
-#define checknull(x) if((x)==NULL) { printf("Error: '%s'\n", SDL_GetError()); exit(1); }
-
 SDL_Window *w = NULL;
 SDL_GLContext gl;
 

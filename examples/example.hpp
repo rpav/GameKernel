@@ -9,6 +9,9 @@
 #define WIDTH 1280
 #define HEIGHT 720
 
+#define checkrc(x) if((x)!=0) { printf("Error: '%s'\n", SDL_GetError()); exit(1); }
+#define checknull(x) if((x)==NULL) { printf("Error: '%s'\n", SDL_GetError()); exit(1); }
+
 void printm(const glm::mat4x4 &m);
 void swap();
 void wait();

@@ -37,6 +37,13 @@ namespace gk {
             l->ncmds = cmds.size();
             l->cmds = cmds.data();
         }
+
+        inline void clear() {
+            gk_list *l = listPtr();
+            cmds.clear();
+            l->ncmds = 0;
+            l->cmds = nullptr;
+        }
     };
 
     class List : public ListTmpl<gk_list, GK_SUB_CONFIG> {

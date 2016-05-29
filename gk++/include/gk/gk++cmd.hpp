@@ -127,13 +127,18 @@ namespace gk {
     };
 
     struct B2BodyDef : public gk_b2_bodydef {
-        B2BodyDef(B2Body &b) {
+        B2BodyDef(B2Body &b, gk_b2_body_type type = GK_B2_BODY_TYPE_STATIC) {
             memset(this, 0, sizeof(*this));
             this->body = &b;
+            this->type = type;
+            this->active = true;
+            this->awake = true;
+            this->gravity_scale = 1.0;
+            this->allow_sleep = true;
         }
     };
 
-    // gk::CmdB2BodyDef
+    // gk::CmdB2BodyCreate
     typedef std::vector<gk_b2_bodydef*> BodydefVector;
     class CmdB2BodyCreate : public CmdTmpl<gk_cmd_b2_body_create, GK_CMD_B2_BODY_CREATE> {
         BodydefVector defs;
@@ -153,6 +158,45 @@ namespace gk {
         inline void add() {
             cmd.ndefs = defs.size();
             cmd.defs = defs.data();
+        }
+    };
+
+    // gk::CmdB2FixtureCreate
+    class CmdB2FixtureCreate : public CmdTmpl<gk_cmd_b2_fixture_create, GK_CMD_B2_FIXTURE_CREATE> {
+    public:
+        CmdB2FixtureCreate(gk_b2_body &body)
+            : CmdTmpl() {
+            cmd.body = &body;
+        }
+
+        void setPath(float *pathdef, size_t count) {
+            cmd.pathdef = pathdef;
+            cmd.pathlen = count;
+        }
+
+        void setPath(PathDef &pathdef) {
+            cmd.pathdef = pathdef.data();
+            cmd.pathlen = pathdef.size();
+        }
+    };
+
+    // gk::CmdB2Step
+    class CmdB2Step : public CmdTmpl<gk_cmd_b2_step, GK_CMD_B2_STEP> {
+    public:
+        CmdB2Step(gk_b2_world &world)
+            : CmdTmpl() {
+            cmd.world = &world;
+        }
+    };
+
+    // gk::CmdB2DrawDebug
+    class CmdB2DrawDebug : public CmdTmpl<gk_cmd_b2_draw_debug, GK_CMD_B2_DRAW_DEBUG> {
+    public:
+        CmdB2DrawDebug(gk_b2_world &world, int width, int height)
+            : CmdTmpl() {
+            cmd.world = &world;
+            cmd.width = width;
+            cmd.height = height;
         }
     };
 }
