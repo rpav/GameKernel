@@ -86,7 +86,6 @@ public:
 
 void gk_process_b2_world_create(gk_context *gk, gk_cmd_b2_world_create *cmd) {
     b2Vec2 gravity(cmd->gravity.x, cmd->gravity.y);
-    LOG("gravity = ", gravity.x, ",", gravity.y);
     auto world = new b2World(gravity);
     auto draw = new B2NvgDraw(gk);
 

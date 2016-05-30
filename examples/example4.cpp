@@ -31,7 +31,8 @@ void example_main() {
     gk::CmdB2FixtureCreate fixCreate(body);
     gk::PathDef fixPath = {
         GK_PATH_BEGIN,
-        GK_PATH_RECT, 1.5, 2.0, 1.0, 1.0,
+        //GK_PATH_RECT, 1.5, 2.0, 1.0, 1.0,
+        GK_PATH_CIRCLE, 1.5, 2.0, 0.5,
         GK_PATH_DENSITY, 1.0,
         GK_PATH_ELASTICITY, 0.5,
         GK_PATH_FILL,
@@ -78,6 +79,10 @@ void example_main() {
         gk::process(gk, bundle);
         swap();
     }
+
+    phys.clear();
+    phys.add(destroyWorld);
+    gk::process(gk, bundle);
 
     gk::destroy(gk);
 }

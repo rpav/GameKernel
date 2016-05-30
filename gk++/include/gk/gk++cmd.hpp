@@ -114,7 +114,7 @@ namespace gk {
     };
 
     /* gk::CmdB2WorldDestroy */
-    class CmdB2WorldDestroy : public CmdTmpl<gk_cmd_b2_world_create, GK_CMD_B2_WORLD_CREATE> {
+    class CmdB2WorldDestroy : public CmdTmpl<gk_cmd_b2_world_destroy, GK_CMD_B2_WORLD_DESTROY> {
     public:
         CmdB2WorldDestroy(gk_b2_world &world) : CmdTmpl() {
             cmd.world = &world;
