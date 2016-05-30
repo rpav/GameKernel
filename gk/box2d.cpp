@@ -68,10 +68,15 @@ public:
         nvgStrokeWidth(nvg, _linewidth);
         nvgFill(nvg);
         nvgStroke(nvg);
+
+        nvgBeginPath(nvg);
+        nvgMoveTo(nvg, center.x, center.y);
+        nvgLineTo(nvg, center.x+(axis.x * radius), center.y+(axis.y * radius));
+        nvgStroke(nvg);
     }
 
     void DrawSegment(const b2Vec2 &p1, const b2Vec2 &p2, const b2Color &color) {
-        
+        LOG("draw segment");
     }
 
     void DrawTransform(const b2Transform &tf) {
