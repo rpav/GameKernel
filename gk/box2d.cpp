@@ -164,7 +164,7 @@ void gk_process_b2_fixture_create(gk_context *gk, gk_cmd_b2_fixture_create *cmd)
                 circle.m_p = b2Vec2(def[1], def[2]);
                 circle.m_radius = def[3];
                 fixdef.shape = &circle;
-                def += 4;
+                def += 3;
                 break;   
 
             case GK_PATH_DENSITY:
@@ -198,8 +198,9 @@ void gk_process_b2_fixture_create(gk_context *gk, gk_cmd_b2_fixture_create *cmd)
                 break;
 
             case GK_PATH_FILL:
-                if(fixdef.shape)
+                if(fixdef.shape) {
                     body->CreateFixture(&fixdef);
+                }
 
                 break;
 

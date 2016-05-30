@@ -31,11 +31,16 @@ void example_main() {
     gk::CmdB2FixtureCreate fixCreate(body);
     gk::PathDef fixPath = {
         GK_PATH_BEGIN,
-        //GK_PATH_RECT, 1.5, 2.0, 1.0, 1.0,
-        GK_PATH_CIRCLE, 1.5, 2.0, 0.5,
+        GK_PATH_RECT, 1.5, 2.0, 1.0, 1.0,
         GK_PATH_DENSITY, 1.0,
         GK_PATH_ELASTICITY, 0.5,
         GK_PATH_FILL,
+
+        GK_PATH_BEGIN,
+        GK_PATH_CIRCLE, 1.5, 2.0, 0.5,
+        GK_PATH_DENSITY, 0.5,
+        GK_PATH_ELASTICITY, 0.5,
+        GK_PATH_FILL
     };
     fixCreate.setPath(fixPath);
 
