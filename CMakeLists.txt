@@ -43,6 +43,7 @@ include_directories(
   ${PROJ_ROOT}/third-party/nanovg/src
   ${PROJ_ROOT}/third-party/json/src
   ${PROJ_ROOT}/gk/include
+  ${PROJ_ROOT}/gk/include-int
   ${PROJ_ROOT}/gk++/include
   )
 
