@@ -3,6 +3,8 @@
 
 #include <new>
 #include <vector>
+#include <set>
+#include <utility>
 #include <gk/gk.hpp>
 #include "gk/log.hpp"
 #include "Box2D/Box2D.h"
@@ -11,13 +13,13 @@
 #include <GL/gl.h>
 #include "nanovg.h"
 
-class B2NvgDraw : public b2Draw {
+class GK_B2NvgDraw : public b2Draw {
     gk_context *_gk;
     int _w, _h;
     float _xscale, _yscale;
     float _linewidth;
 public:
-    B2NvgDraw(gk_context *gk) : _gk(gk), _w(0), _h(0) { }
+    GK_B2NvgDraw(gk_context *gk) : _gk(gk), _w(0), _h(0) { }
 
     void setSize(int w, int h, float xscale, float yscale) {
         _w = w;
@@ -84,28 +86,104 @@ public:
     }
 };
 
+typedef struct gk_b2_contact_pair ContactPair;
+
+// Yeah this is probably terrible, but for now
+struct ContactPairComparator {
+    bool operator() (const ContactPair &a, const ContactPair &b) const {
+        return ((size_t)a.a + (size_t)a.b) < ((size_t)b.a + (size_t)b.b);
+    }
+};
+
+typedef std::vector<ContactPair*> GkContactPtrVector;
+typedef std::set<ContactPair, ContactPairComparator> GkContactSet;
+
+struct gk_b2_body_data {
+    b2Body *body;
+};
+
+class GK_B2ContactListener : public b2ContactListener {
+    GkContactPtrVector _pairs;
+    GkContactSet _contacts;
+
+public:
+    void begin() {
+        _contacts.clear();
+    }
+
+    ContactPair& add(b2Contact *c) {
+        auto a = (gk_b2_body*)c->GetFixtureA()->GetBody()->GetUserData();
+        auto b = (gk_b2_body*)c->GetFixtureB()->GetBody()->GetUserData();
+
+        auto insertion = _contacts.emplace(a, b);
+        return const_cast<ContactPair&>(*insertion.first);
+    }
+
+    virtual void BeginContact(b2Contact *c) {
+        auto &pair = add(c);
+        ++pair.count;
+    }
+    virtual void EndContact(b2Contact *c) {
+        auto &pair = add(c);
+        --pair.count;
+    }
+    virtual void PreSolve (b2Contact *contact, const b2Manifold *oldManifold) {
+
+    }
+    virtual void PostSolve (b2Contact *contact, const b2ContactImpulse *impulse) {
+
+    }
+
+    void finish(gk_cmd_b2_step *cmd) {
+        _pairs.clear();
+        if(_contacts.size() > 0) {
+            for(auto &i : _contacts)
+                if(i.count)
+                    _pairs.push_back(const_cast<ContactPair*>(&i));
+        }
+
+        cmd->collisions = _pairs.data();
+        cmd->ncollisions = _pairs.size();
+    }
+};
+
+struct gk_b2_world_data {
+    b2World *world;
+    GK_B2NvgDraw *draw;
+    GK_B2ContactListener *listen;
+};
+
 void gk_process_b2_world_create(gk_context *gk, gk_cmd_b2_world_create *cmd) {
     b2Vec2 gravity(cmd->gravity.x, cmd->gravity.y);
-    auto world = new b2World(gravity);
-    auto draw = new B2NvgDraw(gk);
 
+    auto draw = new GK_B2NvgDraw(gk);
     draw->SetFlags(b2Draw::e_shapeBit);
 
+    auto world = new b2World(gravity);
     world->SetAllowSleeping(cmd->do_sleep);
     world->SetDebugDraw(draw);
 
-    cmd->world->data = (void*)world;
-    cmd->world->draw = (void*)draw;
+    auto listen = new GK_B2ContactListener;
+    world->SetContactListener(listen);
+
+    auto data = new gk_b2_world_data;
+    data->world = world;
+    data->draw = draw;
+    data->listen = listen;
+
+    cmd->world->data = data;
 }
 
 void gk_process_b2_world_destroy(gk_context *gk, gk_cmd_b2_world_destroy *cmd) {
-    b2World *world = (b2World*)cmd->world->data;
-    delete world;
+    delete cmd->world->data->world;
+    delete cmd->world->data->draw;
+    delete cmd->world->data->listen;
+
     cmd->world->data = nullptr;
 }
 
 void gk_process_b2_body_create(gk_context *gk, gk_cmd_b2_body_create *cmd) {
-    auto world = (b2World*)cmd->world->data;
+    auto world = cmd->world->data->world;
 
     for(int i = 0; i < cmd->ndefs; ++i) {
         b2BodyDef def;
@@ -129,13 +207,16 @@ void gk_process_b2_body_create(gk_context *gk, gk_cmd_b2_body_create *cmd) {
         def.userData         = src.body;
 
         auto body = world->CreateBody(&def);
-        src.body->data = body;
+        auto bodyData = new gk_b2_body_data;
+
+        bodyData->body = body;
+        src.body->data = bodyData;
     }
 }
 
 void gk_process_b2_fixture_create(gk_context *gk, gk_cmd_b2_fixture_create *cmd) {
     std::vector<gk_vec2> verts;
-    auto body = (b2Body*)cmd->body->data;
+    auto body = cmd->body->data->body;
 
     b2FixtureDef fixdef;
 
@@ -165,7 +246,7 @@ void gk_process_b2_fixture_create(gk_context *gk, gk_cmd_b2_fixture_create *cmd)
                 circle.m_radius = def[3];
                 fixdef.shape = &circle;
                 def += 3;
-                break;   
+                break;
 
             case GK_PATH_DENSITY:
                 fixdef.density = def[1];
@@ -216,8 +297,8 @@ void gk_process_b2_fixture_create(gk_context *gk, gk_cmd_b2_fixture_create *cmd)
 }
 
 void gk_process_b2_draw_debug(gk_context *gk, gk_cmd_b2_draw_debug *cmd) {
-    auto world = (b2World*)cmd->world->data;
-    auto draw = (B2NvgDraw*)cmd->world->draw;
+    auto world = cmd->world->data->world;
+    auto draw = cmd->world->data->draw;
 
     draw->setSize(cmd->width, cmd->height, 100.0, 100.0);
 
@@ -226,32 +307,33 @@ void gk_process_b2_draw_debug(gk_context *gk, gk_cmd_b2_draw_debug *cmd) {
 
     nvgBeginFrame(gk->nvg, cmd->width, cmd->height, 1.0);
     nvgTransform(gk->nvg, 1, 0, 0, -1, 0, cmd->height);
-    
+
     nvgScale(gk->nvg, 100, 100);
     world->DrawDebugData();
     nvgEndFrame(gk->nvg);
 }
 
 void gk_process_b2_step(gk_context *gk, gk_cmd_b2_step *cmd) {
-    auto world = (b2World*)cmd->world->data;
+    auto data = cmd->world->data;
+    auto world = data->world;
+    auto listen = data->listen;
+    listen->begin();
     world->Step(1/60.0, 8, 3);
+    listen->finish(cmd);
 }
 
 void gk_process_b2_iter_bodies(gk_context *gk, gk_cmd_b2_iter_bodies* cmd) {
-    auto *world = (b2World*)cmd->world->data;
+    auto world = cmd->world->data->world;
 
     for(auto body = world->GetBodyList(); body; body = body->GetNext()) {
         auto *b = (gk_b2_body*)body->GetUserData();
+        auto isAwake = b->is_awake = body->IsAwake();
 
-        if(body->IsAwake()) {
+        if(isAwake) {
             if(b->pos)
                 *(b2Vec2*)(b->pos) = body->GetPosition();
             if(b->angle)
                 *(b->angle) = body->GetAngle();
-
-            b->is_awake = true;
-        } else {
-            b->is_awake = false;
         }
     }
 }

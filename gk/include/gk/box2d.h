@@ -5,14 +5,15 @@
 #ifndef __GAMEKERNEL_BOX2D_H__
 #define __GAMEKERNEL_BOX2D_H__
 
+typedef struct gk_b2_world_data gk_b2_world_data;
+
 typedef struct gk_b2_world {
     float timestep;
     int velocity_iterations;
     int position_iterations;
 
     /* Internal data */
-    void *data;
-    void *draw;
+    gk_b2_world_data *data;
 } gk_b2_world;
 
 /* These should correspond to b2BodyType */
@@ -21,6 +22,8 @@ typedef enum gk_b2_body_type {
     GK_B2_BODY_TYPE_KINEMATIC,
     GK_B2_BODY_TYPE_DYNAMIC
 } gk_b2_body_type;
+
+typedef struct gk_b2_body_data gk_b2_body_data;
 
 typedef struct gk_b2_body {
     /* Set or zero these.  If set (e.g., point them to members in a
@@ -33,8 +36,11 @@ typedef struct gk_b2_body {
     /* These will be assigned/updated during gk_cmd_b2_iter_bodies. */
     bool is_awake;
 
+    /* Whatever you want */
+    void *user_data;
+
     /* Internal */
-    void *data;
+    gk_b2_body_data *data;
 } gk_b2_body;
 
 typedef struct gk_b2_bodydef {
@@ -127,9 +133,26 @@ typedef struct gk_cmd_b2_fixture_create {
     float *pathdef;
 } gk_cmd_b2_fixture_create;
 
+typedef struct gk_b2_contact_pair {
+    gk_b2_body *a;
+    gk_b2_body *b;
+    int32_t count;
+
+#ifdef __cplusplus
+    gk_b2_contact_pair() = default;
+    gk_b2_contact_pair(gk_b2_body *a_, gk_b2_body *b_)
+        : a(a_), b(b_) {
+        count = 0;
+    }
+#endif
+} gk_b2_contact_pair;
+
 typedef struct gk_cmd_b2_step {
     gk_cmd parent;
     gk_b2_world *world;
+
+    gk_b2_contact_pair **collisions;
+    size_t ncollisions;
 } gk_cmd_b2_step;
 
 typedef struct gk_cmd_b2_iter_bodies {

@@ -87,8 +87,12 @@ void example_main() {
 
         gk::process(gk, bundle);
 
-        if(body.is_awake)
-            LOG("pos = ", b_pos.x, ",", b_pos.y, " ∠ ", b_angle);
+        if(step.cmd.ncollisions > 0) {
+            for(int i = 0; i < step.cmd.ncollisions; ++i) {
+                auto c = step.cmd.collisions[i];
+                LOG("collide ", c->a, " <-> ", c->b, " with ", c->count);
+            }
+        }
 
         swap();
     }
