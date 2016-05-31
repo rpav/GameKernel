@@ -178,7 +178,7 @@ void gk_process_nvg_image_create(gk_context *gk, gk_cmd_image_create *cmd) {
     };
 
     auto nvg = gk->nvg;
-    int flags = cmd->flags & GK_IMAGE_FLAGS_NANOVG_MASK;
+    int flags = cmd->flags & GK_TEX_FLAGS_NANOVG_MASK;
         
     cmd->id = nvgCreateImage(nvg, cmd->filename, flags);
     glBindTexture(GL_TEXTURE_2D, cmd->id);

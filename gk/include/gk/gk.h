@@ -23,9 +23,9 @@ extern "C" {
 #include "gk/core.h"
 #include "gk/math.h"
 #include "gk/transform.h"
+#include "gk/gl.h"
 #include "gk/path.h"
 #include "gk/nanovg.h"
-#include "gk/gl.h"
 #include "gk/box2d.h"
 #include "gk/spritesheet.h"
 

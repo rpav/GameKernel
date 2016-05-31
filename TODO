@@ -7,13 +7,34 @@ TODO
      - Sort caching/list-dirty
    - Reset message?
    - Static/stored VAOs
+   - Shaders
    - More other stuff
    - Clean up impl_data for GL3
    - GL2
  - NanoVG
    - More primitives
- - Box2D?
+ = Box2D
+   + World
+     + Step
+     + Collisions
+     + Iterate / get bodies
+     + Debug Draw
+     - Ray / area queries
+     - Callbacks
+   = Bodies
+     + Define
+     - Update
+   = Fixtures
+     + Box
+     + Circle
+     + Density / elasicity / friction / category / mask / group
+     - General poly
+     - Chain
+     - Sensor
+   - Joints
  - Transforms
+   + Ortho matrix
+   + Translate / Rotate / Scale
    - More
- - Misc
-   - RTT
+ - Render Texture
+ - Modules?
