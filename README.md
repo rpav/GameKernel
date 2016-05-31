@@ -1,8 +1,8 @@
 # GameKernel
 
 GameKernel is a command-driven "kernel" of game functionality.  Its
-goal is to be a fast, portable, language-friendly group of
-functionality:
+goal is to be a fast, portable, *language-friendly* group of
+pure C API functionality:
 
 * Minimal FFI
 * Data/command-driven structure
@@ -15,11 +15,13 @@ Right now, this includes the following:
 * Sprite/quad buffering
 * Transformation/matrices
 * Spritesheets, TexturePacker json parsing
+* A nicer C++ API called `gk++` that wraps the C API
 
 This is *not* an engine---there is no scene handling, animation,
-render loop, or even intialization and similar.  Rather, if you are
-*writing* an engine, or you want to write a game with a great deal of
-control, you would want GameKernel as your core.
+render loop.  It will not even create windows and context; use SDL2 or
+similar.  Rather, if you are *writing* an engine, or you want to write
+a game with a great deal of control, you would want GameKernel as your
+core.
 
 In the works, no particular order:
 
@@ -36,19 +38,24 @@ week-long project in preparation for the [Spring 2016 Lisp Game
 Jam](https://itch.io/jam/spring-2016-lisp-game-jam), and has continued
 from there.
 
-This is still at the point some things *might* change wildly, but
-since I'm also maintaining `cl-gamekernel` I try not to break things
-too much.
+Some things are likely to change wildly---data structure layouts and
+constants, for instance.  However, the actual names are relatively
+stable, though this may not be the case always.
 
 # Example Code
 
-Currently there are a few examples in the `examples/` directory.  This
-is more or less straight C with a bit of C++ for convenience.  It's
-not very friendly, but it's not intended to be used from C!
+Currently there are a few examples in the `examples/` directory.  The
+original examples 1–3 are more-or-less plain C with a bit of C++.  This
+isn't very friendly.
+
+However, with the new `gk++` API, this is changing.  An updated
+version of `example1` called `example1a` shows the differences.  New
+examples will be created this way, because they're easier to read and
+write.
 
 # Building
 
-GLM is required to be installed.  This may become a submodule soon.
+GLM and GLEW are required to be installed.
 
 0. Make sure to `git submodule update --init`.  This depends on numerous submodules.
 0. Create a subdirectory for building.

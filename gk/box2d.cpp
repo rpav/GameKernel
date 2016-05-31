@@ -126,7 +126,7 @@ void gk_process_b2_body_create(gk_context *gk, gk_cmd_b2_body_create *cmd) {
         def.position.x       = src.position.x;
         def.position.y       = src.position.y;
         def.type             = (b2BodyType)src.type;
-        def.userData         = nullptr;
+        def.userData         = src.body;
 
         auto body = world->CreateBody(&def);
         src.body->data = body;
@@ -237,6 +237,25 @@ void gk_process_b2_step(gk_context *gk, gk_cmd_b2_step *cmd) {
     world->Step(1/60.0, 8, 3);
 }
 
+void gk_process_b2_iter_bodies(gk_context *gk, gk_cmd_b2_iter_bodies* cmd) {
+    auto *world = (b2World*)cmd->world->data;
+
+    for(auto body = world->GetBodyList(); body; body = body->GetNext()) {
+        auto *b = (gk_b2_body*)body->GetUserData();
+
+        if(body->IsAwake()) {
+            if(b->pos)
+                *(b2Vec2*)(b->pos) = body->GetPosition();
+            if(b->angle)
+                *(b->angle) = body->GetAngle();
+
+            b->is_awake = true;
+        } else {
+            b->is_awake = false;
+        }
+    }
+}
+
 void gk_process_box2d(gk_context *gk, gk_bundle *bundle, gk_list *list) {
     for(int j = 0; j < list->ncmds; ++j) {
         auto cmd = list->cmds[j];
@@ -257,6 +276,10 @@ void gk_process_box2d(gk_context *gk, gk_bundle *bundle, gk_list *list) {
 
             case GK_CMD_B2_STEP:
                 gk_process_b2_step(gk, (gk_cmd_b2_step*)cmd);
+                break;
+
+            case GK_CMD_B2_ITER_BODIES:
+                gk_process_b2_iter_bodies(gk, (gk_cmd_b2_iter_bodies*)cmd);
                 break;
 
             default:

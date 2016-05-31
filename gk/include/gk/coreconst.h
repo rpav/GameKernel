@@ -35,6 +35,7 @@ typedef enum gk_cmd_type {
     GK_CMD_B2_FIXTURE_CREATE,
 
     GK_CMD_B2_STEP,
+    GK_CMD_B2_ITER_BODIES,
 
     GK_CMD_B2_DRAW_DEBUG,
 

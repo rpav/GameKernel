@@ -21,7 +21,10 @@ void example_main() {
     gk::CmdB2WorldDestroy destroyWorld(world);
 
     // Body
-    gk::B2Body body;
+    gk::vec2 b_pos;
+    float b_angle;
+
+    gk::B2Body body(b_pos, b_angle);
     gk::B2BodyDef bdef(body, GK_B2_BODY_TYPE_DYNAMIC);
     gk::CmdB2BodyCreate bodyCreate(world);
     bdef.angle = 0.2;
@@ -58,9 +61,10 @@ void example_main() {
     };
     fixGroundCreate.setPath(groundPath);
 
-    // Step and draw
+    // Step, draw, iterate
     gk::CmdB2Step step(world);
     gk::CmdB2DrawDebug ddraw(world, 1280, 720);
+    gk::CmdB2IterBodies iterBodies(world);
 
     // Bundle it all up
     bundle.add(phys);
@@ -75,13 +79,17 @@ void example_main() {
 
     // -- Simulate --
     phys.clear();
-    phys.add(step, ddraw);
+    phys.add(step, ddraw, iterBodies);
 
     while(!check_input()) {
         glClearColor(0,0,0,1);
         glClear(GL_COLOR_BUFFER_BIT);
 
         gk::process(gk, bundle);
+
+        if(body.is_awake)
+            LOG("pos = ", b_pos.x, ",", b_pos.y, " ∠ ", b_angle);
+
         swap();
     }
 

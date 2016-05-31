@@ -23,6 +23,16 @@ typedef enum gk_b2_body_type {
 } gk_b2_body_type;
 
 typedef struct gk_b2_body {
+    /* Set or zero these.  If set (e.g., point them to members in a
+       gk_cmd_tf_trs), the internal Box2D body values will be copied
+       there during a gk_cmd_b2_iter_bodies, if the body is not
+       asleep. */
+    gk_vec2 *pos;
+    float *angle;
+
+    /* These will be assigned/updated during gk_cmd_b2_iter_bodies. */
+    bool is_awake;
+
     /* Internal */
     void *data;
 } gk_b2_body;
@@ -86,16 +96,16 @@ typedef struct gk_cmd_b2_fixture_create {
 
          GK_PATH_RECT:     Make a b2PolygonShape rectangle.  Note you still
                            specify x,y,w,h; not center and half-w/h.
-  
+
          GK_PATH_CIRCLE:   Make a b2CircleShape.
-  
+
          GK_PATH_MOVE_TO,
          GK_PATH_LINE_TO:  Only use move-to for the first vertex.  Still subject
                            to Box2D polygon vertex limits.  Must be convex.
-  
+
          GK_PATH_BEGIN:    Reset values and start a new path/shape.
          GK_PATH_FILL:     End and create shape.
-  
+
          GK_PATH_STROKE:   Use with move-to/line-to.  Create a b2ChainShape.
          GK_PATH_CLOSE:    Close a b2ChainShape.  Use before stroke.
 
@@ -106,7 +116,7 @@ typedef struct gk_cmd_b2_fixture_create {
          GK_PATH_CATEGORY,
          GK_PATH_CATEGORY_MASK,
          GK_PATH_GROUP:    Category/group values.
-  
+
        Other path commands are not supported.  Also these are more limited than
        with NVG; e.g. you cannot add multiple shapes to a single path.
 
@@ -121,6 +131,11 @@ typedef struct gk_cmd_b2_step {
     gk_cmd parent;
     gk_b2_world *world;
 } gk_cmd_b2_step;
+
+typedef struct gk_cmd_b2_iter_bodies {
+    gk_cmd parent;
+    gk_b2_world *world;
+} gk_cmd_b2_iter_bodies;
 
 
 typedef struct gk_cmd_b2_draw_debug {

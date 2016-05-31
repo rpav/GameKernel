@@ -124,6 +124,13 @@ namespace gk {
     // gk::B2Body
     struct B2Body : public gk_b2_body {
         B2Body() { memset(this, 0, sizeof(*this)); }
+
+        B2Body(gk_vec2 &pos_, float &angle_)
+            : B2Body()
+        {
+            pos = &pos_;
+            angle = &angle_;
+        }
     };
 
     struct B2BodyDef : public gk_b2_bodydef {
@@ -184,6 +191,14 @@ namespace gk {
     class CmdB2Step : public CmdTmpl<gk_cmd_b2_step, GK_CMD_B2_STEP> {
     public:
         CmdB2Step(gk_b2_world &world)
+            : CmdTmpl() {
+            cmd.world = &world;
+        }
+    };
+
+    class CmdB2IterBodies : public CmdTmpl<gk_cmd_b2_iter_bodies, GK_CMD_B2_ITER_BODIES> {
+    public:
+        CmdB2IterBodies(gk_b2_world &world)
             : CmdTmpl() {
             cmd.world = &world;
         }
