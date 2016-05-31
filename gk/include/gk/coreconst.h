@@ -39,9 +39,15 @@ typedef enum gk_cmd_type {
 
     GK_CMD_B2_DRAW_DEBUG,
 
-    /* Misc */
+    /* Spritesheet */
     GK_CMD_SPRITESHEET_CREATE,
     GK_CMD_SPRITESHEET_DESTROY,
+
+    /* Render Texture */
+    GK_CMD_RT_CREATE,
+    GK_CMD_RT_DESTROY,
+    GK_CMD_RT_BIND,
+    GK_CMD_RT_UNBIND,
 
     /* The last core command ID */
     GK_CMD_MAX

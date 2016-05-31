@@ -79,8 +79,42 @@ typedef struct gk_cmd_quadsprite {
 /* Render Texture.  While this is a "GL" thing, you may set up and
    start/end RT anywhere (e.g., in a CONFIG list).  This can wrap an
    NVG list to draw to a texture for instance. */
+
+typedef enum gk_rt_flags {
+    GK_RT_ALPHA = 1 << 0,
+
+    GK_RT_DEPTH = 1 << 1,
+    GK_RT_STENCIL = 1 << 2,
+} gk_rt_flags;
+
+/* Note this creates a simple, 1-color-attachment FBO.  More may be
+   added later.  There is nothing requiring the use of this command
+   to later use gk_cmd_rt_bind/unbind. */
 typedef struct gk_cmd_rt_create {
     gk_cmd parent;
+
+    uint32_t width;
+    uint32_t height;
+
+    uint32_t rt_flags;          /* gk_rt_flags */
+    uint32_t tex_flags;         /* gk_tex_flags */
+    uint32_t tex_filter;        /* gk_tex_filter */
+
+    /* These are set (based on flags) */
+    unsigned int framebuffer;
+    unsigned int depthbuffer;
+    unsigned int stencilbuffer;
+    unsigned int tex;
 } gk_cmd_rt_create;
+
+typedef struct gk_cmd_rt_destroy {
+    gk_cmd parent;
+
+    /* Anything nonzero will be deleted. */
+    unsigned int framebuffer;
+    unsigned int depthbuffer;
+    unsigned int stencilbuffer;
+    unsigned int tex;
+} gk_cmd_rt_destroy;
 
 #endif  /* __GAMEKERNEL_GL_H__ */
