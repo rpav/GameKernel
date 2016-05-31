@@ -134,10 +134,15 @@ typedef struct gk_cmd_b2_fixture_create {
 } gk_cmd_b2_fixture_create;
 
 typedef struct gk_b2_contact_pair {
+    /* You get A and B; they may be in any order. */
     gk_b2_body *a;
     gk_b2_body *b;
+
+    /* This will be >0 for a collision or <0 for a collision ending
+       (separation) */
     int32_t count;
 
+    /* Ignore the man behind the curtains */
 #ifdef __cplusplus
     gk_b2_contact_pair() = default;
     gk_b2_contact_pair(gk_b2_body *a_, gk_b2_body *b_)
@@ -151,6 +156,9 @@ typedef struct gk_cmd_b2_step {
     gk_cmd parent;
     gk_b2_world *world;
 
+    /* This collision list is managed internally.  Do not
+       free it.  The contents of this are *only* valid until
+       you issue another gk_cmd_b2_step on the same world. */
     gk_b2_contact_pair **collisions;
     size_t ncollisions;
 } gk_cmd_b2_step;
