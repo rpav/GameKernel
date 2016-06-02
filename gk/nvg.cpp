@@ -38,6 +38,9 @@ void gk_process_nvg(gk_context *gk, gk_bundle *bundle, gk_list_nvg *list_nvg) {
     for(int i = 0; i < list->ncmds; ++i) {
         auto cmd = list->cmds[i];
         switch(GK_CMD_TYPE(cmd)) {
+            case GK_CMD_CLEAR:
+                gl_cmd_clear(gk, (gk_cmd_clear*)cmd);
+                break;
             case GK_CMD_PATH:
                 ensure_nvg_inframe(gk, w, h, r);
                 gk_process_nvg_path(gk, bundle, (gk_cmd_path*)cmd);
@@ -203,11 +206,15 @@ void gk_process_nvg_font_face(gk_context *gk, gk_cmd_font_face* cmd) {
 void gk_process_nvg_image_create(gk_context *gk, gk_cmd_image_create *cmd) {
     auto nvg = gk->nvg;
     int flags = cmd->flags & GK_TEX_FLAGS_NANOVG_MASK;
-        
+
     cmd->id = nvgCreateImage(nvg, cmd->filename, flags);
-    glBindTexture(GL_TEXTURE_2D, cmd->id);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gk_filter_to_gl[cmd->min_filter]);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gk_filter_to_gl[cmd->mag_filter]);
+    GL_CHECK(glBindTexture(GL_TEXTURE_2D, cmd->id));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gk_filter_to_gl[cmd->min_filter]));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gk_filter_to_gl[cmd->mag_filter]));
+    return;
+
+ gl_error:
+    return;
 }
 
 void gk_process_nvg_font_style(gk_context *gk, gk_cmd_font_style *cmd) {

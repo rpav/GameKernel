@@ -42,6 +42,23 @@ namespace gk {
         inline void sort(gk_pass_sorting sort) { cmd.sort = sort; }
     };
 
+    // gk::CmdClear
+    class CmdClear : public CmdTmpl<gk_cmd_clear, GK_CMD_CLEAR> {
+    public:
+        CmdClear(uint32_t flags) : CmdTmpl() {
+            cmd.flags = flags;
+            cmd.depth = 1.0;
+        }
+
+        CmdClear(float r, float g, float b, float a = 1.0)
+            : CmdClear(GK_CLEAR_COLOR) {
+            cmd.color.x = r;
+            cmd.color.y = g;
+            cmd.color.z = b;
+            cmd.color.w = a;
+        }
+    };
+
     // gk::CmdQuad
     class CmdQuad : public CmdTmpl<gk_cmd_quad, GK_CMD_QUAD> {
     public:

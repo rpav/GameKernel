@@ -84,7 +84,7 @@ static void compile_shaders(gl3_impl *gl3) {
 
     GLuint shaders[] = { vert, geom, frag };
     gl3->prog_quad = gk_gl_link_program(3, shaders);
-    gl3->quad_uTEX = glGetUniformLocation(gl3->prog_quad, "tex"); GL_CHECK();
+    gl3->quad_uTEX = glGetUniformLocation(gl3->prog_quad, "tex"); GL_CHECKERR(glGetUniformLocation);
 
     return;
 

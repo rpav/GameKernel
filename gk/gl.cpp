@@ -45,7 +45,7 @@ GLuint gk_gl_compile_shader(GLenum type, const char *text) {
 }
 
 GLuint gk_gl_link_program(int numshaders, GLuint *shaders) {
-    auto prog = glCreateProgram(); GL_CHECK();
+    auto prog = glCreateProgram(); GL_CHECKERR(glCreateProgram);
 
     for(int i = 0; i < numshaders; ++i)
         GL_CHECK(glAttachShader(prog, shaders[i]));
@@ -182,6 +182,9 @@ void gk_process_gl(gk_context *gk, gk_bundle *bundle, gk_list_gl *list_gl) {
         }
 
         switch(type) {
+            case GK_CMD_CLEAR:
+                gl_cmd_clear(gk, (gk_cmd_clear*)cmd);
+                break;
             case GK_CMD_QUAD:
                 gk->gl.gl_cmd_quad(gk, bundle, (gk_cmd_quad*)cmd);
                 break;
@@ -198,4 +201,29 @@ void gk_process_gl(gk_context *gk, gk_bundle *bundle, gk_list_gl *list_gl) {
     gk_gl_process_end(gk, bundle, gk->gl.last_cmd);
     gk->gl.last_cmd = GK_CMD_NULL;
     glFlush();
+}
+
+void gl_cmd_clear(gk_context *gk, gk_cmd_clear *cmd) {
+    GLenum flags = 0;
+
+    if(cmd->flags & GK_CLEAR_COLOR) {
+        flags |= GL_COLOR_BUFFER_BIT;
+        GL_CHECK(glClearColor(cmd->color.x, cmd->color.y, cmd->color.z, cmd->color.w));
+    }
+
+    if(cmd->flags & GK_CLEAR_DEPTH) {
+        flags |= GL_DEPTH_BUFFER_BIT;
+        GL_CHECK(glClearDepth(cmd->depth));
+    }
+
+    if(cmd->flags & GK_CLEAR_STENCIL) {
+        flags |= GL_STENCIL_BUFFER_BIT;
+        GL_CHECK(glClearStencil(cmd->stencil));
+    }
+
+    GL_CHECK(glClear(flags));
+    return;
+
+ gl_error:
+    return;
 }

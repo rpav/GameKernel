@@ -33,6 +33,23 @@ typedef struct gk_list_gl {
     float width, height;
 } gk_list_gl;
 
+typedef enum gk_clear_flags {
+    /* Again, not the same as GLenum */
+    GK_CLEAR_COLOR   = 1 << 0,
+    GK_CLEAR_DEPTH   = 1 << 1,
+    GK_CLEAR_STENCIL = 1 << 2
+} gk_clear_flags;
+
+typedef struct gk_cmd_clear {
+    gk_cmd cmd;
+
+    uint32_t flags;
+
+    gk_vec4 color;
+    double depth;               /* GL defaults to 1 */
+    int stencil;                /* GL defaults to 0 */
+} gk_cmd_clear;
+
 typedef struct gk_quadvert {
     gk_vec4 vertex;
     gk_vec2 uv;

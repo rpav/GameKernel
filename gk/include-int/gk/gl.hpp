@@ -31,7 +31,13 @@ struct gl3_impl {
 
 /* Functions */
 
+#ifndef NDEBUG
 #define GL_CHECK(x) do { x; if(gk_gl_checkerror(#x,__FILE__,__LINE__)) goto gl_error; } while(0)
+#define GL_CHECKERR(x) do { if(gk_gl_checkerror(#x,__FILE__,__LINE__)) goto gl_error; } while(0)
+#else
+#define GL_CHECK(x) (x)
+#define GL_CHECKERR(x)
+#endif
 
 bool gk_gl_checkerror(const char *expr, const char *file, int line);
 
@@ -44,6 +50,9 @@ void gk_fini_gl(gk_context *gk);
 void gk_process_gl(gk_context *gk, gk_bundle *bundle, gk_list_gl *list);
 void gk_process_cmd_tf_trs(gk_context *gk, gk_cmd_tf_trs *cmd);
 void gk_process_cmd_tf_ortho(gk_context *gk, gk_cmd_tf_ortho *cmd);
+
+// Any GL
+void gl_cmd_clear(gk_context *gk, gk_cmd_clear *cmd);
 
 /* GL2 */
 void gk_create_gl2(gk_context *gk);

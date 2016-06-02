@@ -24,9 +24,11 @@ using vec2 = glm::vec2;
 void example_main() {
     gk_context *gk = gk_create(GK_GL3);
     gk_bundle b;
-    gk_list l;
+    gk_list_gl l;
     gk_cmd_spritesheet_create c;
     gk_cmd_spritesheet_destroy d;
+
+    l.width = l.height = 0;
 
     //mat4 proj = glm::ortho<float>(0, WIDTH, HEIGHT, 0, -1, 1);
     mat4 proj = glm::ortho<float>(0, WIDTH, 0, HEIGHT, -1, 1);
@@ -35,11 +37,11 @@ void example_main() {
     gk_cmd_quadsprite qs;
 
     init_bundle(&b, 0, 1);
-    b.lists[0] = &l;
+    b.lists[0] = GK_LIST(&l);
 
-    init_list(&l, GK_SUB_CONFIG, 2);
-    l.ncmds = 1;
-    l.cmds[0] = GK_CMD(&c);
+    init_list(GK_LIST(&l), GK_SUB_CONFIG, 2);
+    l.parent.ncmds = 1;
+    l.parent.cmds[0] = GK_CMD(&c);
 
     GK_CMD_TYPE(&c) = GK_CMD_SPRITESHEET_CREATE;
     //c.flags = 0;
@@ -78,10 +80,10 @@ void example_main() {
     qs.sheet = sheet;
     qs.index = f_min;
 
-    l.sub = GK_SUB_GL;
-    l.ncmds = 2;
-    l.cmds[0] = GK_CMD(&tf);
-    l.cmds[1] = GK_CMD(&qs);
+    l.parent.sub = GK_SUB_GL;
+    l.parent.ncmds = 2;
+    l.parent.cmds[0] = GK_CMD(&tf);
+    l.parent.cmds[1] = GK_CMD(&qs);
 
     do {
         glClearColor(0,0,0,1);
@@ -100,9 +102,9 @@ void example_main() {
     // Destroy the sheet.
     GK_CMD_TYPE(&d) = GK_CMD_SPRITESHEET_DESTROY;
     d.sheet = c.sheet;
-    l.sub = GK_SUB_CONFIG;
-    l.ncmds = 1;
-    l.cmds[0] = GK_CMD(&d);
+    l.parent.sub = GK_SUB_CONFIG;
+    l.parent.ncmds = 1;
+    l.parent.cmds[0] = GK_CMD(&d);
 
     gk_process(gk, &b);
 }

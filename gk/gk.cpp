@@ -81,7 +81,7 @@ bool gk_process_pass(gk_context *gk, gk_bundle *b, gk_pass *pass) {
 
 bool gk_process_list(gk_context *gk, gk_bundle *b, gk_list *list) {
     if(!gk_mark(gk, list)) return false;
-    
+
     if(list->sub != gk->last_sub) {
         gk->last_sub = list->sub;
         gk_gl_reset_state(gk);
@@ -121,6 +121,10 @@ void gk_process_config(gk_context *gk, gk_bundle *b, gk_list *list) {
 bool gk_process_cmd_general(const char *listname, gk_context *gk, gk_bundle *b, gk_cmd *cmd) {
 
     switch(GK_CMD_TYPE(cmd)) {
+        case GK_CMD_PASS:
+            gk_process_pass(gk, b, (gk_pass*)cmd);
+            break;
+
         case GK_CMD_TF_TRS:
             gk_process_cmd_tf_trs(gk, (gk_cmd_tf_trs*)cmd);
             break;
@@ -128,8 +132,8 @@ bool gk_process_cmd_general(const char *listname, gk_context *gk, gk_bundle *b, 
             gk_process_cmd_tf_ortho(gk, (gk_cmd_tf_ortho*)cmd);
             break;
 
-        case GK_CMD_PASS:
-            gk_process_pass(gk, b, (gk_pass*)cmd);
+        case GK_CMD_CLEAR:
+            gl_cmd_clear(gk, (gk_cmd_clear*)cmd);
             break;
 
         case GK_CMD_IMAGE_CREATE:

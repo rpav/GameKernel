@@ -116,6 +116,7 @@ void example_main() {
 
     gk_bundle bundle_render;
     gk_list_gl list_spr;
+    list_spr.width = list_spr.height = 0;
 
     /* Configure/load image */
     init_bundle(&bundle_cfg, 0, 1);
@@ -146,7 +147,7 @@ void example_main() {
     printm(proj);
 
     const int spritesize = 64;
-    
+
     typedef std::chrono::high_resolution_clock clock;
     std::default_random_engine reng;
     reng.seed(clock::now().time_since_epoch().count());

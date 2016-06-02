@@ -13,20 +13,23 @@ typedef enum gk_impl {
 typedef enum gk_cmd_type {
     GK_CMD_NULL,
     GK_CMD_PASS,
-    GK_CMD_PATH,
-    GK_CMD_FONT_CREATE,
-    GK_CMD_FONT_STYLE,
-    GK_CMD_FONT_FACE,
-    GK_CMD_TEXT,
-    GK_CMD_IMAGE_CREATE,
 
     /* Transforms */
     GK_CMD_TF_TRS,
     GK_CMD_TF_ORTHO,
 
     /* GL */
+    GK_CMD_CLEAR,
     GK_CMD_QUAD,
     GK_CMD_QUADSPRITE,
+
+    /* NanoVG */
+    GK_CMD_FONT_CREATE,
+    GK_CMD_FONT_STYLE,
+    GK_CMD_FONT_FACE,
+    GK_CMD_PATH,
+    GK_CMD_TEXT,
+    GK_CMD_IMAGE_CREATE,
 
     /* Box2D physics */
     GK_CMD_B2_WORLD_CREATE,

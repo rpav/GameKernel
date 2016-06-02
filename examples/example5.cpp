@@ -12,10 +12,11 @@ void example_main() {
     auto gk = gk::create(GK_GL3);
 
     float width = WIDTH/8, height = HEIGHT/8;
-    
+
     gk::Bundle bundle(0);
     gk::ListNvg nvg(width, height, 1.0);
 
+    gk::CmdClear clear(0, 0, 0);
     gk::CmdPath path;
     float x = 0, y = 0;
     gk::PathDef pathdef = {
@@ -54,7 +55,7 @@ void example_main() {
     bundle.clear();
     bundle.add(passes, nvg);
 
-    nvg.add(bind, path);    
+    nvg.add(bind, clear, path);
 
     path.setPath(pathdef);
 
