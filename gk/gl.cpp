@@ -2,6 +2,15 @@
 #include "gk/gl.hpp"
 #include "gk/log.hpp"
 
+const GLenum gk_filter_to_gl[] = {
+    GL_NEAREST,
+    GL_LINEAR,
+    GL_NEAREST_MIPMAP_NEAREST,
+    GL_LINEAR_MIPMAP_NEAREST,
+    GL_NEAREST_MIPMAP_LINEAR,
+    GL_LINEAR_MIPMAP_LINEAR
+};
+
 bool gk_gl_checkerror(const char *expr, const char *file, int line) {
     auto err = glGetError();
     if(err != GL_NO_ERROR) {
@@ -27,7 +36,7 @@ GLuint gk_gl_compile_shader(GLenum type, const char *text) {
         LOG(log);
         goto gl_error;
     }
-    
+
     return shader;
 
  gl_error:
@@ -93,6 +102,7 @@ bool gk_init_gl(gk_context *gk) {
             return false;
     };
 
+    gk->nvg_inframe = false;
     gk->gl.last_cmd = GK_CMD_NULL;
     gk_gl_reset_state(gk);
 
@@ -147,7 +157,7 @@ static bool gk_gl_process_should_transition(gk_cmd_type last, gk_cmd_type next) 
 static void gk_gl_process_end(gk_context *gk, gk_bundle *bundle, gk_cmd_type type) {
     switch(type) {
         case GK_CMD_QUAD:
-        case GK_CMD_QUADSPRITE:            
+        case GK_CMD_QUADSPRITE:
             gk->gl.gl_end_quad(gk);
             return;
 
@@ -157,6 +167,9 @@ static void gk_gl_process_end(gk_context *gk, gk_bundle *bundle, gk_cmd_type typ
 
 void gk_process_gl(gk_context *gk, gk_bundle *bundle, gk_list_gl *list_gl) {
     auto list = GK_LIST(list_gl);
+
+    if(list_gl->width && list_gl->height)
+        glViewport(0, 0, list_gl->width, list_gl->height);
 
     for(int j = 0; j < list->ncmds; ++j) {
         auto cmd = list->cmds[j];
@@ -174,7 +187,8 @@ void gk_process_gl(gk_context *gk, gk_bundle *bundle, gk_list_gl *list_gl) {
                 break;
             case GK_CMD_QUADSPRITE:
                 gk->gl.gl_cmd_quadsprite(gk, bundle, (gk_cmd_quadsprite*)cmd);
-                break;                
+                break;
+
             default:
                 gk_process_cmd_general("GK_LIST_GL", gk, bundle, cmd);
                 break;

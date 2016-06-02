@@ -152,6 +152,22 @@ bool gk_process_cmd_general(const char *listname, gk_context *gk, gk_bundle *b, 
             gk_process_spritesheet_destroy(gk, (gk_cmd_spritesheet_destroy*)cmd);
             break;
 
+        case GK_CMD_RT_CREATE:
+            gk->gl.gl_cmd_rt_create(gk, (gk_cmd_rt_create*)cmd);
+            break;
+
+        case GK_CMD_RT_DESTROY:
+            gk->gl.gl_cmd_rt_destroy(gk, (gk_cmd_rt_destroy*)cmd);
+            break;
+
+        case GK_CMD_RT_BIND:
+            gk->gl.gl_cmd_rt_bind(gk, (gk_cmd_rt_bind*)cmd);
+            break;
+
+        case GK_CMD_RT_UNBIND:
+            gk->gl.gl_cmd_rt_unbind(gk, (gk_cmd_rt_unbind*)cmd);
+            break;
+
 #ifdef GK_USE_BOX2D
         case GK_CMD_B2_WORLD_CREATE:
             gk_process_b2_world_create(gk, (gk_cmd_b2_world_create*)cmd);

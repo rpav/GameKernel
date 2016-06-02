@@ -10,31 +10,64 @@
 static void gk_process_nvg_path(gk_context *gk, gk_bundle *bundle, gk_cmd_path *cmd);
 static void gk_process_nvg_text(gk_context *gk, gk_cmd_text *cmd);
 
+static inline void ensure_nvg_inframe(gk_context *gk, int w, int h, float r) {
+    if(gk->nvg_inframe) return;
+
+    glViewport(0, 0, w, h);
+    glEnable(GL_STENCIL_TEST);
+    glClear(GL_STENCIL_BUFFER_BIT);
+    nvgBeginFrame(gk->nvg, w, h, r);
+    gk->nvg_inframe = true;
+}
+
+static inline void ensure_nvg_outframe(gk_context *gk) {
+    if(!gk->nvg_inframe) return;
+
+    nvgEndFrame(gk->nvg);
+    gk->nvg_inframe = false;
+    gk_gl_reset_state(gk);
+}
+
 void gk_process_nvg(gk_context *gk, gk_bundle *bundle, gk_list_nvg *list_nvg) {
     auto nvg = gk->nvg;
     auto list = GK_LIST(list_nvg);
+    auto w = list_nvg->width;
+    auto h = list_nvg->height;
+    auto r = list_nvg->ratio;
 
-    glEnable(GL_STENCIL_TEST);
-    glClear(GL_STENCIL_BUFFER_BIT);
-
-    nvgBeginFrame(nvg, list_nvg->width, list_nvg->height, list_nvg->ratio);
     for(int i = 0; i < list->ncmds; ++i) {
         auto cmd = list->cmds[i];
         switch(GK_CMD_TYPE(cmd)) {
             case GK_CMD_PATH:
+                ensure_nvg_inframe(gk, w, h, r);
                 gk_process_nvg_path(gk, bundle, (gk_cmd_path*)cmd);
-                gk_gl_reset_state(gk);
                 break;
             case GK_CMD_TEXT:
+                ensure_nvg_inframe(gk, w, h, r);
                 gk_process_nvg_text(gk, (gk_cmd_text*)cmd);
-                gk_gl_reset_state(gk);
                 break;
+            case GK_CMD_FONT_FACE:
+                ensure_nvg_inframe(gk, w, h, r);
+                gk_process_nvg_font_face(gk, (gk_cmd_font_face*)cmd);
+                break;
+            case GK_CMD_FONT_STYLE:
+                ensure_nvg_inframe(gk, w, h, r);
+                gk_process_nvg_font_style(gk, (gk_cmd_font_style*)cmd);
+                break;
+            case GK_CMD_FONT_CREATE:
+                ensure_nvg_inframe(gk, w, h, r);
+                gk_process_nvg_font_create(gk, (gk_cmd_font_create*)cmd);
+                break;
+
             default:
+                ensure_nvg_outframe(gk);
                 gk_process_cmd_general("GK_LIST_NVG", gk, bundle, cmd);
+                nvgBeginFrame(nvg, list_nvg->width, list_nvg->height,
+                              list_nvg->ratio);
                 break;
         }
     }
-    nvgEndFrame(nvg);
+    ensure_nvg_outframe(gk);
 }
 
 void gk_process_nvg_path(gk_context *gk, gk_bundle *bundle, gk_cmd_path *cmd) {
@@ -168,22 +201,13 @@ void gk_process_nvg_font_face(gk_context *gk, gk_cmd_font_face* cmd) {
 }
 
 void gk_process_nvg_image_create(gk_context *gk, gk_cmd_image_create *cmd) {
-    static const GLenum filter2gl[] = {
-        GL_NEAREST,
-        GL_LINEAR,
-        GL_NEAREST_MIPMAP_NEAREST,
-        GL_LINEAR_MIPMAP_NEAREST,
-        GL_NEAREST_MIPMAP_LINEAR,
-        GL_LINEAR_MIPMAP_LINEAR
-    };
-
     auto nvg = gk->nvg;
-    int flags = cmd->flags & GK_IMAGE_FLAGS_NANOVG_MASK;
+    int flags = cmd->flags & GK_TEX_FLAGS_NANOVG_MASK;
         
     cmd->id = nvgCreateImage(nvg, cmd->filename, flags);
     glBindTexture(GL_TEXTURE_2D, cmd->id);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter2gl[cmd->min_filter]);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter2gl[cmd->mag_filter]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gk_filter_to_gl[cmd->min_filter]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gk_filter_to_gl[cmd->mag_filter]);
 }
 
 void gk_process_nvg_font_style(gk_context *gk, gk_cmd_font_style *cmd) {

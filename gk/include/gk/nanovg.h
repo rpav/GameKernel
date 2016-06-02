@@ -27,8 +27,8 @@ typedef struct gk_cmd_image_create {
 
     const char *filename;
     uint32_t flags;
-    gk_image_filter min_filter;
-    gk_image_filter mag_filter;
+    gk_tex_filter min_filter;
+    gk_tex_filter mag_filter;
 
     /* This will be set */
     int id;

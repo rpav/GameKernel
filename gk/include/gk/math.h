@@ -34,15 +34,11 @@ typedef struct gk_vec4 {
     CXX_SET(float*)
 } gk_vec4;
 
-typedef union gk_mat4 {
-    float data[16];
-
-    struct {
-        float a00, a01, a02, a03;
-        float a10, a11, a12, a13;
-        float a20, a21, a22, a23;
-        float a30, a31, a32, a33;
-    } v;
+typedef struct gk_mat4 {
+    float a00, a01, a02, a03;
+    float a10, a11, a12, a13;
+    float a20, a21, a22, a23;
+    float a30, a31, a32, a33;
 
     CXX_SET(float*)
 } gk_mat4;

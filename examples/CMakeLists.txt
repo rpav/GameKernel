@@ -19,4 +19,7 @@ target_link_libraries(example3 SDL2 GL gk-static)
 if(GK_BUILD_GKPP)
   add_executable(example4 example4.cpp main.cpp)
   target_link_libraries(example4 SDL2 GL gk-static gk++-static)
+
+  add_executable(example5 example5.cpp main.cpp)
+  target_link_libraries(example5 SDL2 GL gk-static gk++-static)
 endif()

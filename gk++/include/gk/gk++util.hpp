@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string.h>
+
 namespace gk {
     struct vec2 : public gk_vec2 {
         vec2() = default;
@@ -15,6 +17,14 @@ namespace gk {
         vec4() = default;
         vec4(float x_, float y_, float z_, float w_) {
             x = x_; y = y_; z = z_; w = w_;
+        }
+    };
+
+    struct mat4 : public gk_mat4 {
+        mat4() = default;
+        mat4(int x) {
+            memset(this, 0, sizeof(mat4));
+            a00 = a11 = a22 = a33 = 1;
         }
     };
 }

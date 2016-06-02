@@ -69,6 +69,7 @@ const char *shader_frag_quad =
 
  "void main() {"
  "  frag = texture(tex, uv);"
+//"  frag = vec4(1, 0, 0, 1);"
  "  if(frag.a == 0.0) discard;"
  "}"
  ;
@@ -167,7 +168,7 @@ static void gl3_append_quad(gk_context *gk, mat4 *tfm, gk_quadvert *attr) {
     out[1].uv = attr[1].uv;
     out[2].uv = attr[2].uv;
     out[3].uv = attr[3].uv;
-    
+
     gl3->quadcount++;
     if(gl3->quadcount >= QUADBUF_QUADS)
         gl3_render_quads(gk);
@@ -191,7 +192,7 @@ static inline bool gl3_quad_ensuretex(gk_context *gk, int tex) {
 
 void gl3_cmd_quad(gk_context *gk, gk_bundle *b, gk_cmd_quad *q) {
     if(!gl3_quad_ensuretex(gk, q->tex)) return;
-
+    
     gl3_append_quad(gk, (mat4*)&q->tfm, q->attr);
 }
 

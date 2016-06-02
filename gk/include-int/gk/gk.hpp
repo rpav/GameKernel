@@ -9,6 +9,7 @@ struct gk_context {
     void *impl_data;
 
     NVGcontext *nvg;
+    bool nvg_inframe;
 
     gk_subsystem last_sub;
 
@@ -19,6 +20,11 @@ struct gk_context {
         void (*gl_cmd_quad)(gk_context*, gk_bundle*, gk_cmd_quad*);
         void (*gl_cmd_quadsprite)(gk_context*, gk_bundle*, gk_cmd_quadsprite*);
         void (*gl_end_quad)(gk_context*);
+
+        void (*gl_cmd_rt_create)(gk_context*, gk_cmd_rt_create*);
+        void (*gl_cmd_rt_destroy)(gk_context*, gk_cmd_rt_destroy*);
+        void (*gl_cmd_rt_bind)(gk_context*, gk_cmd_rt_bind*);
+        void (*gl_cmd_rt_unbind)(gk_context*, gk_cmd_rt_unbind*);
     } gl;
 
     gk_bundle *current_bundle;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gk/log.hpp"
 #include <string.h>
 
 namespace gk {
@@ -39,6 +40,49 @@ namespace gk {
 
         inline void index(unsigned int index) { cmd.list_index = index; }
         inline void sort(gk_pass_sorting sort) { cmd.sort = sort; }
+    };
+
+    // gk::CmdQuad
+    class CmdQuad : public CmdTmpl<gk_cmd_quad, GK_CMD_QUAD> {
+    public:
+        CmdQuad(int tex = 0) : CmdTmpl() {
+            cmd.tex = tex;
+            cmd.tfm = gk::mat4(0);
+        }
+
+        // For trivial quads
+        CmdQuad(int tex, float x0, float y0, float x1, float y1)
+            : CmdQuad(tex) {
+            setVertex(0, x0, y0);
+            setVertex(1, x1, y0);
+            setVertex(2, x0, y1);
+            setVertex(3, x1, y1);
+
+            setUV(0, 0, 0);
+            setUV(1, 1, 0);
+            setUV(2, 0, 1);
+            setUV(3, 1, 1);
+        }
+
+        inline void setVertex(int n, gk_vec4 &v) {
+            cmd.attr[n].vertex = v;
+        }
+
+        inline void setVertex(int n, float x, float y, float z = 0.0, float w = 1.0) {
+            cmd.attr[n].vertex.x = x;
+            cmd.attr[n].vertex.y = y;
+            cmd.attr[n].vertex.z = z;
+            cmd.attr[n].vertex.w = w;
+        }
+
+        inline void setUV(int n, gk_vec2 &v) {
+            cmd.attr[n].uv = v;
+        }
+
+        inline void setUV(int n, float u, float v) {
+            cmd.attr[n].uv.x = u;
+            cmd.attr[n].uv.y = v;
+        }
     };
 
     /* gk::CmdPath */
@@ -213,5 +257,51 @@ namespace gk {
             cmd.width = width;
             cmd.height = height;
         }
+    };
+
+    // gk::CmdRtCreate
+    class CmdRtCreate :  public CmdTmpl<gk_cmd_rt_create, GK_CMD_RT_CREATE> {
+    public:
+        CmdRtCreate(uint32_t width, uint32_t height, uint32_t flags = GK_RT_ALPHA | GK_RT_STENCIL)
+            : CmdTmpl() {
+            cmd.width = width;
+            cmd.height = height;
+
+            cmd.rt_flags = flags;
+
+            cmd.tex_min_filter = GK_TEX_FILTER_LINEAR;
+            cmd.tex_mag_filter = GK_TEX_FILTER_LINEAR;
+        }
+    };
+
+    // gk::CmdRtDestroy
+    class CmdRtDestroy : public CmdTmpl<gk_cmd_rt_destroy, GK_CMD_RT_DESTROY> {
+    public:
+        CmdRtDestroy() : CmdTmpl() { }
+        CmdRtDestroy(CmdRtCreate &create) {
+            cmd.framebuffer = create.cmd.framebuffer;
+            cmd.dsbuffer    = create.cmd.dsbuffer;
+            cmd.tex         = create.cmd.tex;
+        }
+    };
+
+    // gk::CmdRtBind
+    class CmdRtBind : public CmdTmpl<gk_cmd_rt_bind, GK_CMD_RT_BIND> {
+    public:
+        CmdRtBind() : CmdTmpl() { }
+        CmdRtBind(uint32_t framebuffer) : CmdTmpl() {
+            cmd.framebuffer = framebuffer;
+        }
+        CmdRtBind(CmdRtCreate &create) : CmdTmpl() {
+            cmd.framebuffer = create.cmd.framebuffer;
+            cmd.dsbuffer = create.cmd.dsbuffer;
+            cmd.tex = create.cmd.tex;
+        }
+    };
+
+    // gk::CmdRtUnbind
+    class CmdRtUnbind : public CmdTmpl<gk_cmd_rt_unbind, GK_CMD_RT_UNBIND> {
+    public:
+        CmdRtUnbind() : CmdTmpl() { }
     };
 }

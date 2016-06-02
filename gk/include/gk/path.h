@@ -90,27 +90,8 @@ typedef enum gk_pathdef_linecap {
     GK_LINECAP_MITER
 } gk_pathdef_linecap;
 
-typedef enum gk_image_flags {
-    /* These should correspond to NanoVG */
-    GK_IMG_GENERATE_MIPMAPS = 1 << 0,
-    GK_IMG_REPEATX          = 1 << 1,
-    GK_IMG_REPEATY          = 1 << 2,
-    GK_IMG_FLIPY            = 1 << 3,
-    GK_IMG_PREMULTIPLIED    = 1 << 4,
-} gk_image_flags;
-
 /* This should precisely mask NanoVG-passed-through flags */
-#define GK_IMAGE_FLAGS_NANOVG_MASK 0x1F
-
-typedef enum gk_image_filter {
-    /* These do _not_ numerically correspond to GLenum */
-    GK_IMG_FILTER_NEAREST,
-    GK_IMG_FILTER_LINEAR,
-    GK_IMG_FILTER_NEAREST_MIPMAP_NEAREST,
-    GK_IMG_FILTER_LINEAR_MIPMAP_NEAREST,
-    GK_IMG_FILTER_NEAREST_MIPMAP_LINEAR,
-    GK_IMG_FILTER_LINEAR_MIPMAP_LINEAR
-} gk_image_filter;
+#define GK_TEX_FLAGS_NANOVG_MASK 0x1F
 
 typedef struct gk_cmd_path {
     gk_cmd parent;

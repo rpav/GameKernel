@@ -127,8 +127,8 @@ void example_main() {
     GK_CMD_TYPE(&img_create) = GK_CMD_IMAGE_CREATE;
     img_create.filename = "../examples/res/test.png";
     img_create.flags = 0;
-    img_create.min_filter = GK_IMG_FILTER_LINEAR;
-    img_create.mag_filter = GK_IMG_FILTER_LINEAR;
+    img_create.min_filter = GK_TEX_FILTER_LINEAR;
+    img_create.mag_filter = GK_TEX_FILTER_LINEAR;
 
     gk_process(gk, &bundle_cfg);
     free_list(&list_cfg);

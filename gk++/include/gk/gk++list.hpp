@@ -52,6 +52,15 @@ namespace gk {
         virtual ~List() { }
     };
 
+    class ListGL : public ListTmpl<gk_list_gl, GK_SUB_GL> {
+    public:
+        ListGL(int w = 0, int h = 0) : ListTmpl() {
+            list.width = w;
+            list.height = h;
+        }
+        virtual ~ListGL() { }
+    };
+
     class ListNvg : public ListTmpl<gk_list_nvg, GK_SUB_NVG> {
     public:
         ListNvg() : ListTmpl() { }

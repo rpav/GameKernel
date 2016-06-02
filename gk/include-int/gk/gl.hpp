@@ -59,6 +59,12 @@ void gl3_cmd_quad(gk_context*, gk_bundle*, gk_cmd_quad*);
 void gl3_cmd_quadsprite(gk_context*, gk_bundle*, gk_cmd_quadsprite*);
 void gl3_end_quad(gk_context*);
 
+void gl3_rt_init(gk_context*);
+void gl3_cmd_rt_create(gk_context*, gk_cmd_rt_create*);
+void gl3_cmd_rt_destroy(gk_context*, gk_cmd_rt_destroy*);
+void gl3_cmd_rt_bind(gk_context*, gk_cmd_rt_bind*);
+void gl3_cmd_rt_unbind(gk_context*, gk_cmd_rt_unbind*);
+
 void gk_gl_reset_state(gk_context *gk);
 
 void gk_glActiveTexture(gk_context *gk, GLenum texture);
@@ -66,3 +72,7 @@ void gk_glUseProgram(gk_context *gk, GLuint program);
 
 void gk_glBindVertexArray(gk_context *gk, GLuint array);
 void gk_glBindBuffer(gk_context *gk, GLenum target, GLuint buffer);
+
+// tables
+
+extern const GLenum gk_filter_to_gl[];

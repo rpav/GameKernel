@@ -15,6 +15,7 @@ void gk_create_gl3(gk_context *gk) {
     gk->nvg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
 
     gl3_quad_init(gk);
+    gl3_rt_init(gk);
 }
 
 void gk_destroy_gl3(gk_context *gk) {
