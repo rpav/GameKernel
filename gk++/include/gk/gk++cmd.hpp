@@ -3,6 +3,8 @@
 #include "gk/log.hpp"
 #include <string.h>
 
+#include <vector>
+
 namespace gk {
     typedef std::vector<gk_cmd*> CmdVector;
 
@@ -318,5 +320,100 @@ namespace gk {
     class CmdRtUnbind : public CmdTmpl<gk_cmd_rt_unbind, GK_CMD_RT_UNBIND> {
     public:
         CmdRtUnbind() : CmdTmpl() { }
+    };
+
+    // gk::ShaderSource
+    class ShaderSource {
+    public:
+        ShaderSource(gk_shader_type type) {
+            memset(&source, 0, sizeof(source));
+            source.type = type;
+        }
+        ShaderSource(gk_shader_type type, const char *source_)
+            : ShaderSource(type) {
+            source.source = source_;
+        }
+
+        gk_shader_source source;
+    };
+
+    // gk::ProgramSource
+    typedef std::vector<gk_shader_source*> ShaderSourceVector;
+    class ProgramSource {
+        ShaderSourceVector _shaders;
+    public:
+        gk_program_source source;
+
+        template<typename...Rest>
+        inline void add(ShaderSource &src, Rest&...args) {
+            _shaders.push_back(&(src.source));
+            add(args...);
+        }
+
+        template<typename...Rest>
+        inline void add(gk_shader_source *src, Rest&...args) {
+            _shaders.push_back(src);
+            add(args...);
+        }
+
+        inline void add() {
+            source.nsources = _shaders.size();
+            source.source   = _shaders.data();
+        }
+
+        inline void clear() {
+            _shaders.clear();
+            source.nsources = 0;
+            source.source   = nullptr;
+        }
+    };
+
+    // gk::CmdProgramCreate
+    typedef std::vector<gk_program_source*> ProgramSourceVector;
+    class CmdProgramCreate : public CmdTmpl<gk_cmd_program_create, GK_CMD_PROGRAM_CREATE> {
+        ProgramSourceVector _sources;
+
+    public:
+        CmdProgramCreate() : CmdTmpl() { }
+
+        template<typename...Rest>
+        inline void add(ProgramSource &bd, Rest&...args) {
+            _sources.push_back(&bd.source);
+            add(args...);
+        }
+
+        inline void add() {
+            cmd.nsources = _sources.size();
+            cmd.source   = _sources.data();
+        }
+    };
+
+    // gk::CmdProgramDestroy
+    typedef std::vector<gk_program> ProgramVector;
+    class CmdProgramDestroy : public CmdTmpl<gk_cmd_program_destroy, GK_CMD_PROGRAM_DESTROY> {
+        ProgramVector _progs;
+
+    public:
+        CmdProgramDestroy() : CmdTmpl() { }
+
+        template<typename...Rest>
+        inline void add(gk_program &p, Rest&...args) {
+            _progs.push_back(p);
+            add(args...);
+        }
+
+        template<typename...Rest>
+        inline void add(CmdProgramCreate &cmd, Rest&...args) {
+            auto &c = cmd.cmd;
+            for(int i = 0; i < c.nsources; ++i) {
+                _progs.push_back(c.source[i]->program);
+            }
+            add(args...);
+        }
+
+        inline void add() {
+            cmd.nprograms = _progs.size();
+            cmd.program   = _progs.data();
+        }
     };
 }

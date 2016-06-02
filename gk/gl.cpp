@@ -1,6 +1,11 @@
+#include <GL/glew.h>
+#include <GL/gl.h>
+
 #include "gk/gk.hpp"
 #include "gk/gl.hpp"
 #include "gk/log.hpp"
+
+#include <vector>
 
 const GLenum gk_filter_to_gl[] = {
     GL_NEAREST,
@@ -225,5 +230,54 @@ void gl_cmd_clear(gk_context *gk, gk_cmd_clear *cmd) {
     return;
 
  gl_error:
+    return;
+}
+
+static const GLenum gk_to_gl_shader[] = {
+    GL_VERTEX_SHADER,
+    GL_TESS_CONTROL_SHADER,
+    GL_TESS_EVALUATION_SHADER,
+    GL_GEOMETRY_SHADER,
+    GL_FRAGMENT_SHADER,
+    GL_COMPUTE_SHADER,
+
+    0
+};
+
+static void build_one_program(gk_context *gk, gk_program_source *progsrc) {
+    std::vector<GLuint> shaders;
+    shaders.reserve(GK_SHADER_MAX);
+
+    for(int i = 0; i < progsrc->nsources; ++i) {
+        auto *src = progsrc->source[i];
+        auto s = gk_gl_compile_shader(gk_to_gl_shader[src->type],
+                                      src->source);
+
+        if(s) {
+            shaders.push_back(s);
+        } else {
+            gk_seterror(gk, GK_ERROR_COMPILING_SHADER);
+            return;
+        }
+    }
+
+    progsrc->program = gk_gl_link_program(shaders.size(), shaders.data());
+}
+
+void gl_cmd_program_create(gk_context *gk, gk_cmd_program_create *cmd) {
+    for(int i = 0; i < cmd->nsources; ++i) {
+        build_one_program(gk, cmd->source[i]);
+        if(gk_haserror(gk)) return;
+    }
+}
+
+void gl_cmd_program_destroy(gk_context *gk, gk_cmd_program_destroy *cmd) {
+    for(int i = 0; i < cmd->nprograms; ++i) {
+        GL_CHECK(glDeleteProgram(cmd->program[i]));
+    }
+    return;
+
+ gl_error:
+    gk_seterror(gk, GK_ERROR_DESTROYING_PROGRAM);
     return;
 }

@@ -136,6 +136,13 @@ bool gk_process_cmd_general(const char *listname, gk_context *gk, gk_bundle *b, 
             gl_cmd_clear(gk, (gk_cmd_clear*)cmd);
             break;
 
+        case GK_CMD_PROGRAM_CREATE:
+            gl_cmd_program_create(gk, (gk_cmd_program_create*)cmd);
+            break;
+        case GK_CMD_PROGRAM_DESTROY:
+            gl_cmd_program_destroy(gk, (gk_cmd_program_destroy*)cmd);
+            break;
+
         case GK_CMD_IMAGE_CREATE:
             gk_process_nvg_image_create(gk, (gk_cmd_image_create*)cmd);
             break;

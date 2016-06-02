@@ -23,6 +23,16 @@ typedef enum gk_cmd_type {
     GK_CMD_QUAD,
     GK_CMD_QUADSPRITE,
 
+    /* Render Texture */
+    GK_CMD_RT_CREATE,
+    GK_CMD_RT_DESTROY,
+    GK_CMD_RT_BIND,
+    GK_CMD_RT_UNBIND,
+
+    /* Shaders */
+    GK_CMD_PROGRAM_CREATE,
+    GK_CMD_PROGRAM_DESTROY,
+
     /* NanoVG */
     GK_CMD_FONT_CREATE,
     GK_CMD_FONT_STYLE,
@@ -46,12 +56,6 @@ typedef enum gk_cmd_type {
     GK_CMD_SPRITESHEET_CREATE,
     GK_CMD_SPRITESHEET_DESTROY,
 
-    /* Render Texture */
-    GK_CMD_RT_CREATE,
-    GK_CMD_RT_DESTROY,
-    GK_CMD_RT_BIND,
-    GK_CMD_RT_UNBIND,
-
     /* The last core command ID */
     GK_CMD_MAX
 } gk_cmd_type;
@@ -66,5 +70,30 @@ typedef enum gk_subsystem {
     /* Last core subsystem ID */
     GK_SUB_MAX
 } gk_subsystem;
+
+typedef enum gk_error_code {
+    GK_ERROR_NONE = 0,
+
+    /* Lists */
+    GK_ERROR_LIST_RECURSION,
+    GK_ERROR_LIST_UNKNOWN,
+    GK_ERROR_LIST_CORRUPT,
+
+    /* Pass */
+    GK_ERROR_PASS_BADLIST,
+
+    /* Commands */
+    GK_ERROR_CMD_UNKNOWN,
+
+    /* GL */
+    GK_ERROR_COMPILING_SHADER,
+    GK_ERROR_DESTROYING_PROGRAM,
+
+    /* Spritesheet */
+    GK_ERROR_SSF_UNKNOWN,
+
+    /* End of the line */
+    GK_ERROR_MAX
+} gk_error_code;
 
 #endif  /* __GAMEKERNEL_CORECONST_H__ */

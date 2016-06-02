@@ -2,6 +2,9 @@
  * GL ... raw GL-related stuff including quad and sprite batching.
  * Well, entirely that at the moment.  But this is where Render
  * Texture, 3D, custom shaders, etc will end up.
+ *
+ * Unless specifically stated, enums and constants do _not_ correspond
+ * to GLenum, even if they have similar names and functions.
  ******************************************************************/
 
 #ifndef __GAMEKERNEL_GL_H__
@@ -17,7 +20,6 @@ typedef enum gk_tex_flags {
 } gk_tex_flags;
 
 typedef enum gk_tex_filter {
-    /* These do _not_ numerically correspond to GLenum */
     GK_TEX_FILTER_NEAREST,
     GK_TEX_FILTER_LINEAR,
     GK_TEX_FILTER_NEAREST_MIPMAP_NEAREST,
@@ -33,8 +35,9 @@ typedef struct gk_list_gl {
     float width, height;
 } gk_list_gl;
 
+/* Clear ************************************************************/
+
 typedef enum gk_clear_flags {
-    /* Again, not the same as GLenum */
     GK_CLEAR_COLOR   = 1 << 0,
     GK_CLEAR_DEPTH   = 1 << 1,
     GK_CLEAR_STENCIL = 1 << 2
@@ -49,6 +52,8 @@ typedef struct gk_cmd_clear {
     double depth;               /* GL defaults to 1 */
     int stencil;                /* GL defaults to 0 */
 } gk_cmd_clear;
+
+/* Quads ************************************************************/
 
 typedef struct gk_quadvert {
     gk_vec4 vertex;
@@ -95,11 +100,12 @@ typedef struct gk_cmd_quadsprite {
     unsigned int index;
 } gk_cmd_quadsprite;
 
+/* Render Texture ***************************************************/
 
-/* Render Texture.  While this is a "GL" thing, you may set up and
-   start/end RT anywhere (e.g., in a CONFIG list).  This can wrap an
-   NVG list to draw to a texture for instance.  Note that NVG requires
-   a stencil buffer. */
+/* While this is a "GL" thing, you may set up and start/end RT
+   anywhere (e.g., in a CONFIG list).  This can wrap an NVG list to
+   draw to a texture for instance.  Note that NVG requires a stencil
+   buffer. */
 
 typedef enum gk_rt_flags {
     GK_RT_ALPHA = 1 << 0,
@@ -108,9 +114,10 @@ typedef enum gk_rt_flags {
     GK_RT_STENCIL = 1 << 2,
 } gk_rt_flags;
 
-/* Note this creates a simple, 1-color-attachment FBO.  More may be
-   added later.  There is nothing requiring the use of this command
-   to later use gk_cmd_rt_bind/unbind. */
+/* This creates a simple, 1-color-attachment FBO.  More may be added
+   later.  There is nothing requiring the use of this command to later
+   use gk_cmd_rt_bind/unbind, i.e., you can set up your own
+   framebuffer. */
 typedef struct gk_cmd_rt_create {
     gk_cmd parent;
 
@@ -145,5 +152,47 @@ typedef struct gk_cmd_rt_bind {
 typedef struct gk_cmd_rt_unbind {
     gk_cmd parent;
 } gk_cmd_rt_unbind;
+
+/* Shaders **********************************************************/
+
+typedef enum gk_shader_type {
+    GK_SHADER_VERTEX,
+    GK_SHADER_TESS_CONTROL,
+    GK_SHADER_TESS_EVALUATION,
+    GK_SHADER_GEOMETRY,
+    GK_SHADER_FRAGMENT,
+    GK_SHADER_COMPUTE,
+
+    GK_SHADER_MAX
+} gk_shader_type;
+
+typedef struct gk_shader_source {
+    gk_shader_type type;
+    const char *source;
+} gk_shader_source;
+
+typedef unsigned int gk_program;
+
+typedef struct gk_program_source {
+    size_t nsources;
+    gk_shader_source **source;
+
+    /* Output */
+    gk_program program;
+} gk_program_source;
+
+typedef struct gk_cmd_program_create {
+    gk_cmd parent;
+
+    size_t nsources;
+    gk_program_source **source;
+} gk_cmd_program_create;
+
+typedef struct gk_cmd_program_destroy {
+    gk_cmd parent;
+
+    size_t nprograms;
+    gk_program *program;
+} gk_cmd_shader_destroy;
 
 #endif  /* __GAMEKERNEL_GL_H__ */

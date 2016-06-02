@@ -39,27 +39,6 @@ typedef struct gk_pass {
 #define GK_PASS(x) ((gk_pass*)(x))
 #define GK_SUBSYSTEM(x) (GK_PASS(x)->type)
 
-typedef enum gk_error_code {
-    GK_ERROR_NONE = 0,
-
-    /* Lists */
-    GK_ERROR_LIST_RECURSION,
-    GK_ERROR_LIST_UNKNOWN,
-    GK_ERROR_LIST_CORRUPT,
-
-    /* Pass */
-    GK_ERROR_PASS_BADLIST,
-
-    /* Commands */
-    GK_ERROR_CMD_UNKNOWN,
-
-    /* Spritesheet */
-    GK_ERROR_SSF_UNKNOWN,
-
-    /* End of the line */
-    GK_ERROR_MAX
-} gk_error_code;
-
 typedef struct gk_error {
     gk_error_code code;
     const char *message;

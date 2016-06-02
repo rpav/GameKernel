@@ -14,6 +14,10 @@ const char *gk_error_strings[] = {
     // Commands
     "Unknown or invalid commands", // GK_ERROR_CMD_UNKNOWN
 
+    // GL
+    "Error compiling shader",   // GK_ERROR_COMPILING_SHADER
+    "Error destroying program", // GK_ERROR_DESTROYING_PROGRAM
+
     // Sprites
     "Sprite sheet format unknown", // GK_ERROR_SSF_UNKNOWN
 

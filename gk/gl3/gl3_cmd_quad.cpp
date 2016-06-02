@@ -18,7 +18,7 @@ using vec4 = glm::vec4;
 using vec3 = glm::vec3;
 using vec2 = glm::vec2;
 
-const char *shader_geom_quad =
+static const char *shader_geom_quad =
  "#version 330 core\n"
 
  "layout(lines_adjacency) in;"
@@ -45,7 +45,7 @@ const char *shader_geom_quad =
  "}"
  ;
 
-const char *shader_vert_quad =
+static const char *shader_vert_quad =
  "#version 330 core\n"
 
  "layout (location = 0) in vec4 vertex;"
@@ -59,7 +59,7 @@ const char *shader_vert_quad =
  "}"
  ;
 
-const char *shader_frag_quad =
+static const char *shader_frag_quad =
  "#version 330 core\n"
 
  "uniform sampler2D tex;"
