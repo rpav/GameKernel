@@ -311,8 +311,6 @@ namespace gk {
         }
         CmdRtBind(CmdRtCreate &create) : CmdTmpl() {
             cmd.framebuffer = create.cmd.framebuffer;
-            cmd.dsbuffer = create.cmd.dsbuffer;
-            cmd.tex = create.cmd.tex;
         }
     };
 

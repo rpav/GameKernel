@@ -140,8 +140,6 @@ typedef struct gk_cmd_rt_destroy {
 typedef struct gk_cmd_rt_bind {
     gk_cmd parent;
     unsigned int framebuffer;
-    unsigned int dsbuffer;
-    unsigned int tex;
 } gk_cmd_rt_bind;
 
 typedef struct gk_cmd_rt_unbind {

@@ -8,11 +8,14 @@ TODO
    - Reset message?
    - Static/stored VAOs
    - Shaders
+   - More state caching
    - More other stuff
    - Clean up impl_data for GL3
    - GL2
  - NanoVG
    - More primitives
+   - Remove implicit stencil clear?
+   - Specially handle RT unbind to reduce inframe/outframe?
  = Box2D
    + World
      + Step
@@ -37,5 +40,14 @@ TODO
    + Ortho matrix
    + Translate / Rotate / Scale
    - More
- - Render Texture
+ = Render Texture
+   + Create
+   + Destroy
+   + Bind
+   + Unbind
+   - Switch textures?
+ - Shaders
+   - Compile
+   - Associate defaults (quads)
+   - Custom uniforms, attributes, etc
  - Modules?
