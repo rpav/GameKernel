@@ -5,10 +5,11 @@ TODO
    = Pass sorting
      + Sorting
      - Sort caching/list-dirty
-   - Reset message?
    - Static/stored VAOs
-   - Shaders
-   - More state caching
+   - State
+     - More tracking
+     - Better transition handling
+     - Better state tracking for quads etc
    - More other stuff
    - Clean up impl_data for GL3
    - GL2
@@ -46,8 +47,9 @@ TODO
    + Bind
    + Unbind
    - Switch textures?
- - Shaders
-   - Compile
-   - Associate defaults (quads)
+ = Shaders
+   + Compile
+   X Associate defaults (quads)
+   + Custom program per quad/sprite
    - Custom uniforms, attributes, etc
  - Modules?

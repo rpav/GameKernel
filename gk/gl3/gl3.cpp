@@ -11,6 +11,8 @@
 
 void gk_create_gl3(gk_context *gk) {
     gl3_impl *gl3 = new gl3_impl;
+    memset(gl3, 0, sizeof(gl3_impl));
+
     gk->impl_data = gl3;
     gk->nvg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
 

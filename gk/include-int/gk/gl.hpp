@@ -19,8 +19,9 @@ struct gl3_impl {
 
     // Quads
     GLuint tex;
-    int prog_quad;
-    GLuint quad_uMVP;
+    GLuint program;
+    GLuint last_program;
+    GLuint default_quad_prog;
     GLuint quad_uTEX;
 
     int quadcount;

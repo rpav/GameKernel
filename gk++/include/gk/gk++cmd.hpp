@@ -366,6 +366,8 @@ namespace gk {
             source.nsources = 0;
             source.source   = nullptr;
         }
+
+        inline operator gk_program() { return source.program; }
     };
 
     // gk::CmdProgramCreate

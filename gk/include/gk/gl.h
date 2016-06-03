@@ -35,6 +35,9 @@ typedef struct gk_list_gl {
     float width, height;
 } gk_list_gl;
 
+typedef unsigned int gk_texture;
+typedef unsigned int gk_program;
+
 /* Clear ************************************************************/
 
 typedef enum gk_clear_flags {
@@ -64,7 +67,11 @@ typedef struct gk_cmd_quad {
     gk_cmd parent;
 
     /* The texture name, not the bound texture number */
-    int tex;
+    gk_texture tex;
+
+    /* Shader program. If this is zero, the builtin program will be used */
+    gk_program program;
+
     gk_mat4 tfm;
     gk_quadvert attr[4];
 } gk_cmd_quad;
@@ -81,7 +88,7 @@ typedef struct gk_sprite {
 } gk_sprite;
 
 typedef struct gk_spritesheet {
-    unsigned int tex;           /* Texture for the sprites */
+    gk_texture tex;           /* Texture for the sprites */
 
     size_t nsprites;
     gk_sprite *sprites;
@@ -94,6 +101,9 @@ typedef struct gk_spritesheet {
 
 typedef struct gk_cmd_quadsprite {
     gk_cmd parent;
+
+    /* Shader program. If this is zero, the builtin program will be used */
+    gk_program program;
 
     gk_mat4 tfm;
     gk_spritesheet *sheet;
@@ -132,7 +142,7 @@ typedef struct gk_cmd_rt_create {
     /* These are set (based on flags) */
     unsigned int framebuffer;
     unsigned int dsbuffer;
-    unsigned int tex;
+    gk_texture tex;
 } gk_cmd_rt_create;
 
 typedef struct gk_cmd_rt_destroy {
@@ -141,7 +151,7 @@ typedef struct gk_cmd_rt_destroy {
     /* Anything nonzero will be deleted. */
     unsigned int framebuffer;
     unsigned int dsbuffer;
-    unsigned int tex;
+    gk_texture tex;
 } gk_cmd_rt_destroy;
 
 typedef struct gk_cmd_rt_bind {
@@ -170,8 +180,6 @@ typedef struct gk_shader_source {
     gk_shader_type type;
     const char *source;
 } gk_shader_source;
-
-typedef unsigned int gk_program;
 
 typedef struct gk_program_source {
     size_t nsources;

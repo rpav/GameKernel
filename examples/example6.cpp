@@ -55,7 +55,7 @@ static const char *shader_frag_quad =
 
  "void main() {"
  "  frag = texture(tex, uv);"
-//"  frag = vec4(1, 0, 0, 1);"
+ "  frag.b = frag.b/2;"
  "  if(frag.a == 0.0) discard;"
  "}"
  ;
@@ -137,6 +137,7 @@ void example_main() {
 
     gk::ListGL gl(WIDTH, HEIGHT);
     gk::CmdQuad quad(rtCreate.cmd.tex, -0.8, -0.8, 0.8, 0.8);
+    quad.cmd.program = prog;
 
     bundle.add(gl);
     gl.add(quad, rtDestroy, progDestroy);
