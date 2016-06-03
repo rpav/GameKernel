@@ -3,20 +3,10 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 
-/* For state-aware GL wrappers.  This MUST be the FIRST member for all
-   impl_data for GL. */
-struct gl_state {
-    GLuint active_program;
-    GLenum active_texture;
-
-    GLuint bound_array;
-    GLuint bound_array_buffer;
-};
+#include "gk/gk.hpp"
 
 /* Structs */
-struct gl3_impl {
-    gl_state glstate;
-
+struct gl3_impl : public gl_impl_data {
     // Quads
     GLuint tex;
     GLuint program;
@@ -76,14 +66,6 @@ void gl3_cmd_rt_create(gk_context*, gk_cmd_rt_create*);
 void gl3_cmd_rt_destroy(gk_context*, gk_cmd_rt_destroy*);
 void gl3_cmd_rt_bind(gk_context*, gk_cmd_rt_bind*);
 void gl3_cmd_rt_unbind(gk_context*, gk_cmd_rt_unbind*);
-
-void gk_gl_reset_state(gk_context *gk);
-
-void gk_glActiveTexture(gk_context *gk, GLenum texture);
-void gk_glUseProgram(gk_context *gk, GLuint program);
-
-void gk_glBindVertexArray(gk_context *gk, GLuint array);
-void gk_glBindBuffer(gk_context *gk, GLenum target, GLuint buffer);
 
 // tables
 

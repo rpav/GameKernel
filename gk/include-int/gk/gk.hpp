@@ -1,12 +1,21 @@
 #pragma once
 
+#include <GL/glew.h>
+#include <GL/gl.h>
+
 #include "gk/gk.h"
+#include "gk/glstate.hpp"
 
 typedef struct NVGcontext NVGcontext;
 
+// Base for implementations
+struct gl_impl_data {
+    gk::GLGlobalState glstate;
+};
+
 struct gk_context {
     gk_impl impl;
-    void *impl_data;
+    gl_impl_data *impl_data;
 
     NVGcontext *nvg;
     bool nvg_inframe;
