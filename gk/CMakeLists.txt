@@ -69,6 +69,7 @@ if(GK_BUILD_STATIC)
   add_library(${LIB_NAME}-static STATIC ${GK_SOURCE_FILES})
   set_target_properties(${LIB_NAME}-static PROPERTIES OUTPUT_NAME ${LIB_NAME})
   target_link_libraries(${LIB_NAME}-static ${GK_LIBS_STATIC})
+  cotire(${LIB_NAME}-static)
 
   if(GK_INSTALL)
     install(TARGETS ${LIB_NAME}-static ARCHIVE DESTINATION lib/)

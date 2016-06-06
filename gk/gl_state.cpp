@@ -4,8 +4,6 @@
 #include "gk/gl.hpp"
 #include "gk/log.hpp"
 
-#define GLSTATE(gk) ((gk)->impl_data->glstate)
-
 #define CHECK_SET_STATE(state, name, newval)    \
     do {                                        \
         if((newval) == state.name)              \
@@ -16,22 +14,15 @@
 
 void gk_gl_reset_state(gk_context *gk) {
     auto &state = gk->impl_data->glstate;
-
-    memset(&state, 0, sizeof(state));
+    state.reset();
 }
 
-void gk_glActiveTexture(gk_context *gk, GLenum texture) {
-    auto &state = gk->impl_data->glstate;
-
-    CHECK_SET_STATE(state, active_texture, texture);
-    glActiveTexture(texture);
-}
-
-void gk_glUseProgram(gk_context *gk, GLuint program) {
-    auto &state = gk->impl_data->glstate;
-
-    CHECK_SET_STATE(state, active_program, program);
-    glUseProgram(program);
+void gk::GLGlobalState::reset() {
+    active_program = 0;
+    active_texture = 0;
+    vertex_array = 0;
+    array_buffer = 0;
+    textures.clear();
 }
 
 void gk_glBindVertexArray(gk_context *gk, GLuint array) {

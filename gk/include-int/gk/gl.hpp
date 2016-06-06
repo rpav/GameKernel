@@ -6,11 +6,23 @@
 #include "gk/gk.hpp"
 
 /* Structs */
+namespace gk {
+    struct QuadStateConfig : public GLStateConfigGeneral {
+    public:
+        GLStateTex tex;
+        GLStateProgram program;
+
+        QuadStateConfig()
+            : tex(0, GL_TEXTURE_2D) {
+            add(tex, program);
+        }
+    };
+}
+
 struct gl3_impl : public gl_impl_data {
     // Quads
-    GLuint tex;
-    GLuint program;
-    GLuint last_program;
+    gk::QuadStateConfig qsc;
+
     GLuint default_quad_prog;
     GLuint quad_uTEX;
 

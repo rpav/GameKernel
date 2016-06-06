@@ -1,40 +1,26 @@
 #pragma once
 
+#include <map>
 #include <vector>
 
-struct gk_context;
-
 namespace gk {
-    // This tracks all "global state"
-    struct GLGlobalState {
-        GLuint active_program;
-        GLenum active_texture;
+    class GLGlobalState;
 
-        GLuint vertex_array;
-        GLuint array_buffer;
-    };
-
-    // This (or a subclass at least) tracks one specific thing
+    // gk::GLState
     class GLState {
     public:
         virtual ~GLState() {}
-
-        // Subclasses should implement this; check/update the GLState and
-        // make the appropriate GL call if necessary.
-        virtual void stateUpdate(GLState*) = 0;
-    };
-    typedef std::vector<GLState*> StateVector;
-
-    // This is one configuration of GL states.  Subclass it, make members,
-    // add them to the vector.
-    class GLStateConfig {
-    protected:
-        StateVector states;
-    public:
-
-        void apply(GLGlobalState*);
+        virtual void apply(GLGlobalState&) = 0;
     };
 }
+
+#include "gk/glstate/global.hpp"
+#include "gk/glstate/config.hpp"
+#include "gk/glstate/tex.hpp"
+#include "gk/glstate/program.hpp"
+
+struct gk_context;
+
 // State-tracking API
 void gk_gl_reset_state(gk_context *gk);
 

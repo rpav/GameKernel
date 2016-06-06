@@ -54,8 +54,7 @@ static const char *shader_frag_quad =
  "out vec4 frag;"
 
  "void main() {"
- "  frag = texture(tex, uv);"
- "  frag.b = frag.b/2;"
+ "  frag = texture(tex, uv).brga;"
  "  if(frag.a == 0.0) discard;"
  "}"
  ;

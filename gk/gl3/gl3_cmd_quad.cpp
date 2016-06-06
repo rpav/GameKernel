@@ -84,10 +84,7 @@ static void compile_shaders(gl3_impl *gl3) {
 
     GLuint shaders[] = { vert, geom, frag };
     gl3->default_quad_prog = gk_gl_link_program(3, shaders);
-    gl3->program = gl3->default_quad_prog;
-    gl3->last_program = 0;
-
-    gl3->quad_uTEX = glGetUniformLocation(gl3->program, "tex"); GL_CHECKERR(glGetUniformLocation);
+    gl3->quad_uTEX = glGetUniformLocation(gl3->default_quad_prog, "tex"); GL_CHECKERR(glGetUniformLocation);
 
     return;
 
@@ -144,10 +141,13 @@ void gl3_render_quads(gk_context *gk) {
 
 void gl3_begin_quad(gk_context *gk, gk_bundle *b, gk_cmd_quad *q) {
     auto gl3 = (gl3_impl*)gk->impl_data;
-    gl3->quadcount = 0;
-    gl3->tex = 0;
+    auto &config = gl3->qsc;
 
-    GL_CHECK(gk_glUseProgram(gk, gl3->default_quad_prog));
+    config.program.set(gl3->default_quad_prog, config);
+    config.apply(gl3->glstate);
+
+    gl3->quadcount = 0;
+
     GL_CHECK(gk_glBindVertexArray(gk, gl3->quadvao));
     GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, gl3->quadvbo));
     GL_CHECK(glUniform1i(gl3->quad_uTEX, 0));
@@ -177,58 +177,31 @@ static void gl3_append_quad(gk_context *gk, mat4 *tfm, gk_quadvert *attr) {
         gl3_render_quads(gk);
 }
 
-struct gk_quad_state {
-    GLuint tex;
-    GLuint program;
-};
-
-static bool gl3_quad_ensure_state(gk_context *gk, gk_quad_state &qs) {
+static inline void gl3_quad_ensure_state(gk_context *gk, GLuint tex, GLuint program) {
     auto gl3 = (gl3_impl*)gk->impl_data;
+    auto &config = gl3->qsc;
 
-    if(qs.tex != gl3->tex || qs.program != gl3->last_program) {
+    config.tex.set(tex, config);
+
+    if(program) config.program.set(program, config);
+    else        config.program.set(gl3->default_quad_prog, config);
+
+    if(config.dirty) {
         gl3_render_quads(gk);
+        config.apply(gl3->glstate);
     }
-
-    if(qs.tex != gl3->tex) {
-        gl3->tex = qs.tex;
-
-        GL_CHECK(gk_glActiveTexture(gk, GL_TEXTURE0));
-        GL_CHECK(glBindTexture(GL_TEXTURE_2D, gl3->tex));
-    }
-
-    if(qs.program != gl3->last_program) {
-        gl3->last_program = qs.program;
-
-        if(qs.program == 0)
-            gl3->program = gl3->default_quad_prog;
-        else
-            gl3->program = qs.program;
-
-        GL_CHECK(gk_glUseProgram(gk, gl3->program));
-        gl3->quad_uTEX = glGetUniformLocation(gl3->program, "tex"); GL_CHECKERR(glGetUniformLocation);
-        GL_CHECK(glUniform1i(gl3->quad_uTEX, 0));
-    }
-    return true;
-
- gl_error:
-    return false;
 }
 
 void gl3_cmd_quad(gk_context *gk, gk_bundle *b, gk_cmd_quad *q) {
-    gk_quad_state qs = { q->tex, q->program };
-
-    if(!gl3_quad_ensure_state(gk, qs)) return;
-
+    gl3_quad_ensure_state(gk, q->tex, q->program);
     gl3_append_quad(gk, (mat4*)&q->tfm, q->attr);
 }
 
 void gl3_cmd_quadsprite(gk_context *gk, gk_bundle *b, gk_cmd_quadsprite *cmd) {
     auto sheet = cmd->sheet;
     auto &sprite = cmd->sheet->sprites[cmd->index];
-    gk_quad_state qs = { sheet->tex, cmd->program };
 
-    if(!gl3_quad_ensure_state(gk, qs)) return;
-
+    gl3_quad_ensure_state(gk, sheet->tex, cmd->program);
     gl3_append_quad(gk, (mat4*)&cmd->tfm, sprite.attr);
 }
 
