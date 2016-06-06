@@ -9,7 +9,7 @@ namespace gk {
 
     public:
         GLStateTex(GLuint unit, GLenum target, GLuint tex = 0)
-            : _unit(unit), _target(target) { }
+            : _unit(unit), _target(target), _tex(tex) { }
 
         inline bool set(GLuint tex, GLStateConfig &c) {
             if(_tex != tex) {

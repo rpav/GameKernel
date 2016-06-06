@@ -3,6 +3,7 @@
 #include <map>
 #include <vector>
 
+#include "gk/glutil.hpp"
 #include "gk/log.hpp"
 
 namespace gk {
@@ -41,16 +42,19 @@ namespace gk {
         GLuint bound_vertex_array;
 
     public:
-        GLGlobalState() : buffers(BUFFER_MAX, 0) { }
+        GLGlobalState() : buffers(BUFFER_MAX, 0) {
+            reset();
+        }
 
         void reset();
 
         inline bool activeTexture(GLuint unit) {
             if(active_texture != unit) {
-                glActiveTexture(GL_TEXTURE0 + unit);
+                GL_CHECK(glActiveTexture(GL_TEXTURE0 + unit));
                 active_texture = unit;
                 return true;
             }
+        gl_error:
             return false;
         }
 
@@ -70,39 +74,54 @@ namespace gk {
 
                 activeTexture(unit);
 
-                glBindTexture(target, tex);
+                GL_CHECK(glBindTexture(target, tex));
                 textures[k] = tex;
 
                 return true;
             }
+        gl_error:
             return false;
         }
 
         inline bool useProgram(GLuint program) {
             if(active_program != program) {
-                glUseProgram(program);
+                GL_CHECK(glUseProgram(program));
                 active_program = program;
                 return true;
             }
+        gl_error:
             return false;
         }
 
         inline bool bindBuffer(BufferTarget target, GLuint buffer) {
             if(buffers[target] != buffer) {
-                glBindBuffer(target_to_gl[target], buffer);
+                GL_CHECK(glBindBuffer(target_to_gl[target], buffer));
                 buffers[target] = buffer;
                 return true;
             }
+        gl_error:
             return false;
         }
 
         inline bool bindVertexArray(GLuint vao) {
             if(bound_vertex_array != vao) {
-                glBindVertexArray(vao);
+                GL_CHECK(glBindVertexArray(vao));
                 bound_vertex_array = vao;
                 return true;
             }
+        gl_error:
             return false;
+        }
+
+        inline void deleteVertexArrays(GLsizei n, const GLuint *arrays) {
+            for(GLsizei i = 0; i < n; ++i) {
+                if(arrays[i] == bound_vertex_array)
+                    bound_vertex_array = 0;
+            }
+
+            GL_CHECK(glDeleteVertexArrays(n, arrays));
+        gl_error:
+            return;
         }
     };
 }

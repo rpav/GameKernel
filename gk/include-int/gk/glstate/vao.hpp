@@ -14,9 +14,13 @@ namespace gk {
                 c.dirty = true;
             }
         }
-        
+
         inline virtual void apply(GLGlobalState &g) {
             g.bindVertexArray(_vao);
+        }
+
+        inline virtual void clean(GLGlobalState &g) {
+            g.deleteVertexArrays(1, &_vao);
         }
     };
 }

@@ -11,6 +11,7 @@ namespace gk {
     public:
         virtual ~GLState() {}
         virtual void apply(GLGlobalState&) = 0;
+        virtual void clean(GLGlobalState&) { }
     };
 }
 
@@ -25,5 +26,3 @@ struct gk_context;
 
 // State-tracking API
 void gk_gl_reset_state(gk_context *gk);
-
-void gk_glBindVertexArray(gk_context *gk, GLuint array);

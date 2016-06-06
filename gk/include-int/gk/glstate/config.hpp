@@ -4,8 +4,9 @@ namespace gk {
     // gk::GLStateConfig
     class GLStateConfig {
     public:
-        bool dirty;
+        bool dirty = true;
         virtual void apply(GLGlobalState&) = 0;
+        virtual void clean(GLGlobalState&) = 0;
     };
 
     // gk::GLStateConfigGeneral
@@ -22,12 +23,20 @@ namespace gk {
             }
         }
 
+        inline virtual void clean(GLGlobalState &g) {
+            for(auto *state : states)
+                state->clean(g);
+            dirty = true;
+        }
+
         template<typename...Rest>
         inline void add(GLState &s, Rest&...args) {
             states.push_back(&s);
             add(args...);
         }
 
-        inline void add() { }
+        inline void add() {
+            dirty = true;
+        }
     };
 }

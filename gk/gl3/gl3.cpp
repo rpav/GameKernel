@@ -21,7 +21,8 @@ void gk_create_gl3(gk_context *gk) {
 
 void gk_destroy_gl3(gk_context *gk) {
     auto gl3 = (gl3_impl*)gk->impl_data;
-    GL_CHECK(glDeleteVertexArrays(1, &gl3->quadvao));
+
+    gl3->qsc.clean(gl3->glstate);
 
     delete gl3->quadbuf;
     delete gl3;

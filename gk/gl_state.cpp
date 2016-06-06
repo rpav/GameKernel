@@ -47,8 +47,3 @@ void gk::GLGlobalState::reset() {
     for(int i = 0; i < gk::BUFFER_MAX; ++i)
         buffers[i] = 0;
 }
-
-void gk_glBindVertexArray(gk_context *gk, GLuint array) {
-    auto &g = gk->impl_data->glstate;
-    g.bindVertexArray(array);
-}

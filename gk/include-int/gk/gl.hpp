@@ -4,6 +4,7 @@
 #include <GL/gl.h>
 
 #include "gk/gk.hpp"
+#include "gk/glutil.hpp"
 
 /* Structs */
 namespace gk {
@@ -30,24 +31,9 @@ struct gl3_impl : public gl_impl_data {
 
     int quadcount;
     float *quadbuf;
-    GLuint quadvao;
-    GLuint quadvbo;
 };
 
 /* Functions */
-
-#ifndef NDEBUG
-#define GL_CHECK(x) do { x; if(gk_gl_checkerror(#x,__FILE__,__LINE__)) goto gl_error; } while(0)
-#define GL_CHECKERR(x) do { if(gk_gl_checkerror(#x,__FILE__,__LINE__)) goto gl_error; } while(0)
-#else
-#define GL_CHECK(x) (x)
-#define GL_CHECKERR(x)
-#endif
-
-bool gk_gl_checkerror(const char *expr, const char *file, int line);
-
-GLuint gk_gl_compile_shader(GLenum type, const char *text);
-GLuint gk_gl_link_program(int numshaders, GLuint *shaders);
 
 bool gk_init_gl(gk_context *gk);
 void gk_fini_gl(gk_context *gk);
