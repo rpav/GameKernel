@@ -96,6 +96,8 @@ void gl3_quad_init(gk_context *gk) {
     const size_t szf = sizeof(float);
 
     auto gl3 = (gl3_impl*)gk->impl_data;
+    auto &qs = gl3->qsc;
+
     gl3->quadbuf = new float[QUADBUF_QUADS * QUADBUF_VALS_PER_VERT * 4];
 
     gk->gl.gl_begin_quad = gl3_begin_quad;
@@ -105,10 +107,16 @@ void gl3_quad_init(gk_context *gk) {
 
     compile_shaders(gl3);
 
-    GL_CHECK(glGenVertexArrays(1, &gl3->quadvao));
-    GL_CHECK(glGenBuffers(1, &gl3->quadvbo));
-    GL_CHECK(glBindVertexArray(gl3->quadvao));
-    GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, gl3->quadvbo));
+    GLuint vao, vbo;
+
+    GL_CHECK(glGenVertexArrays(1, &vao));
+    GL_CHECK(glGenBuffers(1, &vbo));
+
+    qs.vao.set(vao, qs);
+    qs.vbo.set(vbo, qs);
+
+    qs.apply(gk->impl_data->glstate);
+
     GL_CHECK(glEnableVertexAttribArray(0));
     GL_CHECK(glEnableVertexAttribArray(1));
     GL_CHECK(glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, QUADBUF_VALS_PER_VERT*szf,
@@ -148,10 +156,7 @@ void gl3_begin_quad(gk_context *gk, gk_bundle *b, gk_cmd_quad *q) {
 
     gl3->quadcount = 0;
 
-    GL_CHECK(gk_glBindVertexArray(gk, gl3->quadvao));
-    GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, gl3->quadvbo));
     GL_CHECK(glUniform1i(gl3->quad_uTEX, 0));
-
     GL_CHECK(glEnable(GL_BLEND));
     GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 

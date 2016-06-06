@@ -11,10 +11,12 @@ namespace gk {
     public:
         GLStateTex tex;
         GLStateProgram program;
+        GLStateVao vao;
+        GLStateBuffer vbo;
 
         QuadStateConfig()
-            : tex(0, GL_TEXTURE_2D) {
-            add(tex, program);
+            : tex(0, GL_TEXTURE_2D), vbo(BUFFER_ARRAY) {
+            add(tex, program, vao, vbo);
         }
     };
 }

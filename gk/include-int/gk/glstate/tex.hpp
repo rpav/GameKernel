@@ -3,7 +3,7 @@
 namespace gk {
     // gk::GLStateTex
     class GLStateTex : public GLState {
-        GLuint _unit;            // GL_TEXTURE0 + unit
+        GLuint _unit;            // GL_TEXTURE0 + _unit
         GLenum _target;
         GLuint _tex;
 
