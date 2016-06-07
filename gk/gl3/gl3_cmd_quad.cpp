@@ -78,18 +78,12 @@ const int QUADBUF_QUADS = 1024;
 const int QUADBUF_VALS_PER_VERT = sizeof(gk_quadvert)/sizeof(float);
 
 static void compile_shaders(gl3_impl *gl3) {
-    auto vert = gk_gl_compile_shader(GL_VERTEX_SHADER, shader_vert_quad);
-    auto geom = gk_gl_compile_shader(GL_GEOMETRY_SHADER, shader_geom_quad);
-    auto frag = gk_gl_compile_shader(GL_FRAGMENT_SHADER, shader_frag_quad);
+    gk::GLProgramBuilder build;
 
-    GLuint shaders[] = { vert, geom, frag };
-    gl3->default_quad_prog = gk_gl_link_program(3, shaders);
-    gl3->quad_uTEX = glGetUniformLocation(gl3->default_quad_prog, "tex"); GL_CHECKERR(glGetUniformLocation);
-
-    return;
-
- gl_error:
-    return;
+    build.add(GL_VERTEX_SHADER, shader_vert_quad,
+              GL_GEOMETRY_SHADER, shader_geom_quad,
+              GL_FRAGMENT_SHADER, shader_frag_quad);
+    build.link(gl3->quad_program);
 }
 
 void gl3_quad_init(gk_context *gk) {
@@ -151,12 +145,12 @@ void gl3_begin_quad(gk_context *gk, gk_bundle *b, gk_cmd_quad *q) {
     auto gl3 = (gl3_impl*)gk->impl_data;
     auto &config = gl3->quad_state;
 
-    config.program.set(gl3->default_quad_prog, config);
+    config.program.set(gl3->quad_program, config);
     config.apply(gl3->glstate);
 
     gl3->quadcount = 0;
 
-    GL_CHECK(glUniform1i(gl3->quad_uTEX, 0));
+    GL_CHECK(glUniform1i(gl3->quad_program.uTEX, 0));
     GL_CHECK(glEnable(GL_BLEND));
     GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
@@ -189,7 +183,7 @@ static inline void gl3_quad_ensure_state(gk_context *gk, GLuint tex, GLuint prog
     config.tex.set(tex, config);
 
     if(program) config.program.set(program, config);
-    else        config.program.set(gl3->default_quad_prog, config);
+    else        config.program.set(gl3->quad_program, config);
 
     if(config.dirty) {
         gl3_render_quads(gk);

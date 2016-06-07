@@ -6,6 +6,8 @@ namespace gk {
     class GLStateProgram : public GLState {
         GLuint _program;
     public:
+        GLStateProgram(int program = 0) : _program(program) { }
+
         inline virtual void apply(GLGlobalState &g) {
             g.useProgram(_program);
         }

@@ -4,12 +4,13 @@
 #include <GL/gl.h>
 
 #include "gk/gk.hpp"
+#include "gk/glprogram.hpp"
 #include "gk/glutil.hpp"
+#include "gk/log.hpp"
 
 /* Structs */
 namespace gk {
     struct QuadStateConfig : public GLStateConfigGeneral {
-    public:
         GLStateTex tex;
         GLStateProgram program;
         GLStateVao vao;
@@ -20,14 +21,20 @@ namespace gk {
             add(tex, program, vao, vbo);
         }
     };
+
+    struct QuadProgram : public GLProgram {
+        GLuint uTEX;
+
+        virtual void postLink() {
+            findUniform(uTEX, "tex");
+        }
+    };
 }
 
 struct gl3_impl : public gl_impl_data {
     // Quads
     gk::QuadStateConfig quad_state;
-
-    GLuint default_quad_prog;
-    GLuint quad_uTEX;
+    gk::QuadProgram quad_program;
 
     int quadcount;
     float *quadbuf;
