@@ -96,7 +96,7 @@ void gl3_quad_init(gk_context *gk) {
     const size_t szf = sizeof(float);
 
     auto gl3 = (gl3_impl*)gk->impl_data;
-    auto &qs = gl3->qsc;
+    auto &qs = gl3->quad_state;
 
     gl3->quadbuf = new float[QUADBUF_QUADS * QUADBUF_VALS_PER_VERT * 4];
 
@@ -149,7 +149,7 @@ void gl3_render_quads(gk_context *gk) {
 
 void gl3_begin_quad(gk_context *gk, gk_bundle *b, gk_cmd_quad *q) {
     auto gl3 = (gl3_impl*)gk->impl_data;
-    auto &config = gl3->qsc;
+    auto &config = gl3->quad_state;
 
     config.program.set(gl3->default_quad_prog, config);
     config.apply(gl3->glstate);
@@ -184,7 +184,7 @@ static void gl3_append_quad(gk_context *gk, mat4 *tfm, gk_quadvert *attr) {
 
 static inline void gl3_quad_ensure_state(gk_context *gk, GLuint tex, GLuint program) {
     auto gl3 = (gl3_impl*)gk->impl_data;
-    auto &config = gl3->qsc;
+    auto &config = gl3->quad_state;
 
     config.tex.set(tex, config);
 

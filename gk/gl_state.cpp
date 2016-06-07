@@ -24,14 +24,6 @@ const GLenum gk::target_to_gl[] = {
     0
 };;
 
-#define CHECK_SET_STATE(state, name, newval)    \
-    do {                                        \
-        if((newval) == state.name)              \
-            return;                             \
-        else                                    \
-            state.name = (newval);              \
-    } while(0);
-
 void gk_gl_reset_state(gk_context *gk) {
     auto &state = gk->impl_data->glstate;
     state.reset();

@@ -24,7 +24,7 @@ namespace gk {
 
 struct gl3_impl : public gl_impl_data {
     // Quads
-    gk::QuadStateConfig qsc;
+    gk::QuadStateConfig quad_state;
 
     GLuint default_quad_prog;
     GLuint quad_uTEX;
