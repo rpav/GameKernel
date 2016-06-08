@@ -34,7 +34,7 @@ typedef std::chrono::steady_clock steady_clock;
 typedef std::chrono::duration<float> float_dur;
 typedef std::chrono::milliseconds time_ms;
 
-class Bench {
+class Clock {
     std::chrono::time_point<steady_clock> _start;
 public:
     void start() { reset(); }
@@ -49,7 +49,7 @@ public:
 };
 
 class FPS {
-    Bench _clock;
+    Clock _clock;
     unsigned int _reports;
     unsigned int _frames;
     

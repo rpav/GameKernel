@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
+#include <SDL2/SDL.h>
 #include "gk/gk++.hpp"
 #include "gk/log.hpp"
 #include "example.hpp"
@@ -26,7 +27,7 @@ static const char *shader_geom_quad =
  "    uv = vert_uv[3];"
  "    gl_Position = gl_in[3].gl_Position;"
  "  EmitVertex();"
- 
+
  "  EndPrimitive();"
  "}"
  ;
@@ -49,6 +50,7 @@ static const char *shader_frag_quad =
  "#version 330 core\n"
 
  "uniform sampler2D tex;"
+ "uniform float time;"
 
  "in vec2 uv;"
  "out vec4 frag;"
@@ -56,12 +58,13 @@ static const char *shader_frag_quad =
  "void main() {"
  "  frag = texture(tex, uv).brga;"
  "  if(frag.a == 0.0) discard;"
+ "  if(int(gl_FragCoord.y) % 4 <= 1) frag *= 0.8;"
+ "  frag.b = frag.b + time;"
  "}"
  ;
 
 void example_main() {
-    glClearColor(0,0,0,1);
-    glClear(GL_COLOR_BUFFER_BIT);
+    checkrc(SDL_GL_SetSwapInterval(1));
 
     auto gk = gk::create(GK_GL3);
 
@@ -101,22 +104,31 @@ void example_main() {
     gk::CmdProgramDestroy progDestroy;
     progCreate.add(prog);
 
+    gk::CmdUniformQuery uniforms(prog);
+    uniforms.add("tex", "time");
+
     bundle.add(config);
-    config.add(rtCreate, progCreate);
+    config.add(rtCreate, progCreate, uniforms);
     gk::process(gk, bundle);
 
     gk::CmdRtBind bind(rtCreate);
     gk::CmdRtDestroy rtDestroy(rtCreate);
-    
+
     progDestroy.add(progCreate);
 
     LOG("framebuffer = ", bind.cmd.framebuffer, " tex = ", rtCreate.cmd.tex);
+
+    for(size_t i = 0; i < uniforms.cmd.nuniforms; ++i)
+        LOG("uniform ", uniforms.cmd.names[i], " = ", uniforms.cmd.uniforms[i]);
+
+    uniforms.index();
+    LOG("uniform tex = ", uniforms.find("tex"));
 
     gk::List passes;
     gk::CmdPass passNvg(1);
     gk::CmdPass passGL(2);
     passes.add(passNvg);
-    passes.add(passGL);
+    //passes.add(passGL);
 
     bundle.clear();
     bundle.add(passes, nvg);
@@ -133,17 +145,36 @@ void example_main() {
 
     nvg.add(fc, fs, text);
     nvg.add(unbind);
+    gk::process(gk, bundle);
+
+    bundle.clear();
 
     gk::ListGL gl(WIDTH, HEIGHT);
+
+    /*
+    gk::CmdUniformSet uniformSet;
+    gk_uniform uTIME = uniforms.find("time");
+    uniformSet.add(uTIME, 0.0);
+    gl.add(uniformSet);
+    */
+
     gk::CmdQuad quad(rtCreate.cmd.tex, -0.8, -0.8, 0.8, 0.8);
     quad.cmd.program = prog;
 
     bundle.add(gl);
-    gl.add(quad, rtDestroy, progDestroy);
+    gl.add(quad);
 
+    Clock clock;
+    clock.start();
+
+    while(!check_input()) {
+        gk::process(gk, bundle);
+        swap();
+    }
+
+    gl.clear();
+    gl.add(rtDestroy, progDestroy);
     gk::process(gk, bundle);
-    swap();
 
-    wait();
     gk::destroy(gk);
 }

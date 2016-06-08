@@ -6,12 +6,13 @@ TODO
      + Sorting
      - Sort caching/list-dirty
    - Static/stored VAOs
-   - State
-     - More tracking
+   = State
+     = More tracking
      - Better transition handling
-     - Better state tracking for quads etc
+     + Better state tracking for quads etc
    - More other stuff
-   - Clean up impl_data for GL3
+   = Clean up impl_data for GL3
+     - Create a completely separate Quads struct removed from gl.hpp
    - GL2
  - NanoVG
    - More primitives
@@ -46,10 +47,10 @@ TODO
    + Destroy
    + Bind
    + Unbind
-   - Switch textures?
+   - Swap FBO texture
  = Shaders
    + Compile
-   X Associate defaults (quads)
    + Custom program per quad/sprite
-   - Custom uniforms, attributes, etc
+   = Uniforms
+   - Attributes ...
  - Modules?

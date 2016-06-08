@@ -53,6 +53,7 @@ void gk_process_cmd_tf_ortho(gk_context *gk, gk_cmd_tf_ortho *cmd);
 void gl_cmd_clear(gk_context *gk, gk_cmd_clear *cmd);
 void gl_cmd_program_create(gk_context *gk, gk_cmd_program_create *cmd);
 void gl_cmd_program_destroy(gk_context *gk, gk_cmd_program_destroy *cmd);
+void gl_cmd_uniform_query(gk_context *gk, gk_cmd_uniform_query *cmd);
 
 /* GL2 */
 void gk_create_gl2(gk_context *gk);

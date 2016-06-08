@@ -32,6 +32,7 @@ typedef enum gk_cmd_type {
     /* Shaders */
     GK_CMD_PROGRAM_CREATE,
     GK_CMD_PROGRAM_DESTROY,
+    GK_CMD_UNIFORM_QUERY,
 
     /* NanoVG */
     GK_CMD_FONT_CREATE,

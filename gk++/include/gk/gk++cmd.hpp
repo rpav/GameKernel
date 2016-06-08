@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include <vector>
+#include <map>
 
 namespace gk {
     typedef std::vector<gk_cmd*> CmdVector;
@@ -416,6 +417,109 @@ namespace gk {
         inline void add() {
             cmd.nprograms = _progs.size();
             cmd.program   = _progs.data();
+        }
+    };
+
+    // gk::CmdUniformQuery
+    typedef std::vector<const char *> NameVector;
+    typedef std::vector<gk_uniform> UniformVector;
+
+    struct strcmp_f { bool operator()(const char *a, const char *b) { return strcmp(a,b) < 0; } };
+    typedef std::map<const char *, gk_uniform, strcmp_f> UniformNameLocationMap;
+
+    class CmdUniformQuery : public CmdTmpl<gk_cmd_uniform_query, GK_CMD_UNIFORM_QUERY> {
+        NameVector _names;
+        UniformVector _uniforms;
+        UniformNameLocationMap _locations;
+
+    public:
+        CmdUniformQuery(gk_program &program) {
+            cmd.program = &program;
+        }
+        CmdUniformQuery(ProgramSource &source) : CmdUniformQuery(source.source.program) { }
+
+        template<typename...Rest>
+        inline void add(const char *name, Rest...args) {
+            _names.push_back(name);
+            add(args...);
+        }
+
+        inline void add() {
+            cmd.nuniforms = _names.size();
+            cmd.names     = _names.data();
+
+            _uniforms.reserve(_names.size());
+            cmd.uniforms = _uniforms.data();
+        }
+
+        void index() {
+            _locations.clear();
+            for(size_t i = 0; i < cmd.nuniforms; ++i) {
+                _locations[cmd.names[i]] = cmd.uniforms[i];
+            }
+        }
+
+        gk_uniform find(const char *name) {
+            auto i = _locations.find(name);
+
+            if(i != _locations.end())
+                return i->second;
+
+            return -1;
+        }
+    };
+
+    // gk::UniformSet
+    typedef std::vector<UniformValue> UniformValueVector;
+
+    class UniformSet {
+        UniformValueVector _values;
+
+    public:
+        gk_uniform_set uniform_set;
+
+        UniformSet() {
+            memset(&uniform_set, 0, sizeof(uniform_set));
+        }
+
+        template<typename T, typename...Rest>
+        inline void add(gk_uniform location, T &v, Rest&...args) {
+            _values.emplace_back(location, v);
+            add(args...);
+        }
+
+        template<typename...Rest>
+        inline void add(gk_uniform location, double v, Rest&...args) {
+            _values.emplace_back(location, (float)v);
+            add(args...);
+        }
+
+        template<typename...Rest>
+        inline void add(gk_uniform location, float v, Rest&...args) {
+            _values.emplace_back(location, v);
+            add(args...);
+        }
+
+        template<typename...Rest>
+        inline void add(gk_uniform location, int v, Rest&...args) {
+            _values.emplace_back(location, v);
+            add(args...);
+        }
+
+        template<typename...Rest>
+        inline void add(gk_uniform location, unsigned int v, Rest&...args) {
+            _values.emplace_back(location, v);
+            add(args...);
+        }
+
+        template<typename...Rest>
+        inline void add(gk_uniform location, vec2 &v, Rest&...args) {
+            add(args...);
+        }
+
+        inline void add() {
+            uniform_set.nuniforms = _values.size();
+            uniform_set.values = _values.data();
         }
     };
 }

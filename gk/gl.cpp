@@ -281,3 +281,11 @@ void gl_cmd_program_destroy(gk_context *gk, gk_cmd_program_destroy *cmd) {
     gk_seterror(gk, GK_ERROR_DESTROYING_PROGRAM);
     return;
 }
+
+void gl_cmd_uniform_query(gk_context *gk, gk_cmd_uniform_query *cmd) {
+    auto &program = *cmd->program;
+
+    for(size_t i = 0; i < cmd->nuniforms; ++i) {
+        cmd->uniforms[i] = glGetUniformLocation(program, cmd->names[i]);
+    }
+}

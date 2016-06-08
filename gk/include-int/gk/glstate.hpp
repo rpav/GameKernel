@@ -21,6 +21,7 @@ namespace gk {
 #include "gk/glstate/program.hpp"
 #include "gk/glstate/buffer.hpp"
 #include "gk/glstate/vao.hpp"
+#include "gk/glstate/pds.hpp"
 
 struct gk_context;
 

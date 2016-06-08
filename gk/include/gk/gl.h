@@ -37,6 +37,9 @@ typedef struct gk_list_gl {
 
 typedef unsigned int gk_texture;
 typedef unsigned int gk_program;
+typedef int gk_uniform;
+
+typedef struct gk_program_data_set gk_program_data_set;
 
 /* Clear ************************************************************/
 
@@ -202,5 +205,72 @@ typedef struct gk_cmd_program_destroy {
     size_t nprograms;
     gk_program *program;
 } gk_cmd_shader_destroy;
+
+typedef struct gk_cmd_uniform_query {
+    gk_cmd parent;
+
+    /* Pass a pointer to the program */
+    gk_program *program;
+
+    /* Pass an array of `nuniforms` strings to query */
+    size_t nuniforms;
+    const char **names;
+
+    /* Output; provide an array of gk_uniform with `nuniforms`
+       elements */
+    gk_uniform *uniforms;
+} gk_cmd_uniform_query;
+
+typedef enum gk_uniform_value_type {
+    GK_UNIFORM_VALUE_FLOAT,
+    GK_UNIFORM_VALUE_INT,
+    GK_UNIFORM_VALUE_UINT,
+
+    GK_UNIFORM_VALUE_VEC2,
+    GK_UNIFORM_VALUE_VEC3,
+    GK_UNIFORM_VALUE_VEC4,
+    GK_UNIFORM_VALUE_MAT4,
+
+    GK_UNIFORM_VALUE_MAX
+} gk_uniform_value_type;
+
+typedef struct gk_uniform_value {
+    gk_uniform location;
+    gk_uniform_value_type type;
+    size_t count;
+
+    union {
+        /* If count > 1 or it's not scalar, use a pointer. */
+        void *data;
+
+        /* If count == 1 and it's a scalar type, use immediate fields. */
+        int i;
+        unsigned int ui;
+        float f;
+    } value;
+} gk_uniform_value;
+
+typedef struct gk_uniform_set {
+    size_t nuniforms;
+    gk_uniform_value *values;
+} gk_uniform_set;
+
+/* A gk_program_data_set is a collection of state necessary for a
+   particular draw operation, even---especially---if the operation
+   (e.g., a quad command) buffers.
+
+   Program data sets may share programs and data.  They are merely
+   configurations of state.
+ */
+typedef enum gk_pds_dirty_flags {
+    GK_PDS_DIRTY_UNIFORMS = 1 << 0
+} gk_pds_update_flags;
+
+struct gk_program_data_set {
+    uint32_t dirty;             /* gk_pds_dirty_flags */
+
+    gk_program program;
+    gk_uniform_set *uniforms;
+};
 
 #endif  /* __GAMEKERNEL_GL_H__ */
