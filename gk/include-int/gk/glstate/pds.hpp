@@ -1,12 +1,15 @@
 #pragma once
 
+#include <gk/gk++util.hpp>
+
 namespace gk {
     // gk::GLStateProgramDataSet
     class GLStateProgramDataSet : public GLState {
         gk_program_data_set *_pds;
 
     public:
-        GLStateProgramDataSet() : _pds(nullptr) { }
+        GLStateProgramDataSet(gk_program_data_set *pds = nullptr) : _pds(pds) { }
+        GLStateProgramDataSet(ProgramDataSet &pds) : GLStateProgramDataSet(&pds.pds) { }
 
         bool set(gk_program_data_set *pds, GLStateConfig &c) {
             if(_pds != pds || pds->dirty) {
@@ -15,6 +18,10 @@ namespace gk {
                 return true;
             }
             return false;
+        }
+
+        bool set(ProgramDataSet &pds, GLStateConfig &c) {
+            return set(&pds.pds, c);
         }
 
         virtual void apply(GLGlobalState &g) {

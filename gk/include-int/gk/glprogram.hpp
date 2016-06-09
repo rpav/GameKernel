@@ -7,11 +7,12 @@ namespace gk {
 
     struct GLProgram {
         GLuint program;
+        UniformSet uniforms;
 
         GLProgram(GLuint program_ = 0) : program(program_) { }
 
-        inline void findUniform(GLuint &place, const char *name) {
-            place = glGetUniformLocation(program, name);
+        inline GLuint findUniform(const char *name) {
+            return glGetUniformLocation(program, name);
         }
 
         inline operator GLuint() { return program; }

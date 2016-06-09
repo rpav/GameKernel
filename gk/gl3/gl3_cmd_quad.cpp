@@ -18,72 +18,80 @@ using vec4 = glm::vec4;
 using vec3 = glm::vec3;
 using vec2 = glm::vec2;
 
-static const char *shader_geom_quad =
- "#version 330 core\n"
+static const char *shader_geom_quad = R"(
+#version 330 core
 
- "layout(lines_adjacency) in;"
- "layout(triangle_strip, max_vertices = 4) out;"
+layout(lines_adjacency) in;
+layout(triangle_strip, max_vertices = 4) out;
 
- "in vec2 vert_uv[];"
- "out vec2 uv;"
+in vec2 vert_uv[];
+out vec2 uv;
 
- "void main() {"
- "    uv = vert_uv[0];"
- "    gl_Position = gl_in[0].gl_Position;"
- "  EmitVertex();"
- "    uv = vert_uv[1];"
- "    gl_Position = gl_in[1].gl_Position;"
- "  EmitVertex();"
- "    uv = vert_uv[2];"
- "    gl_Position = gl_in[2].gl_Position;"
- "  EmitVertex();"
- "    uv = vert_uv[3];"
- "    gl_Position = gl_in[3].gl_Position;"
- "  EmitVertex();"
+void main() {
+    uv = vert_uv[0];
+    gl_Position = gl_in[0].gl_Position;
+  EmitVertex();
+    uv = vert_uv[1];
+    gl_Position = gl_in[1].gl_Position;
+  EmitVertex();
+    uv = vert_uv[2];
+    gl_Position = gl_in[2].gl_Position;
+  EmitVertex();
+    uv = vert_uv[3];
+    gl_Position = gl_in[3].gl_Position;
+  EmitVertex();
 
- "  EndPrimitive();"
- "}"
- ;
+  EndPrimitive();
+}
+)";
 
-static const char *shader_vert_quad =
- "#version 330 core\n"
+static const char *shader_vert_quad = R"(
+#version 330 core
 
- "layout (location = 0) in vec4 vertex;"
- "layout (location = 1) in vec2 in_uv;"
+layout (location = 0) in vec4 vertex;
+layout (location = 1) in vec2 in_uv;
 
- "out vec2 vert_uv;"
+out vec2 vert_uv;
 
- "void main() {"
- "  vert_uv = in_uv;"
- "  gl_Position = vertex;"
- "}"
- ;
+void main() {
+  vert_uv = in_uv;
+  gl_Position = vertex;
+}
+)";
 
-static const char *shader_frag_quad =
- "#version 330 core\n"
+static const char *shader_frag_quad = R"(
+#version 330 core
 
- "uniform sampler2D tex;"
+uniform sampler2D tex;
 
- "in vec2 uv;"
- "out vec4 frag;"
+in vec2 uv;
+out vec4 frag;
 
- "void main() {"
- "  frag = texture(tex, uv);"
-//"  frag = vec4(1, 0, 0, 1);"
- "  if(frag.a == 0.0) discard;"
- "}"
- ;
+void main() {
+  frag = texture(tex, uv);
+  //frag = vec4(1, 0, 0, 1);
+  if(frag.a == 0.0) discard;
+}
+)";
 
 const int QUADBUF_QUADS = 1024;
 const int QUADBUF_VALS_PER_VERT = sizeof(gk_quadvert)/sizeof(float);
 
 static void compile_shaders(gl3_impl *gl3) {
     gk::GLProgramBuilder build;
+    GLuint program;
 
     build.add(GL_VERTEX_SHADER, shader_vert_quad,
               GL_GEOMETRY_SHADER, shader_geom_quad,
               GL_FRAGMENT_SHADER, shader_frag_quad);
     build.link(gl3->quad_program);
+
+    // Default program data set
+    gl3->quad_state.default_pds.set(gl3->quad_program);
+    gl3->quad_state.default_pds.set(gl3->quad_program.uniforms);
+
+    // Start with the default
+    gl3->quad_state.pds.set(gl3->quad_state.default_pds, gl3->quad_state);
 }
 
 void gl3_quad_init(gk_context *gk) {
@@ -145,12 +153,10 @@ void gl3_begin_quad(gk_context *gk, gk_bundle *b, gk_cmd_quad *q) {
     auto gl3 = (gl3_impl*)gk->impl_data;
     auto &config = gl3->quad_state;
 
-    config.program.set(gl3->quad_program, config);
     config.apply(gl3->glstate);
 
     gl3->quadcount = 0;
 
-    GL_CHECK(glUniform1i(gl3->quad_program.uTEX, 0));
     GL_CHECK(glEnable(GL_BLEND));
     GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
@@ -176,14 +182,18 @@ static void gl3_append_quad(gk_context *gk, mat4 *tfm, gk_quadvert *attr) {
         gl3_render_quads(gk);
 }
 
-static inline void gl3_quad_ensure_state(gk_context *gk, GLuint tex, GLuint program) {
+static inline void gl3_quad_ensure_state(gk_context *gk, GLuint tex,
+                                         gk_program_data_set *pds) {
     auto gl3 = (gl3_impl*)gk->impl_data;
     auto &config = gl3->quad_state;
 
     config.tex.set(tex, config);
 
-    if(program) config.program.set(program, config);
-    else        config.program.set(gl3->quad_program, config);
+    if(pds) {
+        config.pds.set(pds, config);
+    } else {
+        config.pds.set(gl3->quad_state.default_pds, config);
+    }
 
     if(config.dirty) {
         gl3_render_quads(gk);
@@ -192,7 +202,7 @@ static inline void gl3_quad_ensure_state(gk_context *gk, GLuint tex, GLuint prog
 }
 
 void gl3_cmd_quad(gk_context *gk, gk_bundle *b, gk_cmd_quad *q) {
-    gl3_quad_ensure_state(gk, q->tex, q->program);
+    gl3_quad_ensure_state(gk, q->tex, q->pds);
     gl3_append_quad(gk, (mat4*)&q->tfm, q->attr);
 }
 
@@ -200,7 +210,7 @@ void gl3_cmd_quadsprite(gk_context *gk, gk_bundle *b, gk_cmd_quadsprite *cmd) {
     auto sheet = cmd->sheet;
     auto &sprite = cmd->sheet->sprites[cmd->index];
 
-    gl3_quad_ensure_state(gk, sheet->tex, cmd->program);
+    gl3_quad_ensure_state(gk, sheet->tex, cmd->pds);
     gl3_append_quad(gk, (mat4*)&cmd->tfm, sprite.attr);
 }
 

@@ -72,8 +72,8 @@ typedef struct gk_cmd_quad {
     /* The texture name, not the bound texture number */
     gk_texture tex;
 
-    /* Shader program. If this is zero, the builtin program will be used */
-    gk_program program;
+    /* Program Data Set.  If this is NULL, the default will be used */
+    gk_program_data_set *pds;
 
     gk_mat4 tfm;
     gk_quadvert attr[4];
@@ -105,8 +105,8 @@ typedef struct gk_spritesheet {
 typedef struct gk_cmd_quadsprite {
     gk_cmd parent;
 
-    /* Shader program. If this is zero, the builtin program will be used */
-    gk_program program;
+    /* Program Data Set.  If this is NULL, the default will be used */
+    gk_program_data_set *pds;
 
     gk_mat4 tfm;
     gk_spritesheet *sheet;

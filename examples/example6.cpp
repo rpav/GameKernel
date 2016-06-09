@@ -46,22 +46,25 @@ static const char *shader_vert_quad =
  "}"
  ;
 
-static const char *shader_frag_quad =
- "#version 330 core\n"
+// Some random effect
+static const char *shader_frag_quad = R"(
+#version 330 core
 
- "uniform sampler2D tex;"
- "uniform float time;"
+uniform sampler2D tex;
+uniform float time;
 
- "in vec2 uv;"
- "out vec4 frag;"
+in vec2 uv;
+out vec4 frag;
 
- "void main() {"
- "  frag = texture(tex, uv).brga;"
- "  if(frag.a == 0.0) discard;"
- "  if(int(gl_FragCoord.y) % 4 <= 1) frag *= 0.8;"
- "  frag.b = frag.b + time;"
- "}"
- ;
+float div = 256.0;
+float ydiv = 2.0;
+float speed = 5;
+
+void main() {
+  float vary = sin(gl_FragCoord.y/ydiv-time*speed)/div;
+  frag = texture2D(tex, vec2(uv.x + vary, uv.y));
+}
+)";
 
 void example_main() {
     checkrc(SDL_GL_SetSwapInterval(1));
@@ -73,6 +76,7 @@ void example_main() {
     gk::Bundle bundle(0);
     gk::ListNvg nvg(width, height, 1.0);
 
+    // Create texture etc
     gk::CmdClear clear(0, 0, 0);
     gk::CmdPath path;
     float x = 0, y = 0;
@@ -111,6 +115,7 @@ void example_main() {
     config.add(rtCreate, progCreate, uniforms);
     gk::process(gk, bundle);
 
+    // --- Bind texture, draw something in it
     gk::CmdRtBind bind(rtCreate);
     gk::CmdRtDestroy rtDestroy(rtCreate);
 
@@ -124,14 +129,8 @@ void example_main() {
     uniforms.index();
     LOG("uniform tex = ", uniforms.find("tex"));
 
-    gk::List passes;
-    gk::CmdPass passNvg(1);
-    gk::CmdPass passGL(2);
-    passes.add(passNvg);
-    //passes.add(passGL);
-
     bundle.clear();
-    bundle.add(passes, nvg);
+    bundle.add(nvg);
 
     nvg.add(bind, clear, path);
 
@@ -147,6 +146,7 @@ void example_main() {
     nvg.add(unbind);
     gk::process(gk, bundle);
 
+    // --- Make quad, draw using texture and shader
     bundle.clear();
 
     gk::ListGL gl(WIDTH, HEIGHT);
@@ -157,7 +157,7 @@ void example_main() {
     gk::ProgramDataSet pds(prog);
 
     gk::CmdQuad quad(rtCreate.cmd.tex, -0.8, -0.8, 0.8, 0.8);
-    quad.cmd.program = prog;
+    quad.cmd.pds = &pds.pds;
 
     bundle.add(gl);
     gl.add(quad);
@@ -165,9 +165,17 @@ void example_main() {
     Clock clock;
     clock.start();
 
+    FPS fps;
+    fps.start();
+
     while(!check_input()) {
+        float delta = clock.delta()/1000.0;
+        uniformSet.set(uTIME, delta);
+        pds.set(uniformSet);
         gk::process(gk, bundle);
+
         swap();
+        fps.frame();
     }
 
     gl.clear();

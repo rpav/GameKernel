@@ -79,7 +79,7 @@ void example_main() {
     GK_CMD_TYPE(&qs) = GK_CMD_QUADSPRITE;
     qs.sheet = sheet;
     qs.index = f_min;
-    qs.program = 0;
+    qs.pds = nullptr;
 
     l.parent.sub = GK_SUB_GL;
     l.parent.ncmds = 2;

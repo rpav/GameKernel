@@ -7,18 +7,22 @@
 #include "gk/glprogram.hpp"
 #include "gk/glutil.hpp"
 #include "gk/log.hpp"
+#include "gk/gk++util.hpp"
 
 /* Structs */
 namespace gk {
     struct QuadStateConfig : public GLStateConfigGeneral {
+        UniformSet default_uniforms;
+        ProgramDataSet default_pds;
+
         GLStateTex tex;
-        GLStateProgram program;
+        GLStateProgramDataSet pds;
         GLStateVao vao;
         GLStateBuffer vbo;
 
         QuadStateConfig()
-            : tex(0, GL_TEXTURE_2D), vbo(BUFFER_ARRAY) {
-            add(tex, program, vao, vbo);
+            : tex(0, GL_TEXTURE_2D), vbo(BUFFER_ARRAY), pds(default_pds) {
+            add(tex, pds, vao, vbo);
         }
     };
 
@@ -26,7 +30,7 @@ namespace gk {
         GLuint uTEX;
 
         virtual void postLink() {
-            findUniform(uTEX, "tex");
+            uTEX = uniforms.add(findUniform("tex"), 0);
         }
     };
 }

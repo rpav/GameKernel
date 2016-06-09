@@ -84,7 +84,7 @@ public:
         GK_CMD_KEY(&_cmd) = key+5000;
 
         _cmd.tex = tex;
-        _cmd.program = 0;
+        _cmd.pds = nullptr;
 
         _cmd.attr[0].vertex.set(-0.5, -0.5, 0, 1);
         _cmd.attr[1].vertex.set( 0.5, -0.5, 0, 1);
