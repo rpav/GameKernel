@@ -151,12 +151,10 @@ void example_main() {
 
     gk::ListGL gl(WIDTH, HEIGHT);
 
-    /*
-    gk::CmdUniformSet uniformSet;
-    gk_uniform uTIME = uniforms.find("time");
-    uniformSet.add(uTIME, 0.0);
-    gl.add(uniformSet);
-    */
+    gk::UniformSet uniformSet;
+    auto uTIME = uniformSet.add(uniforms.find("time"), 0.0);
+
+    gk::ProgramDataSet pds(prog);
 
     gk::CmdQuad quad(rtCreate.cmd.tex, -0.8, -0.8, 0.8, 0.8);
     quad.cmd.program = prog;

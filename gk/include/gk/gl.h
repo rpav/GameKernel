@@ -263,7 +263,8 @@ typedef struct gk_uniform_set {
    configurations of state.
  */
 typedef enum gk_pds_dirty_flags {
-    GK_PDS_DIRTY_UNIFORMS = 1 << 0
+    GK_PDS_DIRTY_PROGRAM  = 1 << 0,
+    GK_PDS_DIRTY_UNIFORMS = 1 << 1
 } gk_pds_update_flags;
 
 struct gk_program_data_set {

@@ -475,6 +475,15 @@ namespace gk {
     class UniformSet {
         UniformValueVector _values;
 
+        size_t update() {
+            auto n = _values.size();
+
+            uniform_set.nuniforms = n;
+            uniform_set.values = _values.data();
+
+            return n-1;
+        }
+
     public:
         gk_uniform_set uniform_set;
 
@@ -482,44 +491,54 @@ namespace gk {
             memset(&uniform_set, 0, sizeof(uniform_set));
         }
 
-        template<typename T, typename...Rest>
-        inline void add(gk_uniform location, T &v, Rest&...args) {
+        template <typename T>
+        inline size_t add(gk_uniform location, T &v) {
             _values.emplace_back(location, v);
-            add(args...);
+            return update();
         }
 
-        template<typename...Rest>
-        inline void add(gk_uniform location, double v, Rest&...args) {
+        inline size_t add(gk_uniform location, double v) {
             _values.emplace_back(location, (float)v);
-            add(args...);
+            return update();
         }
 
-        template<typename...Rest>
-        inline void add(gk_uniform location, float v, Rest&...args) {
+        inline size_t add(gk_uniform location, float v) {
             _values.emplace_back(location, v);
-            add(args...);
+            return update();
         }
 
-        template<typename...Rest>
-        inline void add(gk_uniform location, int v, Rest&...args) {
+        inline size_t add(gk_uniform location, int v) {
             _values.emplace_back(location, v);
-            add(args...);
+            return update();
         }
 
         template<typename...Rest>
-        inline void add(gk_uniform location, unsigned int v, Rest&...args) {
+        inline size_t add(gk_uniform location, unsigned int v) {
             _values.emplace_back(location, v);
-            add(args...);
+            return update();
+        }
+    };
+
+    // gk::ProgramDataSet
+    class ProgramDataSet {
+    public:
+        gk_program_data_set pds;
+
+        ProgramDataSet(gk_program program = 0) {
+            memset(&pds, 0, sizeof(pds));
+            pds.program = program;
         }
 
-        template<typename...Rest>
-        inline void add(gk_uniform location, vec2 &v, Rest&...args) {
-            add(args...);
+        ProgramDataSet(ProgramSource &program) : ProgramDataSet(program.source.program) { }
+
+        void update(gk_program program) {
+            pds.program = program;
+            pds.dirty |= GK_PDS_DIRTY_PROGRAM;
         }
 
-        inline void add() {
-            uniform_set.nuniforms = _values.size();
-            uniform_set.values = _values.data();
+        void update(UniformSet &uniforms) {
+            pds.uniforms = &uniforms.uniform_set;
+            pds.dirty |= GK_PDS_DIRTY_UNIFORMS;
         }
     };
 }
