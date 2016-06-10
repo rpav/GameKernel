@@ -160,7 +160,7 @@ void example_main() {
     quad.cmd.pds = &pds.pds;
 
     bundle.add(gl);
-    gl.add(quad);
+    gl.add(clear, quad);
 
     Clock clock;
     clock.start();
