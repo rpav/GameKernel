@@ -338,6 +338,26 @@ void gk_process_b2_iter_bodies(gk_context *gk, gk_cmd_b2_iter_bodies* cmd) {
     }
 }
 
+void gk_process_b2_force(gk_context *gk, gk_cmd_b2_force* cmd) {
+    cmd->body->data->body->ApplyForce((b2Vec2&)cmd->force,
+                                      (b2Vec2&)cmd->point,
+                                      cmd->wake);
+}
+
+void gk_process_b2_torque(gk_context *gk, gk_cmd_b2_torque* cmd) {
+    cmd->body->data->body->ApplyTorque(cmd->torque, cmd->wake);
+}
+
+void gk_process_b2_linear_impulse(gk_context *gk, gk_cmd_b2_linear_impulse* cmd) {
+    cmd->body->data->body->ApplyLinearImpulse((b2Vec2&)cmd->impulse,
+                                              (b2Vec2&)cmd->point,
+                                              cmd->wake);
+}
+
+void gk_process_b2_angular_impulse(gk_context *gk, gk_cmd_b2_angular_impulse* cmd) {
+    cmd->body->data->body->ApplyAngularImpulse(cmd->impulse, cmd->wake);
+}
+
 void gk_process_box2d(gk_context *gk, gk_bundle *bundle, gk_list *list) {
     for(int j = 0; j < list->ncmds; ++j) {
         auto cmd = list->cmds[j];
@@ -362,6 +382,22 @@ void gk_process_box2d(gk_context *gk, gk_bundle *bundle, gk_list *list) {
 
             case GK_CMD_B2_ITER_BODIES:
                 gk_process_b2_iter_bodies(gk, (gk_cmd_b2_iter_bodies*)cmd);
+                break;
+
+            case GK_CMD_B2_FORCE:
+                gk_process_b2_force(gk, (gk_cmd_b2_force*)cmd);
+                break;
+
+            case GK_CMD_B2_TORQUE:
+                gk_process_b2_torque(gk, (gk_cmd_b2_torque*)cmd);
+                break;
+
+            case GK_CMD_B2_LINEAR_IMPULSE:
+                gk_process_b2_linear_impulse(gk, (gk_cmd_b2_linear_impulse*)cmd);
+                break;
+
+            case GK_CMD_B2_ANGULAR_IMPULSE:
+                gk_process_b2_angular_impulse(gk, (gk_cmd_b2_angular_impulse*)cmd);
                 break;
 
             default:

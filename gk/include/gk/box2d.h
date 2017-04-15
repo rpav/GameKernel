@@ -169,6 +169,43 @@ typedef struct gk_cmd_b2_iter_bodies {
 } gk_cmd_b2_iter_bodies;
 
 
+/* Forces */
+typedef struct gk_cmd_b2_force {
+    gk_cmd parent;
+
+    gk_b2_body *body;
+    gk_vec2 force;
+    gk_vec2 point;
+    bool wake;
+} gk_cmd_b2_point_force;
+
+typedef struct gk_cmd_b2_torque {
+    gk_cmd parent;
+
+    gk_b2_body *body;
+    float torque;
+    bool wake;
+} gk_cmd_b2_angular_force;
+
+typedef struct gk_cmd_b2_linear_impulse {
+    gk_cmd parent;
+
+    gk_b2_body *body;
+    gk_vec2 impulse;
+    gk_vec2 point;
+    bool wake;
+} gk_cmd_b2_linear_impulse;
+
+typedef struct gk_cmd_b2_angular_impulse {
+    gk_cmd parent;
+
+    gk_b2_body *body;
+    float impulse;
+    bool wake;
+} gk_cmd_b2_angular_impulse;
+
+
+/* Debug Draw */
 typedef struct gk_cmd_b2_draw_debug {
     gk_cmd parent;
 
@@ -176,5 +213,6 @@ typedef struct gk_cmd_b2_draw_debug {
     int width;
     int height;
 } gk_cmd_b2_draw_debug;
+
 
 #endif  /* __GAMEKERNEL_BOX2D_H__ */

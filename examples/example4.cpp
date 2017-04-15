@@ -61,6 +61,9 @@ void example_main() {
     };
     fixGroundCreate.setPath(groundPath);
 
+    // Some starting force
+    gk::CmdB2LinearImpulse force(body, gk::vec2(0,-10), gk::vec2(2, 4));
+
     // Step, draw, iterate
     gk::CmdB2Step step(world);
     gk::CmdB2DrawDebug ddraw(world, 1280, 720);
@@ -72,7 +75,8 @@ void example_main() {
     phys.add(createWorld,
              bodyCreate,
              fixCreate,
-             fixGroundCreate);
+             fixGroundCreate,
+             force);
 
     // Go
     gk::process(gk, bundle);

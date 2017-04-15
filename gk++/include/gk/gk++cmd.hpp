@@ -268,6 +268,48 @@ namespace gk {
         }
     };
 
+    class CmdB2Force : public CmdTmpl<gk_cmd_b2_force, GK_CMD_B2_FORCE> {
+    public:
+        CmdB2Force(gk_b2_body &body, vec2 force, vec2 point, bool wake = true)
+            : CmdTmpl() {
+            cmd.body = &body;
+            cmd.force = (gk_vec2)force;
+            cmd.point = (gk_vec2)point;
+            cmd.wake = wake;
+        }
+    };
+
+    class CmdB2Torque : public CmdTmpl<gk_cmd_b2_torque, GK_CMD_B2_TORQUE> {
+    public:
+        CmdB2Torque(gk_b2_body &body, float torque, bool wake = true)
+            : CmdTmpl() {
+            cmd.body = &body;
+            cmd.torque = torque;
+            cmd.wake = wake;
+        }
+    };
+
+    class CmdB2LinearImpulse : public CmdTmpl<gk_cmd_b2_linear_impulse, GK_CMD_B2_LINEAR_IMPULSE> {
+    public:
+        CmdB2LinearImpulse(gk_b2_body &body, vec2 impulse, vec2 point, bool wake = true)
+            : CmdTmpl() {
+            cmd.body = &body;
+            cmd.impulse = (gk_vec2)impulse;
+            cmd.point = (gk_vec2)point;
+            cmd.wake = wake;
+        }
+    };
+
+    class CmdB2AngularImpulse : public CmdTmpl<gk_cmd_b2_angular_impulse, GK_CMD_B2_ANGULAR_IMPULSE> {
+    public:
+        CmdB2AngularImpulse(gk_b2_body &body, float impulse, bool wake = true)
+            : CmdTmpl() {
+            cmd.body = &body;
+            cmd.impulse = impulse;
+            cmd.wake = wake;
+        }
+    };
+
     // gk::CmdB2DrawDebug
     class CmdB2DrawDebug : public CmdTmpl<gk_cmd_b2_draw_debug, GK_CMD_B2_DRAW_DEBUG> {
     public:
