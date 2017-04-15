@@ -314,11 +314,14 @@ void gk_process_b2_draw_debug(gk_context *gk, gk_cmd_b2_draw_debug *cmd) {
 }
 
 void gk_process_b2_step(gk_context *gk, gk_cmd_b2_step *cmd) {
-    auto data = cmd->world->data;
-    auto world = data->world;
+    auto world = cmd->world;
+    auto data = world->data;
+    auto b2world = data->world;
     auto listen = data->listen;
     listen->begin();
-    world->Step(1/60.0, 8, 3);
+    b2world->Step(world->timestep,
+                  world->velocity_iterations,
+                  world->position_iterations);
     listen->finish(cmd);
 }
 

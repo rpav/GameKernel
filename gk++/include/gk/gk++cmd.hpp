@@ -163,7 +163,14 @@ namespace gk {
 
     // gk::B2World
     struct B2World : public gk_b2_world {
-        B2World() { memset(this, 0, sizeof(*this)); }
+        B2World(float timestep = 1.0f / 60.0f,
+                int velocityIterations = 8,
+                int positionIterations = 3) {
+            memset(this, 0, sizeof(*this));
+            this->timestep = timestep;
+            this->velocity_iterations = velocityIterations;
+            this->position_iterations = positionIterations;
+        }
     };
 
     /* gk::CmdB2WorldCreate */
