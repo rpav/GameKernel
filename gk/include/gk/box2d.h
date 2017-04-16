@@ -185,7 +185,7 @@ typedef struct gk_cmd_b2_torque {
     gk_b2_body *body;
     float torque;
     bool wake;
-} gk_cmd_b2_angular_force;
+} gk_cmd_b2_torque;
 
 typedef struct gk_cmd_b2_linear_impulse {
     gk_cmd parent;
