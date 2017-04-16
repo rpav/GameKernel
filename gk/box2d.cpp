@@ -87,45 +87,52 @@ public:
 };
 
 typedef struct gk_b2_contact_pair ContactPair;
-
-// Yeah this is probably terrible, but for now
-struct ContactPairComparator {
-    bool operator() (const ContactPair &a, const ContactPair &b) const {
-        return ((size_t)a.a + (size_t)a.b) < ((size_t)b.a + (size_t)b.b);
-    }
-};
-
 typedef std::vector<ContactPair*> GkContactPtrVector;
-typedef std::set<ContactPair, ContactPairComparator> GkContactSet;
 
 struct gk_b2_body_data {
     b2Body *body;
 };
 
+struct gk_b2_fixture_data {
+    int id;
+};
+
 class GK_B2ContactListener : public b2ContactListener {
     GkContactPtrVector _pairs;
-    GkContactSet _contacts;
 
 public:
     void begin() {
-        _contacts.clear();
+        _pairs.clear();
     }
 
     ContactPair& add(b2Contact *c) {
-        auto a = (gk_b2_body*)c->GetFixtureA()->GetBody()->GetUserData();
-        auto b = (gk_b2_body*)c->GetFixtureB()->GetBody()->GetUserData();
+        auto fixA = c->GetFixtureA();
+        auto fixB = c->GetFixtureB();
 
-        auto insertion = _contacts.emplace(a, b);
-        return const_cast<ContactPair&>(*insertion.first);
+        auto a = (gk_b2_body*)fixA->GetBody()->GetUserData();
+        auto b = (gk_b2_body*)fixB->GetBody()->GetUserData();
+
+        gk_b2_fixture_data *fixDataA = (gk_b2_fixture_data*)fixA->GetUserData();
+        gk_b2_fixture_data *fixDataB = (gk_b2_fixture_data*)fixB->GetUserData();
+
+        int idA = 0, idB = 0;
+
+        if(fixDataA) idA = fixDataA->id;
+        if(fixDataB) idB = fixDataB->id;
+
+        auto pair = new ContactPair(a, b, idA, idB);
+        _pairs.push_back(pair);
+
+        return *pair;
     }
 
     virtual void BeginContact(b2Contact *c) {
         auto &pair = add(c);
-        ++pair.count;
+        pair.contact = 1;
     }
     virtual void EndContact(b2Contact *c) {
         auto &pair = add(c);
-        --pair.count;
+        pair.contact = -1;
     }
     virtual void PreSolve (b2Contact *contact, const b2Manifold *oldManifold) {
 
@@ -135,13 +142,6 @@ public:
     }
 
     void finish(gk_cmd_b2_step *cmd) {
-        _pairs.clear();
-        if(_contacts.size() > 0) {
-            for(auto &i : _contacts)
-                if(i.count)
-                    _pairs.push_back(const_cast<ContactPair*>(&i));
-        }
-
         cmd->collisions = _pairs.data();
         cmd->ncollisions = _pairs.size();
     }
@@ -214,6 +214,15 @@ void gk_process_b2_body_create(gk_context *gk, gk_cmd_b2_body_create *cmd) {
     }
 }
 
+gk_b2_fixture_data* ensure_fixdata(b2FixtureDef *fixdef) {
+    if(fixdef->userData) return (gk_b2_fixture_data*)fixdef->userData;
+
+    auto data = new gk_b2_fixture_data;
+    fixdef->userData = data;
+
+    return data;
+}
+
 void gk_process_b2_fixture_create(gk_context *gk, gk_cmd_b2_fixture_create *cmd) {
     std::vector<gk_vec2> verts;
     auto body = cmd->body->data->body;
@@ -263,6 +272,10 @@ void gk_process_b2_fixture_create(gk_context *gk, gk_cmd_b2_fixture_create *cmd)
                 def++;
                 break;
 
+            case GK_PATH_SENSOR:
+                fixdef.isSensor = true;
+                break;
+
             case GK_PATH_CATEGORY:
                 fixdef.filter.categoryBits = def[1];
                 def++;
@@ -276,6 +289,13 @@ void gk_process_b2_fixture_create(gk_context *gk, gk_cmd_b2_fixture_create *cmd)
             case GK_PATH_GROUP:
                 fixdef.filter.groupIndex = def[1];
                 def++;
+                break;
+
+            case GK_PATH_FIXTURE_ID: {
+                auto data = ensure_fixdata(&fixdef);
+                data->id = (int)def[1];
+                def++;
+            }
                 break;
 
             case GK_PATH_FILL:

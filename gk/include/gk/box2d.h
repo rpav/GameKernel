@@ -119,6 +119,8 @@ typedef struct gk_cmd_b2_fixture_create {
          GK_PATH_ELASTICITY,
          GK_PATH_FRICTION: Physics values.
 
+         GK_PATH_SENSOR:   Make the fixture a sensor (no parameters)
+
          GK_PATH_CATEGORY,
          GK_PATH_CATEGORY_MASK,
          GK_PATH_GROUP:    Category/group values.
@@ -138,16 +140,19 @@ typedef struct gk_b2_contact_pair {
     gk_b2_body *a;
     gk_b2_body *b;
 
-    /* This will be >0 for a collision or <0 for a collision ending
-       (separation) */
-    int32_t count;
+    /* Fixture IDs, if created with IDs, or 0 */
+    int id_a;
+    int id_b;
+
+    /* Contact > 0; Separation < 0 */
+    int contact;
 
     /* Ignore the man behind the curtains */
 #ifdef __cplusplus
     gk_b2_contact_pair() = default;
-    gk_b2_contact_pair(gk_b2_body *a_, gk_b2_body *b_)
-        : a(a_), b(b_) {
-        count = 0;
+    gk_b2_contact_pair(gk_b2_body *a_, gk_b2_body *b_, int fixa, int fixb)
+      : a(a_), b(b_), id_a(fixa), id_b(fixb) {
+        contact = 0;
     }
 #endif
 } gk_b2_contact_pair;

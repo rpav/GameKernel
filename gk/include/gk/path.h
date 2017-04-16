@@ -64,9 +64,13 @@ typedef enum gk_pathdef_cmds {
     GK_PATH_ELASTICITY,
     GK_PATH_FRICTION,
 
+    GK_PATH_SENSOR,
+
     GK_PATH_CATEGORY,
     GK_PATH_CATEGORY_MASK,
     GK_PATH_GROUP,
+
+    GK_PATH_FIXTURE_ID,
 
     /* Max path command */
     GK_PATH_CMD_MAX

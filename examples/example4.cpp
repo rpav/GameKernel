@@ -43,6 +43,12 @@ void example_main() {
         GK_PATH_CIRCLE, 1.5, 2.0, 0.5,
         GK_PATH_DENSITY, 0.5,
         GK_PATH_ELASTICITY, 0.5,
+        GK_PATH_FILL,
+
+        GK_PATH_BEGIN,
+        GK_PATH_CIRCLE, 1.5, 2.0, 2.0,
+        GK_PATH_SENSOR,
+        GK_PATH_FIXTURE_ID, 1.0,
         GK_PATH_FILL
     };
     fixCreate.setPath(fixPath);
@@ -85,6 +91,8 @@ void example_main() {
     phys.clear();
     phys.add(step, ddraw, iterBodies);
 
+    int frame = 0;
+
     while(!check_input()) {
         glClearColor(0,0,0,1);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -94,11 +102,13 @@ void example_main() {
         if(step.cmd.ncollisions > 0) {
             for(int i = 0; i < step.cmd.ncollisions; ++i) {
                 auto c = step.cmd.collisions[i];
-                LOG("collide ", c->a, " <-> ", c->b, " with ", c->count);
+                LOG(frame, " collide ", c->a, "(", c->id_a, ") <-> ", c->b, "(", c->id_b, ") with ",
+                    c->contact);
             }
         }
 
         swap();
+        ++frame;
     }
 
     phys.clear();
