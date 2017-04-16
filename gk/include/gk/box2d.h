@@ -177,7 +177,7 @@ typedef struct gk_cmd_b2_force {
     gk_vec2 force;
     gk_vec2 point;
     bool wake;
-} gk_cmd_b2_point_force;
+} gk_cmd_b2_force;
 
 typedef struct gk_cmd_b2_torque {
     gk_cmd parent;
