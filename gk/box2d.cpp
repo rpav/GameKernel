@@ -316,6 +316,26 @@ void gk_process_b2_fixture_create(gk_context *gk, gk_cmd_b2_fixture_create *cmd)
     }
 }
 
+b2Fixture* findFixture(gk_b2_body *body, int id) {
+
+    return nullptr;
+}
+
+void gk_process_b2_fixture_update(gk_context *gk, gk_cmd_b2_fixture_update* cmd) {
+    auto b = ((gk_b2_body_data*)cmd->body->data)->body;
+    auto mask = cmd->update;
+    auto id = cmd->id;
+
+    // Not the best, but for now
+    for(auto f = b->GetFixtureList(); f; f = f->GetNext()) {
+        if(((gk_b2_fixture_data*)f->GetUserData())->id == id) {
+            if(mask & GK_B2_FIXTURE_UPDATE_DENSITY)    f->SetDensity(cmd->density);
+            if(mask & GK_B2_FIXTURE_UPDATE_ELASTICITY) f->SetRestitution(cmd->elasticity);
+            if(mask & GK_B2_FIXTURE_UPDATE_FRICTION)   f->SetFriction(cmd->friction);
+        }
+    }
+}
+
 void gk_process_b2_draw_debug(gk_context *gk, gk_cmd_b2_draw_debug *cmd) {
     auto world = cmd->world->data->world;
     auto draw = cmd->world->data->draw;
@@ -393,6 +413,10 @@ void gk_process_box2d(gk_context *gk, gk_bundle *bundle, gk_list *list) {
 
             case GK_CMD_B2_FIXTURE_CREATE:
                 gk_process_b2_fixture_create(gk, (gk_cmd_b2_fixture_create*)cmd);
+                break;
+
+            case GK_CMD_B2_FIXTURE_UPDATE:
+                gk_process_b2_fixture_update(gk, (gk_cmd_b2_fixture_update*)cmd);
                 break;
 
             case GK_CMD_B2_DRAW_DEBUG:

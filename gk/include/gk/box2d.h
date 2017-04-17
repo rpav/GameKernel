@@ -74,7 +74,7 @@ typedef struct gk_cmd_b2_world_create {
 
     /* Settings */
     gk_vec2 gravity;
-    char do_sleep;
+    bool do_sleep;
 } gk_cmd_b2_world_create;
 
 typedef struct gk_cmd_b2_world_destroy {
@@ -134,6 +134,27 @@ typedef struct gk_cmd_b2_fixture_create {
     size_t pathlen;
     float *pathdef;
 } gk_cmd_b2_fixture_create;
+
+typedef enum gk_b2_fixture_update_flags {
+    GK_B2_FIXTURE_UPDATE_DENSITY    = (1<<0),
+    GK_B2_FIXTURE_UPDATE_ELASTICITY = (1<<1),
+    GK_B2_FIXTURE_UPDATE_FRICTION   = (1<<2)
+} gk_b2_fixture_update_flags;
+
+typedef struct gk_cmd_b2_fixture_update {
+    gk_cmd parent;
+
+    /* This will update EVERY fixture with this ID */
+    gk_b2_body *body;
+    int id;
+
+    /* gk_b2_fixture_update_flags */
+    unsigned int update;
+
+    float density;
+    float elasticity;
+    float friction;
+} gk_cmd_b2_fixture_update;
 
 typedef struct gk_b2_contact_pair {
     /* You get A and B; they may be in any order. */
