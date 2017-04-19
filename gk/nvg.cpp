@@ -217,6 +217,13 @@ void gk_process_nvg_image_create(gk_context *gk, gk_cmd_image_create *cmd) {
     return;
 }
 
+void gk_process_nvg_image_destroy(gk_context *gk, gk_cmd_image_destroy *cmd) {
+    auto nvg = gk->nvg;
+
+    for(auto i = 0; i < cmd->nids; ++i)
+        nvgDeleteImage(nvg, cmd->ids[i]);
+}
+
 void gk_process_nvg_font_style(gk_context *gk, gk_cmd_font_style *cmd) {
     auto nvg = gk->nvg;
     if(cmd->size > 0)        nvgFontSize(nvg, cmd->size);

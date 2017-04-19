@@ -149,6 +149,9 @@ bool gk_process_cmd_general(const char *listname, gk_context *gk, gk_bundle *b, 
         case GK_CMD_IMAGE_CREATE:
             gk_process_nvg_image_create(gk, (gk_cmd_image_create*)cmd);
             break;
+        case GK_CMD_IMAGE_DESTROY:
+            gk_process_nvg_image_destroy(gk, (gk_cmd_image_destroy*)cmd);
+            break;
         case GK_CMD_FONT_CREATE:
             gk_process_nvg_font_create(gk, (gk_cmd_font_create*)cmd);
             break;

@@ -34,6 +34,13 @@ typedef struct gk_cmd_image_create {
     int id;
 } gk_cmd_image_create;
 
+typedef struct gk_cmd_image_destroy {
+    gk_cmd parent;
+
+    size_t nids;
+    int *ids;
+} gk_cmd_image_destroy;
+
 /* These should correspond with NanoVG */
 typedef enum gk_align {
     GK_ALIGN_LEFT     = 1 << 0,
