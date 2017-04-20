@@ -57,6 +57,7 @@ typedef enum gk_cmd_type {
     GK_CMD_B2_TORQUE,
     GK_CMD_B2_LINEAR_IMPULSE,
     GK_CMD_B2_ANGULAR_IMPULSE,
+    GK_CMD_B2_SET_VELOCITY,
 
     GK_CMD_B2_DRAW_DEBUG,
 

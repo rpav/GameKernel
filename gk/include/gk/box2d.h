@@ -30,8 +30,13 @@ typedef struct gk_b2_body {
        gk_cmd_tf_trs), the internal Box2D body values will be copied
        there during a gk_cmd_b2_iter_bodies, if the body is not
        asleep. */
-    gk_vec2 *pos;
+    gk_vec2 *position;
     float *angle;
+
+    /* These aren't pointers because they take about the same space
+       and you probably don't need the values elsewhere */
+    gk_vec2 velocity;
+    float angular_velocity;
 
     /* These will be assigned/updated during gk_cmd_b2_iter_bodies. */
     bool is_awake;
@@ -230,6 +235,14 @@ typedef struct gk_cmd_b2_angular_impulse {
     bool wake;
 } gk_cmd_b2_angular_impulse;
 
+
+typedef struct gk_cmd_b2_set_velocity {
+    gk_cmd parent;
+
+    gk_b2_body *body;
+    gk_vec2 linear;
+    float angular;
+} gk_cmd_b2_set_velocity;
 
 /* Debug Draw */
 typedef struct gk_cmd_b2_draw_debug {

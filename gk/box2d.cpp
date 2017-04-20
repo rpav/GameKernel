@@ -328,7 +328,8 @@ void gk_process_b2_fixture_update(gk_context *gk, gk_cmd_b2_fixture_update* cmd)
 
     // Not the best, but for now
     for(auto f = b->GetFixtureList(); f; f = f->GetNext()) {
-        if(((gk_b2_fixture_data*)f->GetUserData())->id == id) {
+        gk_b2_fixture_data *d = (gk_b2_fixture_data*)f->GetUserData();
+        if((d && d->id == id) || (!d && id == 0)) {
             if(mask & GK_B2_FIXTURE_UPDATE_DENSITY)    f->SetDensity(cmd->density);
             if(mask & GK_B2_FIXTURE_UPDATE_ELASTICITY) f->SetRestitution(cmd->elasticity);
             if(mask & GK_B2_FIXTURE_UPDATE_FRICTION)   f->SetFriction(cmd->friction);
@@ -376,10 +377,12 @@ void gk_process_b2_iter_bodies(gk_context *gk, gk_cmd_b2_iter_bodies* cmd) {
         auto isAwake = b->is_awake = body->IsAwake();
 
         if(isAwake) {
-            if(b->pos)
-                *(b2Vec2*)(b->pos) = body->GetPosition();
+            if(b->position)
+                *(b2Vec2*)(b->position) = body->GetPosition();
             if(b->angle)
                 *(b->angle) = body->GetAngle();
+            (b2Vec2&)(b->velocity) = body->GetLinearVelocity();
+            b->angular_velocity = body->GetAngularVelocity();
         }
     }
 }
@@ -402,6 +405,11 @@ void gk_process_b2_linear_impulse(gk_context *gk, gk_cmd_b2_linear_impulse* cmd)
 
 void gk_process_b2_angular_impulse(gk_context *gk, gk_cmd_b2_angular_impulse* cmd) {
     cmd->body->data->body->ApplyAngularImpulse(cmd->impulse, cmd->wake);
+}
+
+void gk_process_b2_set_velocity(gk_context *gk, gk_cmd_b2_set_velocity* cmd) {
+    cmd->body->data->body->SetLinearVelocity((b2Vec2&)cmd->linear);
+    cmd->body->data->body->SetAngularVelocity(cmd->angular);
 }
 
 void gk_process_box2d(gk_context *gk, gk_bundle *bundle, gk_list *list) {
@@ -448,6 +456,10 @@ void gk_process_box2d(gk_context *gk, gk_bundle *bundle, gk_list *list) {
 
             case GK_CMD_B2_ANGULAR_IMPULSE:
                 gk_process_b2_angular_impulse(gk, (gk_cmd_b2_angular_impulse*)cmd);
+                break;
+
+            case GK_CMD_B2_SET_VELOCITY:
+                gk_process_b2_set_velocity(gk, (gk_cmd_b2_set_velocity*)cmd);
                 break;
 
             default:

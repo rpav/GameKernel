@@ -199,7 +199,7 @@ namespace gk {
         B2Body(gk_vec2 &pos_, float &angle_)
             : B2Body()
         {
-            pos = &pos_;
+            position = &pos_;
             angle = &angle_;
         }
     };
