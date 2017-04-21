@@ -341,18 +341,20 @@ void gk_process_b2_draw_debug(gk_context *gk, gk_cmd_b2_draw_debug *cmd) {
     auto world = cmd->world->data->world;
     auto draw = cmd->world->data->draw;
 
-    float xscale = cmd->xscale ? cmd->xscale : 100.0;
-    float yscale = cmd->yscale ? cmd->yscale : 100.0;
+    float xscale = cmd->scale.x ? cmd->scale.x : 100.0;
+    float yscale = cmd->scale.y ? cmd->scale.y : 100.0;
 
-    draw->setSize(cmd->width, cmd->height, xscale, yscale);
+    draw->setSize(cmd->resolution.x, cmd->resolution.y, xscale, yscale);
 
     glEnable(GL_STENCIL_TEST);
     glClear(GL_STENCIL_BUFFER_BIT);
 
-    nvgBeginFrame(gk->nvg, cmd->width, cmd->height, 1.0);
-    nvgTransform(gk->nvg, 1, 0, 0, -1, 0, cmd->height);
+    nvgBeginFrame(gk->nvg, cmd->resolution.x, cmd->resolution.y, 1.0);
+    nvgTransform(gk->nvg, 1, 0, 0, -1, 0, cmd->resolution.y);
 
     nvgScale(gk->nvg, xscale, yscale);
+    nvgTranslate(gk->nvg, cmd->translate.x, cmd->translate.y);
+
     world->DrawDebugData();
     nvgEndFrame(gk->nvg);
 }

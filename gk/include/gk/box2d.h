@@ -249,10 +249,9 @@ typedef struct gk_cmd_b2_draw_debug {
     gk_cmd parent;
 
     gk_b2_world *world;
-    int width;
-    int height;
-    float xscale;
-    float yscale;
+    gk_vec2 resolution;
+    gk_vec2 translate;
+    gk_vec2 scale;
 } gk_cmd_b2_draw_debug;
 
 

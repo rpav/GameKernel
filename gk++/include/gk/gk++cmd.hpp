@@ -323,8 +323,8 @@ namespace gk {
         CmdB2DrawDebug(gk_b2_world &world, int width, int height)
             : CmdTmpl() {
             cmd.world = &world;
-            cmd.width = width;
-            cmd.height = height;
+            cmd.resolution.x = width;
+            cmd.resolution.y = height;
         }
     };
 
