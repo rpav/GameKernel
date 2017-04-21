@@ -98,6 +98,14 @@ typedef struct gk_cmd_b2_body_create {
     gk_b2_bodydef **defs;
 } gk_cmd_b2_body_create;
 
+typedef struct gk_cmd_b2_body_update {
+    gk_cmd parent;
+
+    gk_b2_body *body;
+    gk_vec2 translate;
+    float angle;
+} gk_cmd_b2_body_update;
+
 typedef struct gk_cmd_b2_fixture_create {
     gk_cmd parent;
 
