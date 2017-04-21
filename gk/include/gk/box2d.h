@@ -106,6 +106,13 @@ typedef struct gk_cmd_b2_body_update {
     float angle;
 } gk_cmd_b2_body_update;
 
+typedef struct gk_cmd_b2_body_destroy {
+    gk_cmd parent;
+
+    gk_b2_world *world;
+    gk_b2_body *body;
+} gk_cmd_b2_body_destroy;
+
 typedef struct gk_cmd_b2_fixture_create {
     gk_cmd parent;
 

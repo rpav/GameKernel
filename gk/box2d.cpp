@@ -219,6 +219,12 @@ void gk_process_b2_body_update(gk_context *gk, gk_cmd_b2_body_update *cmd) {
     body->SetTransform((b2Vec2&)cmd->translate, cmd->angle);
 }
 
+void gk_process_b2_body_destroy(gk_context *gk, gk_cmd_b2_body_destroy *cmd) {
+    auto world = cmd->world->data->world;
+    auto body = cmd->body->data->body;
+    world->DestroyBody(body);
+}
+
 gk_b2_fixture_data* ensure_fixdata(b2FixtureDef *fixdef) {
     if(fixdef->userData) return (gk_b2_fixture_data*)fixdef->userData;
 
@@ -431,6 +437,10 @@ void gk_process_box2d(gk_context *gk, gk_bundle *bundle, gk_list *list) {
 
             case GK_CMD_B2_BODY_UPDATE:
                 gk_process_b2_body_update(gk, (gk_cmd_b2_body_update*)cmd);
+                break;
+
+            case GK_CMD_B2_BODY_DESTROY:
+                gk_process_b2_body_destroy(gk, (gk_cmd_b2_body_destroy*)cmd);
                 break;
 
             case GK_CMD_B2_FIXTURE_CREATE:
