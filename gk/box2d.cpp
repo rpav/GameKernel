@@ -344,6 +344,15 @@ void gk_process_b2_fixture_update(gk_context *gk, gk_cmd_b2_fixture_update* cmd)
             if(mask & GK_B2_FIXTURE_UPDATE_DENSITY)    f->SetDensity(cmd->density);
             if(mask & GK_B2_FIXTURE_UPDATE_ELASTICITY) f->SetRestitution(cmd->elasticity);
             if(mask & GK_B2_FIXTURE_UPDATE_FRICTION)   f->SetFriction(cmd->friction);
+            if(mask & GK_B2_FIXTURE_UPDATE_SENSOR)     f->SetSensor(cmd->sensor);
+
+            if(mask & GK_B2_FIXTURE_UPDATE_FILTER) {
+                b2Filter filt;
+                filt.categoryBits = cmd->category;
+                filt.maskBits = cmd->mask;
+                filt.groupIndex = cmd->group;
+                f->SetFilterData(filt);
+            }
         }
     }
 }

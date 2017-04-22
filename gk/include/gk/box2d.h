@@ -158,7 +158,9 @@ typedef struct gk_cmd_b2_fixture_create {
 typedef enum gk_b2_fixture_update_flags {
     GK_B2_FIXTURE_UPDATE_DENSITY    = (1<<0),
     GK_B2_FIXTURE_UPDATE_ELASTICITY = (1<<1),
-    GK_B2_FIXTURE_UPDATE_FRICTION   = (1<<2)
+    GK_B2_FIXTURE_UPDATE_FRICTION   = (1<<2),
+    GK_B2_FIXTURE_UPDATE_SENSOR     = (1<<3),
+    GK_B2_FIXTURE_UPDATE_FILTER     = (1<<4)
 } gk_b2_fixture_update_flags;
 
 typedef struct gk_cmd_b2_fixture_update {
@@ -174,6 +176,11 @@ typedef struct gk_cmd_b2_fixture_update {
     float density;
     float elasticity;
     float friction;
+    bool sensor;
+
+    uint16_t category;
+    uint16_t mask;
+    int16_t group;
 } gk_cmd_b2_fixture_update;
 
 typedef struct gk_b2_contact_pair {
