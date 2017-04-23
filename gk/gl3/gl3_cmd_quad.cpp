@@ -153,6 +153,7 @@ void gl3_begin_quad(gk_context *gk, gk_bundle *b, gk_cmd_quad *q) {
     auto gl3 = (gl3_impl*)gk->impl_data;
     auto &config = gl3->quad_state;
 
+    config.dirty = true;
     config.apply(gl3->glstate);
 
     gl3->quadcount = 0;
