@@ -153,6 +153,26 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle *bundle, gk_cmd_path *cmd) {
                 nvgFill(nvg);
                 break;
 
+            case GK_PATH_FONT_SIZE:
+                nvgFontSize(nvg, def[1]); ++def;
+                break;
+
+            case GK_PATH_FONT_BLUR:
+                nvgFontBlur(nvg, def[1]); ++def;
+                break;
+                
+            case GK_PATH_FONT_SPACING:
+                nvgTextLetterSpacing(nvg, def[1]); ++def;
+                break;
+                
+            case GK_PATH_FONT_LINE_HEIGHT:
+                nvgTextLineHeight(nvg, def[1]); ++def;
+                break;
+                
+            case GK_PATH_FONT_ALIGN:
+                nvgTextAlign(nvg, def[1]); ++def;
+                break;
+
             case GK_PATH_TF_IDENTITY:
                 nvgResetTransform(nvg);
                 break;

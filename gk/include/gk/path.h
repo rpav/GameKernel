@@ -51,6 +51,13 @@ typedef enum gk_pathdef_cmds {
     GK_PATH_FILL,
     GK_PATH_STROKE,
 
+    /* Font style things */
+    GK_PATH_FONT_SIZE,
+    GK_PATH_FONT_BLUR,
+    GK_PATH_FONT_SPACING,
+    GK_PATH_FONT_LINE_HEIGHT,
+    GK_PATH_FONT_ALIGN,
+
     /* Transforms */
     GK_PATH_TF_IDENTITY,
     GK_PATH_TF_TRANSLATE,
