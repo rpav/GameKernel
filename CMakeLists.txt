@@ -11,7 +11,7 @@ option(GK_USE_BOX2D "Compile in Box2D support" ON)
 option(GK_USE_TEXTUREPACKER "Compile in generic TexturePacker JSON support" ON)
 
 ## Everything
-set(PROJ_ROOT ${CMAKE_SOURCE_DIR})
+set(PROJ_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
 
@@ -54,7 +54,7 @@ endif()
 
 include_directories(
   ${PROJ_ROOT}/third-party/nanovg/src
-  ${PROJ_ROOT}/third-party/json/src
+  ${PROJ_ROOT}/third-party/json
   ${PROJ_ROOT}/gk/include
   ${PROJ_ROOT}/gk/include-int
   ${PROJ_ROOT}/gk++/include

@@ -4,6 +4,3 @@
 [submodule "third-party/Box2D"]
 	path = third-party/Box2D
 	url = https://github.com/erincatto/Box2D.git
-[submodule "third-party/json"]
-	path = third-party/json
-	url = https://github.com/nlohmann/json.git
