@@ -39,7 +39,7 @@ GLuint gk_gl_compile_shader(GLenum type, const char *text) {
 
         GL_CHECK(glGetShaderInfoLog(shader, res, nullptr, log));
         LOG(log);
-		delete log;
+        delete[] log;
         goto gl_error;
     }
 
@@ -67,7 +67,7 @@ GLuint gk_gl_link_program(int numshaders, GLuint *shaders) {
 
         GL_CHECK(glGetProgramInfoLog(prog, res, nullptr, log));
         LOG(log);
-		delete log;
+        delete[] log;
         goto gl_error;
     }
 
