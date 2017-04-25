@@ -1,4 +1,4 @@
-#include <unistd.h>
+//#include <unistd.h>
 
 #include <GL/glew.h>
 #include <GL/gl.h>
@@ -127,7 +127,7 @@ void example_main() {
     list_cfg.cmds[0] = GK_CMD(&img_create);
 
     GK_CMD_TYPE(&img_create) = GK_CMD_IMAGE_CREATE;
-    img_create.filename = "../examples/res/test.png";
+    img_create.filename = "../../../examples/res/test.png";
     img_create.flags = 0;
     img_create.min_filter = GK_TEX_FILTER_LINEAR;
     img_create.mag_filter = GK_TEX_FILTER_LINEAR;

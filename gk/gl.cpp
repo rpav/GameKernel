@@ -35,10 +35,11 @@ GLuint gk_gl_compile_shader(GLenum type, const char *text) {
     if(res != GL_TRUE) {
         LOG("GLSL error:");
         GL_CHECK(glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &res));
-        char log[res+1];
+        char *log = new char[res+1];
 
         GL_CHECK(glGetShaderInfoLog(shader, res, nullptr, log));
         LOG(log);
+		delete log;
         goto gl_error;
     }
 
@@ -62,10 +63,11 @@ GLuint gk_gl_link_program(int numshaders, GLuint *shaders) {
     if(res != GL_TRUE) {
         LOG("GLSL error linking program:");
         GL_CHECK(glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &res));
-        char log[res+1];
+        char *log = new char[res+1];
 
         GL_CHECK(glGetProgramInfoLog(prog, res, nullptr, log));
         LOG(log);
+		delete log;
         goto gl_error;
     }
 
@@ -209,6 +211,8 @@ void gk_process_gl(gk_context *gk, gk_bundle *bundle, gk_list_gl *list_gl) {
 }
 
 void gl_cmd_clear(gk_context *gk, gk_cmd_clear *cmd) {
+	LOG("was clear");
+	return;
     GLenum flags = 0;
 
     if(cmd->flags & GK_CLEAR_COLOR) {

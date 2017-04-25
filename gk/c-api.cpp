@@ -1,3 +1,9 @@
+#if defined(WIN32) || defined(_WIN32)
+#  include <windows.h>
+#  undef near
+#  undef far
+#endif
+ 
 #include <GL/glew.h>
 #include "nanovg.h"
 
@@ -6,7 +12,7 @@
 #include "gk/nvg.hpp"
 #include "gk/log.hpp"
 
-extern "C" gk_context* gk_create(gk_impl impl) {
+extern "C" GK_API gk_context* gk_create(gk_impl impl) {
     auto *gk = new gk_context;
 
     gk->impl = impl;
@@ -22,11 +28,11 @@ extern "C" gk_context* gk_create(gk_impl impl) {
     return nullptr;
 }
 
-extern "C" void gk_destroy(gk_context *gk) {
+extern "C" GK_API void gk_destroy(gk_context *gk) {
     gk_fini_gl(gk);
 }
 
-extern "C" void gk_process(gk_context *gk, gk_bundle *b) {
+extern "C" GK_API void gk_process(gk_context *gk, gk_bundle *b) {
     gk->current_bundle = b;
     gk_seterror(gk, GK_ERROR_NONE);
 

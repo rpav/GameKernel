@@ -17,12 +17,20 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-include(cotire)
+if(NOT WIN32)
+  include(cotire)
+endif()
 
 find_package(GLEW REQUIRED)
 if(GLEW_FOUND)
   include_directories(${GLEW_INCLUDE_DIRS})
   link_libraries(${GLEW_LIBRARIES})
+  #add_definitions(-DGLEW_STATIC)
+endif()
+
+if(WIN32)
+  set(GK_LIBS_STATIC ${GK_LIBS_STATIC} opengl32.lib)
+  set(GK_LIBS_SHARED ${GK_LIBS_SHARED} opengl32.lib)
 endif()
 
 if(GK_USE_BOX2D)

@@ -16,7 +16,7 @@ void printm(const glm::mat4x4 &m);
 void swap();
 void wait();
 bool check_input();
-void example_main();
+extern void example_main();
 
 /* Note these do not alloc/free the *passed* object, only its *direct*
    contents. */

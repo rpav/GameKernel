@@ -85,7 +85,7 @@ namespace gk {
 
         inline bool useProgram(GLuint program) {
             if(active_program != program) {
-                GL_CHECK(glUseProgram(program));
+				GL_CHECK(glUseProgram(program));
                 active_program = program;
                 return true;
             }

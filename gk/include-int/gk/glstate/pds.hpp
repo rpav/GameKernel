@@ -38,11 +38,11 @@ namespace gk {
 
                 if(v.count == 1) {
                     switch(v.type) {
-                        case GK_UNIFORM_VALUE_FLOAT: glUniform1f(v.location,  v.value.f);  break;
-                        case GK_UNIFORM_VALUE_INT:   glUniform1i(v.location,  v.value.i);  break;
-                        case GK_UNIFORM_VALUE_UINT:  glUniform1ui(v.location, v.value.ui); break;
+                        case GK_UNIFORM_VALUE_FLOAT: GL_CHECK(glUniform1f(v.location,  v.value.f));  break;
+                        case GK_UNIFORM_VALUE_INT:   GL_CHECK(glUniform1i(v.location,  v.value.i));  break;
+                        case GK_UNIFORM_VALUE_UINT:  GL_CHECK(glUniform1ui(v.location, v.value.ui)); break;
                         case GK_UNIFORM_VALUE_MAT4:
-                            glUniformMatrix4fv(v.location, 1, false, (float*)v.value.data);
+                            GL_CHECK(glUniformMatrix4fv(v.location, 1, false, (float*)v.value.data));
                             break;
                         default:
                             LOG("gk: bad uniform v type: ", v.type);
@@ -50,18 +50,20 @@ namespace gk {
                     }
                 } else {
                     switch(v.type) {
-                        case GK_UNIFORM_VALUE_FLOAT: glUniform1fv(v.location,  v.count, (float*)v.value.data); break;
-                        case GK_UNIFORM_VALUE_INT:   glUniform1iv(v.location,  v.count, (int*)v.value.data); break;
-                        case GK_UNIFORM_VALUE_UINT:  glUniform1uiv(v.location, v.count, (unsigned int*)v.value.data); break;
+                        case GK_UNIFORM_VALUE_FLOAT: GL_CHECK(glUniform1fv(v.location,  v.count, (float*)v.value.data)); break;
+                        case GK_UNIFORM_VALUE_INT:   GL_CHECK(glUniform1iv(v.location,  v.count, (int*)v.value.data)); break;
+                        case GK_UNIFORM_VALUE_UINT:  GL_CHECK(glUniform1uiv(v.location, v.count, (unsigned int*)v.value.data)); break;
                         case GK_UNIFORM_VALUE_MAT4:
-                            glUniformMatrix4fv(v.location, 1, false, (float*)v.value.data);
+                            GL_CHECK(glUniformMatrix4fv(v.location, 1, false, (float*)v.value.data));
                             break;
                         default:
                             LOG("gk: bad uniform v type: ", v.type);
                             break;
                     }
                 }
-            }
+           }
+		gl_error:
+			return;	
         }
     };
 }

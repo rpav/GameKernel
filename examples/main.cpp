@@ -35,6 +35,7 @@ bool check_input() {
     return false;
 }
 
+#undef main
 int main() {
     checkrc(SDL_Init(SDL_INIT_EVERYTHING));
 

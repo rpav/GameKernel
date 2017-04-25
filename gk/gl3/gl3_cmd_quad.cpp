@@ -30,15 +30,19 @@ out vec2 uv;
 void main() {
     uv = vert_uv[0];
     gl_Position = gl_in[0].gl_Position;
+	//gl_Position = vec4(-1,-1,0,0);
   EmitVertex();
     uv = vert_uv[1];
     gl_Position = gl_in[1].gl_Position;
+	//gl_Position = vec4(-1,1,0,0);
   EmitVertex();
     uv = vert_uv[2];
     gl_Position = gl_in[2].gl_Position;
+	//gl_Position = vec4(1,-1,0,0);
   EmitVertex();
     uv = vert_uv[3];
     gl_Position = gl_in[3].gl_Position;
+	//gl_Position = vec4(1,1,0,0);
   EmitVertex();
 
   EndPrimitive();
@@ -79,7 +83,6 @@ const int QUADBUF_VALS_PER_VERT = sizeof(gk_quadvert)/sizeof(float);
 
 static void compile_shaders(gl3_impl *gl3) {
     gk::GLProgramBuilder build;
-    GLuint program;
 
     build.add(GL_VERTEX_SHADER, shader_vert_quad,
               GL_GEOMETRY_SHADER, shader_geom_quad,
@@ -136,11 +139,10 @@ void gl3_render_quads(gk_context *gk) {
     auto gl3 = (gl3_impl*)gk->impl_data;
 
     if(gl3->quadcount > 0) {
-        GL_CHECK(glBufferData(GL_ARRAY_BUFFER,
+		GL_CHECK(glBufferData(GL_ARRAY_BUFFER,
                               gl3->quadcount * (sizeof(float) * QUADBUF_VALS_PER_VERT * 4),
                               gl3->quadbuf, GL_STREAM_DRAW));
         GL_CHECK(glDrawArrays(GL_LINES_ADJACENCY, 0, gl3->quadcount * 4));
-
         gl3->quadcount = 0;
     }
     return;

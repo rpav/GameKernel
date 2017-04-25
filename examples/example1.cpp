@@ -1,5 +1,7 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
+
+#undef GK_EXPORT
 #include "gk/gk.h"
 #include "gk/log.hpp"
 #include "example.hpp"

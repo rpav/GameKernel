@@ -12,7 +12,10 @@ namespace gk {
         GLProgram(GLuint program_ = 0) : program(program_) { }
 
         inline GLuint findUniform(const char *name) {
-            return glGetUniformLocation(program, name);
+			GLuint r = glGetUniformLocation(program, name); GL_CHECKERR(glGetUniformLocation);
+            return r;
+		gl_error:
+			return 0;
         }
 
         inline operator GLuint() { return program; }

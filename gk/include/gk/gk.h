@@ -15,6 +15,18 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#if defined(_WIN32) || defined(WIN32)
+#  ifdef GK_EXPORT
+#    define GK_API __declspec(dllexport)
+#  elif defined(GK_IMPORT)
+#    define GK_API __declspec(dllimport)
+#  else
+#    define GK_API
+#  endif
+#else
+#define GK_API
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,9 +44,9 @@ extern "C" {
 /******************************************************************
  * API
  ******************************************************************/
-gk_context* gk_create(gk_impl impl);
-void gk_destroy(gk_context *gk);
-void gk_process(gk_context *gk, gk_bundle *bundle);
+GK_API gk_context* gk_create(gk_impl impl);
+GK_API void gk_destroy(gk_context *gk);
+GK_API void gk_process(gk_context *gk, gk_bundle *bundle);
 
 #ifdef __cplusplus
 }
