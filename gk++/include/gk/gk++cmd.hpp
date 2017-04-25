@@ -425,7 +425,7 @@ namespace gk {
     typedef std::vector<const char *> NameVector;
     typedef std::vector<gk_uniform> UniformVector;
 
-    struct strcmp_f { bool operator()(const char *a, const char *b) { return strcmp(a,b) < 0; } };
+    struct strcmp_f { bool operator()(const char *a, const char *b) const { return strcmp(a,b) < 0; } };
     typedef std::map<const char *, gk_uniform, strcmp_f> UniformNameLocationMap;
 
     class CmdUniformQuery : public CmdTmpl<gk_cmd_uniform_query, GK_CMD_UNIFORM_QUERY> {
