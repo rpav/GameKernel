@@ -104,6 +104,19 @@ namespace gk {
         }
     };
 
+    class CmdQuadSprite : public CmdTmpl<gk_cmd_quadsprite, GK_CMD_QUADSPRITE> {
+    public:
+        CmdQuadSprite(gk::SpriteSheet &sheet, unsigned int index)
+            : CmdTmpl()
+        {
+            cmd.tfm = gk::mat4(0);
+            cmd.sheet = &sheet;
+            cmd.index = index;
+        }
+
+        mat4* tfm() { return (mat4*)&cmd.tfm; }
+    };
+
     /* gk::CmdPath */
 
     typedef std::vector<float> PathDef;

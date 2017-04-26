@@ -253,4 +253,7 @@ namespace gk {
 
     typedef ProgramDataSetTmpl<gk_program_data_set, true> ProgramDataSet;
     typedef ProgramDataSetTmpl<gk_program_data_set*, false> ProgramDataSetRef;
+
+    // gk::SpriteSheet
+    struct SpriteSheet : public gk_spritesheet { };
 }
