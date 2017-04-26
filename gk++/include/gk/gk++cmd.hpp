@@ -1,6 +1,5 @@
 #pragma once
 
-#include "gk/log.hpp"
 #include <string.h>
 
 #include <vector>
