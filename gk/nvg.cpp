@@ -35,7 +35,7 @@ void gk_process_nvg(gk_context *gk, gk_bundle *bundle, gk_list_nvg *list_nvg) {
     auto h = list_nvg->height;
     auto r = list_nvg->ratio;
 
-    for(int i = 0; i < list->ncmds; ++i) {
+    for(size_t i = 0; i < list->ncmds; ++i) {
         auto cmd = list->cmds[i];
         switch(GK_CMD_TYPE(cmd)) {
             case GK_CMD_CLEAR:
@@ -73,7 +73,7 @@ void gk_process_nvg(gk_context *gk, gk_bundle *bundle, gk_list_nvg *list_nvg) {
     ensure_nvg_outframe(gk);
 }
 
-void gk_process_nvg_path(gk_context *gk, gk_bundle *bundle, gk_cmd_path *cmd) {
+void gk_process_nvg_path(gk_context *gk, gk_bundle*, gk_cmd_path *cmd) {
     auto def = cmd->pathdef;
     auto end = def + cmd->pathlen;
     auto nvg = gk->nvg;
@@ -240,7 +240,7 @@ void gk_process_nvg_image_create(gk_context *gk, gk_cmd_image_create *cmd) {
 void gk_process_nvg_image_destroy(gk_context *gk, gk_cmd_image_destroy *cmd) {
     auto nvg = gk->nvg;
 
-    for(auto i = 0; i < cmd->nids; ++i)
+    for(size_t i = 0; i < cmd->nids; ++i)
         nvgDeleteImage(nvg, cmd->ids[i]);
 }
 

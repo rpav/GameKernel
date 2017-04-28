@@ -112,7 +112,7 @@ bool gk_process_list(gk_context *gk, gk_bundle *b, gk_list *list) {
 }
 
 void gk_process_config(gk_context *gk, gk_bundle *b, gk_list *list) {
-    for(int i = 0; i < list->ncmds; ++i) {
+    for(size_t i = 0; i < list->ncmds; ++i) {
         auto cmd = list->cmds[i];
         gk_process_cmd_general("GK_LIST_CONFIG", gk, b, cmd);
     }

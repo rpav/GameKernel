@@ -161,7 +161,7 @@ static bool gk_gl_process_should_transition(gk_cmd_type last, gk_cmd_type next) 
     return true;
 }
 
-static void gk_gl_process_end(gk_context *gk, gk_bundle *bundle, gk_cmd_type type) {
+static void gk_gl_process_end(gk_context *gk, gk_bundle *, gk_cmd_type type) {
     switch(type) {
         case GK_CMD_QUAD:
         case GK_CMD_QUADSPRITE:
@@ -178,7 +178,7 @@ void gk_process_gl(gk_context *gk, gk_bundle *bundle, gk_list_gl *list_gl) {
     if(list_gl->width && list_gl->height)
         glViewport(0, 0, list_gl->width, list_gl->height);
 
-    for(int j = 0; j < list->ncmds; ++j) {
+    for(size_t j = 0; j < list->ncmds; ++j) {
         auto cmd = list->cmds[j];
         auto type = GK_CMD_TYPE(cmd);
 
@@ -210,9 +210,7 @@ void gk_process_gl(gk_context *gk, gk_bundle *bundle, gk_list_gl *list_gl) {
     glFlush();
 }
 
-void gl_cmd_clear(gk_context *gk, gk_cmd_clear *cmd) {
-	LOG("was clear");
-	return;
+void gl_cmd_clear(gk_context*, gk_cmd_clear *cmd) {
     GLenum flags = 0;
 
     if(cmd->flags & GK_CLEAR_COLOR) {
@@ -252,7 +250,7 @@ static void build_one_program(gk_context *gk, gk_program_source *progsrc) {
     std::vector<GLuint> shaders;
     shaders.reserve(GK_SHADER_MAX);
 
-    for(int i = 0; i < progsrc->nsources; ++i) {
+    for(size_t i = 0; i < progsrc->nsources; ++i) {
         auto *src = progsrc->source[i];
         auto s = gk_gl_compile_shader(gk_to_gl_shader[src->type],
                                       src->source);
@@ -269,14 +267,14 @@ static void build_one_program(gk_context *gk, gk_program_source *progsrc) {
 }
 
 void gl_cmd_program_create(gk_context *gk, gk_cmd_program_create *cmd) {
-    for(int i = 0; i < cmd->nsources; ++i) {
+    for(size_t i = 0; i < cmd->nsources; ++i) {
         build_one_program(gk, cmd->source[i]);
         if(gk_haserror(gk)) return;
     }
 }
 
 void gl_cmd_program_destroy(gk_context *gk, gk_cmd_program_destroy *cmd) {
-    for(int i = 0; i < cmd->nprograms; ++i) {
+    for(size_t i = 0; i < cmd->nprograms; ++i) {
         GL_CHECK(glDeleteProgram(cmd->program[i]));
     }
     return;
@@ -286,7 +284,7 @@ void gl_cmd_program_destroy(gk_context *gk, gk_cmd_program_destroy *cmd) {
     return;
 }
 
-void gl_cmd_uniform_query(gk_context *gk, gk_cmd_uniform_query *cmd) {
+void gl_cmd_uniform_query(gk_context*, gk_cmd_uniform_query *cmd) {
     auto &program = *cmd->program;
 
     for(size_t i = 0; i < cmd->nuniforms; ++i) {

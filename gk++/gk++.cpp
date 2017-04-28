@@ -22,4 +22,23 @@ void Bundle::handleError() {
         bundle.error.message);
 }
 
+void SpriteSheet::rereadSheet() {
+    _name_map.clear();
+
+    if(_sheet->names) {
+        for(size_t i = 0; i < _sheet->nsprites; ++i)
+            _name_map.emplace(_sheet->names[i], i);
+    }
+}
+
+SpriteSheet::SpriteSheet(gk_spritesheet *sheet)
+    : _sheet(sheet) {
+    rereadSheet();
+}
+
+SpriteSheet::SpriteSheet(CmdSpriteSheetCreate &cmd)
+    : _sheet(cmd.cmd.sheet) {
+    rereadSheet();
+}
+
 END_NS_GK;

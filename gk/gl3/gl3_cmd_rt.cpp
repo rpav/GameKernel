@@ -12,7 +12,7 @@ void gl3_rt_init(gk_context *gk) {
     gk->gl.gl_cmd_rt_unbind = gl3_cmd_rt_unbind;
 }
 
-void gl3_cmd_rt_create(gk_context *gk, gk_cmd_rt_create *cmd) {
+void gl3_cmd_rt_create(gk_context*, gk_cmd_rt_create *cmd) {
     GLenum format = GL_RGB;
     GLenum buffers[1] = { GL_COLOR_ATTACHMENT0 };
     GLenum wrap_s = GL_CLAMP;

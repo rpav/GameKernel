@@ -1,6 +1,9 @@
 #pragma once
 
-#include <string.h>
+#include <cstring>
+
+#include <map>
+#include <string>
 
 namespace gk {
     struct vec2 : public gk_vec2 {
@@ -22,7 +25,7 @@ namespace gk {
 
     struct mat4 : public gk_mat4 {
         mat4() = default;
-        mat4(int x) {
+        mat4(int) {
             memset(this, 0, sizeof(mat4));
             a00 = a11 = a22 = a33 = 1;
         }
@@ -255,5 +258,25 @@ namespace gk {
     typedef ProgramDataSetTmpl<gk_program_data_set*, false> ProgramDataSetRef;
 
     // gk::SpriteSheet
-    struct SpriteSheet : public gk_spritesheet { };
+    class CmdSpriteSheetCreate;
+    class CmdSpriteSheetDestroy;
+
+    class SpriteSheet {
+        gk_spritesheet *_sheet;
+        std::map<std::string,int32_t> _name_map;
+
+    public:
+        SpriteSheet(gk_spritesheet *sheet);
+        SpriteSheet(CmdSpriteSheetCreate &cmd);
+
+        operator gk_spritesheet*() { return _sheet; }
+
+        void rereadSheet();
+
+        inline int32_t lookup(const std::string &name, int32_t errval = -1) {
+            auto v = _name_map.find(name);
+            if(v == _name_map.end()) return errval;
+            return v->second;
+        }
+    };
 }

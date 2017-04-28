@@ -29,14 +29,14 @@ void gk_process_spritesheet_create(gk_context *gk, gk_cmd_spritesheet_create *cm
     free(sheet);
 }
 
-void gk_process_spritesheet_destroy(gk_context *gk, gk_cmd_spritesheet_destroy *cmd) {
+void gk_process_spritesheet_destroy(gk_context*, gk_cmd_spritesheet_destroy *cmd) {
     auto sheet = cmd->sheet;
     GL_CHECK(glDeleteTextures(1, (GLuint*)&sheet->tex));
 
  gl_error:
     free(sheet->sprites);
 
-    for(int i = 0; i < sheet->nsprites; ++i)
+    for(size_t i = 0; i < sheet->nsprites; ++i)
         free(sheet->names[i]);
 
     free(sheet->names);

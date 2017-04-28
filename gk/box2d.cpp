@@ -174,7 +174,7 @@ void gk_process_b2_world_create(gk_context *gk, gk_cmd_b2_world_create *cmd) {
     cmd->world->data = data;
 }
 
-void gk_process_b2_world_destroy(gk_context *gk, gk_cmd_b2_world_destroy *cmd) {
+void gk_process_b2_world_destroy(gk_context *, gk_cmd_b2_world_destroy *cmd) {
     delete cmd->world->data->world;
     delete cmd->world->data->draw;
     delete cmd->world->data->listen;
@@ -182,10 +182,10 @@ void gk_process_b2_world_destroy(gk_context *gk, gk_cmd_b2_world_destroy *cmd) {
     cmd->world->data = nullptr;
 }
 
-void gk_process_b2_body_create(gk_context *gk, gk_cmd_b2_body_create *cmd) {
+void gk_process_b2_body_create(gk_context *, gk_cmd_b2_body_create *cmd) {
     auto world = cmd->world->data->world;
 
-    for(int i = 0; i < cmd->ndefs; ++i) {
+    for(size_t i = 0; i < cmd->ndefs; ++i) {
         b2BodyDef def;
         auto &src = *(cmd->defs[i]);
 
@@ -214,12 +214,12 @@ void gk_process_b2_body_create(gk_context *gk, gk_cmd_b2_body_create *cmd) {
     }
 }
 
-void gk_process_b2_body_update(gk_context *gk, gk_cmd_b2_body_update *cmd) {
+void gk_process_b2_body_update(gk_context *, gk_cmd_b2_body_update *cmd) {
     auto body = cmd->body->data->body;
     body->SetTransform((b2Vec2&)cmd->translate, cmd->angle);
 }
 
-void gk_process_b2_body_destroy(gk_context *gk, gk_cmd_b2_body_destroy *cmd) {
+void gk_process_b2_body_destroy(gk_context *, gk_cmd_b2_body_destroy *cmd) {
     auto world = cmd->world->data->world;
     auto body = cmd->body->data->body;
     world->DestroyBody(body);
@@ -234,7 +234,7 @@ gk_b2_fixture_data* ensure_fixdata(b2FixtureDef *fixdef) {
     return data;
 }
 
-void gk_process_b2_fixture_create(gk_context *gk, gk_cmd_b2_fixture_create *cmd) {
+void gk_process_b2_fixture_create(gk_context *, gk_cmd_b2_fixture_create *cmd) {
     std::vector<gk_vec2> verts;
     auto body = cmd->body->data->body;
 
@@ -327,12 +327,7 @@ void gk_process_b2_fixture_create(gk_context *gk, gk_cmd_b2_fixture_create *cmd)
     }
 }
 
-b2Fixture* findFixture(gk_b2_body *body, int id) {
-
-    return nullptr;
-}
-
-void gk_process_b2_fixture_update(gk_context *gk, gk_cmd_b2_fixture_update* cmd) {
+void gk_process_b2_fixture_update(gk_context *, gk_cmd_b2_fixture_update* cmd) {
     auto b = ((gk_b2_body_data*)cmd->body->data)->body;
     auto mask = cmd->update;
     auto id = cmd->id;
@@ -379,7 +374,7 @@ void gk_process_b2_draw_debug(gk_context *gk, gk_cmd_b2_draw_debug *cmd) {
     nvgEndFrame(gk->nvg);
 }
 
-void gk_process_b2_step(gk_context *gk, gk_cmd_b2_step *cmd) {
+void gk_process_b2_step(gk_context *, gk_cmd_b2_step *cmd) {
     auto world = cmd->world;
     auto data = world->data;
     auto b2world = data->world;
@@ -391,7 +386,7 @@ void gk_process_b2_step(gk_context *gk, gk_cmd_b2_step *cmd) {
     listen->finish(cmd);
 }
 
-void gk_process_b2_iter_bodies(gk_context *gk, gk_cmd_b2_iter_bodies* cmd) {
+void gk_process_b2_iter_bodies(gk_context *, gk_cmd_b2_iter_bodies* cmd) {
     auto world = cmd->world->data->world;
 
     for(auto body = world->GetBodyList(); body; body = body->GetNext()) {
@@ -409,33 +404,33 @@ void gk_process_b2_iter_bodies(gk_context *gk, gk_cmd_b2_iter_bodies* cmd) {
     }
 }
 
-void gk_process_b2_force(gk_context *gk, gk_cmd_b2_force* cmd) {
+void gk_process_b2_force(gk_context *, gk_cmd_b2_force* cmd) {
     cmd->body->data->body->ApplyForce((b2Vec2&)cmd->force,
                                       (b2Vec2&)cmd->point,
                                       cmd->wake);
 }
 
-void gk_process_b2_torque(gk_context *gk, gk_cmd_b2_torque* cmd) {
+void gk_process_b2_torque(gk_context *, gk_cmd_b2_torque* cmd) {
     cmd->body->data->body->ApplyTorque(cmd->torque, cmd->wake);
 }
 
-void gk_process_b2_linear_impulse(gk_context *gk, gk_cmd_b2_linear_impulse* cmd) {
+void gk_process_b2_linear_impulse(gk_context *, gk_cmd_b2_linear_impulse* cmd) {
     cmd->body->data->body->ApplyLinearImpulse((b2Vec2&)cmd->impulse,
                                               (b2Vec2&)cmd->point,
                                               cmd->wake);
 }
 
-void gk_process_b2_angular_impulse(gk_context *gk, gk_cmd_b2_angular_impulse* cmd) {
+void gk_process_b2_angular_impulse(gk_context *, gk_cmd_b2_angular_impulse* cmd) {
     cmd->body->data->body->ApplyAngularImpulse(cmd->impulse, cmd->wake);
 }
 
-void gk_process_b2_set_velocity(gk_context *gk, gk_cmd_b2_set_velocity* cmd) {
+void gk_process_b2_set_velocity(gk_context *, gk_cmd_b2_set_velocity* cmd) {
     cmd->body->data->body->SetLinearVelocity((b2Vec2&)cmd->linear);
     cmd->body->data->body->SetAngularVelocity(cmd->angular);
 }
 
 void gk_process_box2d(gk_context *gk, gk_bundle *bundle, gk_list *list) {
-    for(int j = 0; j < list->ncmds; ++j) {
+    for(size_t j = 0; j < list->ncmds; ++j) {
         auto cmd = list->cmds[j];
         auto type = GK_CMD_TYPE(cmd);
 

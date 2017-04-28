@@ -27,7 +27,7 @@ void gk_vec3::set(float *ptr) { memcpy(this, ptr, sizeof(gk_vec3)); }
 void gk_vec4::set(float *ptr) { memcpy(this, ptr, sizeof(gk_vec4)); }
 void gk_mat4::set(float *ptr) { memcpy(this, ptr, sizeof(gk_mat4)); }
 
-void gk_process_cmd_tf_trs(gk_context *gk, gk_cmd_tf_trs *cmd) {
+void gk_process_cmd_tf_trs(gk_context *, gk_cmd_tf_trs *cmd) {
     const mat4 *prior = (mat4*)cmd->parent.prior;
     mat4 *tf = (mat4*)cmd->parent.out;
 
@@ -42,7 +42,7 @@ void gk_process_cmd_tf_trs(gk_context *gk, gk_cmd_tf_trs *cmd) {
         *tf = glm::scale<float>(*tf, glm::make_vec3((float*)&cmd->scale));
 }
 
-void gk_process_cmd_tf_ortho(gk_context *gk, gk_cmd_tf_ortho *cmd) {
+void gk_process_cmd_tf_ortho(gk_context *, gk_cmd_tf_ortho *cmd) {
     mat4 *tf = (mat4*)cmd->parent.out;
 
     *tf = glm::ortho<float>(cmd->left, cmd->right, cmd->bottom, cmd->top,

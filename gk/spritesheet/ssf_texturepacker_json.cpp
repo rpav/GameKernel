@@ -98,7 +98,7 @@ void gk_load_ssf_texturepacker_json(gk_context *gk, gk_cmd_spritesheet_create *c
 
     std::ifstream f(path + "/" + cmd->filename);
     json j;
-    j << f;
+    f >> j;
     auto &frames = j["frames"];
     auto &meta = j["meta"];
     auto imagefile = path + "/" + meta["image"].get<std::string>();

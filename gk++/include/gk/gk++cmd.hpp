@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+#include <string>
 #include <vector>
 #include <map>
 
@@ -110,7 +111,7 @@ namespace gk {
             : CmdTmpl()
         {
             cmd.tfm = gk::mat4(0);
-            cmd.sheet = &sheet;
+            cmd.sheet = sheet;
             cmd.index = index;
         }
 
@@ -421,7 +422,7 @@ namespace gk {
         template<typename...Rest>
         inline void add(CmdProgramCreate &cmd, Rest&...args) {
             auto &c = cmd.cmd;
-            for(int i = 0; i < c.nsources; ++i) {
+            for(size_t i = 0; i < c.nsources; ++i) {
                 _progs.push_back(c.source[i]->program);
             }
             add(args...);
@@ -479,6 +480,21 @@ namespace gk {
                 return i->second;
 
             return -1;
+        }
+    };
+
+    // gk::CmdSpriteSheetCreate
+    class CmdSpriteSheetCreate : public CmdTmpl<gk_cmd_spritesheet_create, GK_CMD_SPRITESHEET_CREATE> {
+        std::string _path;
+        std::string _filename;
+    public:
+        CmdSpriteSheetCreate(gk_spritesheet_format fmt, std::string path, std::string filename,
+                             gk_spritesheet_create_flags fl = (gk_spritesheet_create_flags)0)
+            : CmdTmpl(), _path(path), _filename(filename) {
+            cmd.format = fmt;
+            cmd.flags = fl;
+            cmd.path = _path.c_str();
+            cmd.filename = _filename.c_str();
         }
     };
 }

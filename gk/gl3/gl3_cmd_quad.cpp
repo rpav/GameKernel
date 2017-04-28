@@ -151,7 +151,7 @@ void gl3_render_quads(gk_context *gk) {
     return;
 }
 
-void gl3_begin_quad(gk_context *gk, gk_bundle *b, gk_cmd_quad *q) {
+void gl3_begin_quad(gk_context *gk, gk_bundle *, gk_cmd_quad *) {
     auto gl3 = (gl3_impl*)gk->impl_data;
     auto &config = gl3->quad_state;
 
@@ -204,12 +204,12 @@ static inline void gl3_quad_ensure_state(gk_context *gk, GLuint tex,
     }
 }
 
-void gl3_cmd_quad(gk_context *gk, gk_bundle *b, gk_cmd_quad *q) {
+void gl3_cmd_quad(gk_context *gk, gk_bundle *, gk_cmd_quad *q) {
     gl3_quad_ensure_state(gk, q->tex, q->pds);
     gl3_append_quad(gk, (mat4*)&q->tfm, q->attr);
 }
 
-void gl3_cmd_quadsprite(gk_context *gk, gk_bundle *b, gk_cmd_quadsprite *cmd) {
+void gl3_cmd_quadsprite(gk_context *gk, gk_bundle *, gk_cmd_quadsprite *cmd) {
     auto sheet = cmd->sheet;
     auto &sprite = cmd->sheet->sprites[cmd->index];
 

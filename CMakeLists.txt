@@ -5,6 +5,7 @@ option(GK_INSTALL "Install GK (or not)" ON)
 option(GK_BUILD_STATIC "Build static library" ON)
 option(GK_BUILD_SHARED "Build shared library" ON)
 option(GK_BUILD_GKPP "Build GK++ library (required for some examples)" ON)
+option(GK_BUILD_EXAMPLES "Build examples" ON)
 
 # Optional functionality
 option(GK_USE_BOX2D "Compile in Box2D support" ON)
@@ -66,4 +67,6 @@ if(GK_BUILD_GKPP)
   add_subdirectory(gk++)
 endif()
 
-add_subdirectory(examples)
+if(GK_BUILD_EXAMPLES)
+  add_subdirectory(examples)
+endif()
