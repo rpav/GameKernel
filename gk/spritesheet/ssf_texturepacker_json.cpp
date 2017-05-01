@@ -94,14 +94,15 @@ static void parse_texturepacker_frame(const json &meta,
 
 void gk_load_ssf_texturepacker_json(gk_context *gk, gk_cmd_spritesheet_create *cmd,
                                     gk_spritesheet *sheet) {
-    auto path = std::string(cmd->path ? cmd->path : "");
-
-    std::ifstream f(path + "/" + cmd->filename);
+    std::ifstream f(cmd->path);
     json j;
     f >> j;
     auto &frames = j["frames"];
     auto &meta = j["meta"];
-    auto imagefile = path + "/" + meta["image"].get<std::string>();
+
+    std::string path(cmd->path);
+    auto dirname = path.substr(0, path.find_last_of("\\/")+1);
+    auto imagefile = dirname + meta["image"].get<std::string>();
     int i = 0;
 
     sheet->tex = nvgCreateImage(gk->nvg, imagefile.c_str(), 0);

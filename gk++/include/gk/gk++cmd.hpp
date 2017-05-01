@@ -486,15 +486,13 @@ namespace gk {
     // gk::CmdSpriteSheetCreate
     class CmdSpriteSheetCreate : public CmdTmpl<gk_cmd_spritesheet_create, GK_CMD_SPRITESHEET_CREATE> {
         std::string _path;
-        std::string _filename;
     public:
-        CmdSpriteSheetCreate(gk_spritesheet_format fmt, std::string path, std::string filename,
+        CmdSpriteSheetCreate(gk_spritesheet_format fmt, std::string path,
                              gk_spritesheet_create_flags fl = (gk_spritesheet_create_flags)0)
-            : CmdTmpl(), _path(path), _filename(filename) {
+            : CmdTmpl(), _path(path) {
             cmd.format = fmt;
             cmd.flags = fl;
             cmd.path = _path.c_str();
-            cmd.filename = _filename.c_str();
         }
     };
 }

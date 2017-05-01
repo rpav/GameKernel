@@ -41,9 +41,11 @@ namespace gk {
         }
     };
 
-    inline gk_context* create(gk_impl impl) { return gk_create(impl); }
-    inline void destroy(gk_context *gk) { gk_destroy(gk); }
-    inline void process(gk_context *gk, Bundle &bundle) {
+    typedef gk_context Context;
+
+    inline Context* create(gk_impl impl) { return gk_create(impl); }
+    inline void destroy(Context *gk) { gk_destroy(gk); }
+    inline void process(Context *gk, Bundle &bundle) {
         gk_process(gk, &bundle.bundle);
         if(bundle.bundle.error.code)
             bundle.handleError();

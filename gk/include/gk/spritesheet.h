@@ -33,7 +33,6 @@ typedef struct gk_cmd_spritesheet_create {
 
     gk_spritesheet_format format;
     const char *path;
-    const char *filename;
 
     uint32_t flags;
 
