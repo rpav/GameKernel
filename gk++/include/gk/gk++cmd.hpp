@@ -495,4 +495,31 @@ namespace gk {
             cmd.path = _path.c_str();
         }
     };
+
+    // gk::CmdSpriteSheetDestroy
+    typedef std::vector<gk_spritesheet*> SpriteSheetVector;
+    class CmdSpriteSheetDestroy : public CmdTmpl<gk_cmd_spritesheet_destroy, GK_CMD_SPRITESHEET_DESTROY> {
+        SpriteSheetVector sheets;
+
+    public:
+        CmdSpriteSheetDestroy(gk_spritesheet *sheet = nullptr) {
+            add(sheet);
+        }
+
+        CmdSpriteSheetDestroy(SpriteSheet &sheet) {
+            add(sheet);
+        }
+
+        void add(gk_spritesheet *sheet) {
+            if(!sheet) return;
+
+            sheets.push_back(sheet);
+            cmd.sheets = sheets.data();
+            cmd.nsheets = sheets.size();
+        }
+
+        void reserve(SpriteSheetVector::size_type size) {
+            sheets.reserve(size);
+        }
+    };
 }

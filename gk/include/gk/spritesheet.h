@@ -43,7 +43,9 @@ typedef struct gk_cmd_spritesheet_create {
 
 typedef struct gk_cmd_spritesheet_destroy {
     gk_cmd parent;
-    gk_spritesheet *sheet;
+
+    size_t nsheets;
+    gk_spritesheet **sheets;
 } gk_cmd_spritesheet_destroy;
 
 #endif  /* __GAMEKERNEL_SPRITESHEET_H__ */

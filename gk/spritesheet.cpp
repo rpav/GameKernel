@@ -29,8 +29,7 @@ void gk_process_spritesheet_create(gk_context *gk, gk_cmd_spritesheet_create *cm
     free(sheet);
 }
 
-void gk_process_spritesheet_destroy(gk_context*, gk_cmd_spritesheet_destroy *cmd) {
-    auto sheet = cmd->sheet;
+void gk_free_one_sheet(gk_spritesheet *sheet) {
     GL_CHECK(glDeleteTextures(1, (GLuint*)&sheet->tex));
 
  gl_error:
@@ -41,4 +40,11 @@ void gk_process_spritesheet_destroy(gk_context*, gk_cmd_spritesheet_destroy *cmd
 
     free(sheet->names);
     free(sheet);
+}
+
+void gk_process_spritesheet_destroy(gk_context*, gk_cmd_spritesheet_destroy *cmd) {
+    for(size_t i = 0; i < cmd->nsheets; ++i) {
+        auto sheet = cmd->sheets[i];
+        gk_free_one_sheet(sheet);
+    }
 }

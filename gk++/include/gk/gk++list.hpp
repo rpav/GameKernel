@@ -44,6 +44,10 @@ namespace gk {
             l->ncmds = 0;
             l->cmds = nullptr;
         }
+
+        inline void reserve(CmdVector::size_type size) {
+            cmds.reserve(size);
+        }
     };
 
     class List : public ListTmpl<gk_list, GK_SUB_CONFIG> {
