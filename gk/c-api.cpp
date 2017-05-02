@@ -30,6 +30,7 @@ extern "C" GK_API gk_context* gk_create(gk_impl impl) {
 
 extern "C" GK_API void gk_destroy(gk_context *gk) {
     gk_fini_gl(gk);
+    delete gk;
 }
 
 extern "C" GK_API void gk_process(gk_context *gk, gk_bundle *b) {
