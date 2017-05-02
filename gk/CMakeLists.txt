@@ -32,10 +32,17 @@ file(GLOB_RECURSE GK_SOURCE_SPRITESHEET
   ${GK_ROOT}/spritesheet/*.cpp
   )
 
-file(GLOB GK_HEADER_GLOB
-  ${GK_ROOT}/include/gk/*.hpp
-  ${GK_ROOT}/include/gk/*.h
+file(GLOB_RECURSE GK_INT_HEADER_GLOB
+  ${GK_ROOT}/include-int/**/*.hpp
+  ${GK_ROOT}/include-int/**/*.h
   )
+
+file(GLOB_RECURSE GK_EXT_HEADER_GLOB
+  ${GK_ROOT}/include/**/*.h
+)
+
+source_group("Header Files\\Internal" FILES ${GK_INT_HEADER_GLOB})
+source_group("Header Files\\External" FILES ${GK_EXT_HEADER_GLOB})
 
 set(GK_SOURCE_FILES
   c-api.cpp
@@ -52,11 +59,12 @@ set(GK_SOURCE_FILES
   )
 
 set(GK_HEADER_FILES
-  ${GK_HEADER_GLOB}
+  ${GK_INT_HEADER_GLOB}
+  ${GK_EXT_HEADER_GLOB}
   )
 
 if(GK_BUILD_SHARED)
-  add_library(${LIB_NAME}-shared SHARED ${GK_SOURCE_FILES})
+  add_library(${LIB_NAME}-shared SHARED ${GK_SOURCE_FILES} ${GK_HEADER_FILES})
   set_target_properties(${LIB_NAME}-shared PROPERTIES OUTPUT_NAME ${LIB_NAME})
   target_link_libraries(${LIB_NAME}-shared ${GK_LIBS_SHARED})
 
@@ -74,7 +82,7 @@ if(GK_BUILD_SHARED)
 endif()
 
 if(GK_BUILD_STATIC)
-  add_library(${LIB_NAME}-static STATIC ${GK_SOURCE_FILES})
+  add_library(${LIB_NAME}-static STATIC ${GK_SOURCE_FILES} ${GK_HEADER_FILES})
   set_target_properties(${LIB_NAME}-static PROPERTIES OUTPUT_NAME ${LIB_NAME})
   target_link_libraries(${LIB_NAME}-static ${GK_LIBS_STATIC})
 
