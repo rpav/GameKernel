@@ -6,6 +6,7 @@ set(LIB_NAME gk)
 project(${LIB_NAME})
 
 set(GK_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKE_CXX_STANDARD 11)
 
 ### Modules ###############################################################
 
