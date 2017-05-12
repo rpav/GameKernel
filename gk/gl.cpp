@@ -85,6 +85,19 @@ GLuint gk_gl_link_program(int numshaders, GLuint *shaders) {
     return 0;
 }
 
+std::ostream & operator<<(std::ostream & os, const glm::mat4x4 & m) {
+    os << "[";
+
+    for(int i = 0; i < 4; ++i) {
+        os << "[";
+        os << m[i][0] << ", " << m[i][1] << ", "
+            << m[i][2] << ", " << m[i][3]
+            << "]";
+    }
+    os << "]";
+    return os;
+}
+
 bool gk_init_gl(gk_context *gk) {
     glewExperimental = GL_TRUE;
     GLenum err = glewInit();
@@ -135,7 +148,8 @@ static void gk_gl_process_begin(gk_context *gk, gk_bundle *bundle, gk_cmd_type t
     switch(type) {
         case GK_CMD_QUAD:
         case GK_CMD_QUADSPRITE:
-            gk->gl.gl_begin_quad(gk, bundle, (gk_cmd_quad*)cmd);
+        case GK_CMD_SPRITELAYER:
+            gk->gl.gl_begin_quad(gk);
             return;
 
         default: return;
@@ -147,12 +161,14 @@ static bool gk_gl_process_should_transition(gk_cmd_type last, gk_cmd_type next) 
         case GK_CMD_QUAD:
             switch(next) {
                 case GK_CMD_QUADSPRITE: return false;
+                case GK_CMD_SPRITELAYER: return false;
                 default: break;
             }
             break;
         case GK_CMD_QUADSPRITE:
             switch(next) {
                 case GK_CMD_QUAD: return false;
+                case GK_CMD_SPRITELAYER: return false;
                 default: break;
             }
             break;
@@ -165,6 +181,7 @@ static void gk_gl_process_end(gk_context *gk, gk_bundle *, gk_cmd_type type) {
     switch(type) {
         case GK_CMD_QUAD:
         case GK_CMD_QUADSPRITE:
+        case GK_CMD_SPRITELAYER:
             gk->gl.gl_end_quad(gk);
             return;
 
@@ -197,6 +214,9 @@ void gk_process_gl(gk_context *gk, gk_bundle *bundle, gk_list_gl *list_gl) {
                 break;
             case GK_CMD_QUADSPRITE:
                 gk->gl.gl_cmd_quadsprite(gk, bundle, (gk_cmd_quadsprite*)cmd);
+                break;
+            case GK_CMD_SPRITELAYER:
+                gk->gl.gl_cmd_spritelayer(gk, bundle, (gk_cmd_spritelayer*)cmd);
                 break;
 
             default:

@@ -109,6 +109,7 @@ void gl3_quad_init(gk_context *gk) {
     gk->gl.gl_cmd_quad = gl3_cmd_quad;
     gk->gl.gl_cmd_quadsprite = gl3_cmd_quadsprite;
     gk->gl.gl_end_quad = gl3_end_quad;
+    gk->gl.gl_cmd_spritelayer = gl3_cmd_spritelayer;
 
     compile_shaders(gl3);
 
@@ -151,7 +152,7 @@ void gl3_render_quads(gk_context *gk) {
     return;
 }
 
-void gl3_begin_quad(gk_context *gk, gk_bundle *, gk_cmd_quad *) {
+void gl3_begin_quad(gk_context *gk) {
     auto gl3 = (gl3_impl*)gk->impl_data;
     auto &config = gl3->quad_state;
 
@@ -220,4 +221,39 @@ void gl3_cmd_quadsprite(gk_context *gk, gk_bundle *, gk_cmd_quadsprite *cmd) {
 void gl3_end_quad(gk_context *gk) {
     auto gl3 = (gl3_impl*)gk->impl_data;
     gl3_render_quads(gk);
+}
+
+void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) {
+    auto *sheet = cmd->sheet;
+    mat4 m;
+    vec3 tr;
+
+    gl3_quad_ensure_state(gk, sheet->tex, cmd->pds);
+    auto layer_x = (size_t)cmd->layer_size.x;
+    auto sx = cmd->sprite_size.x;
+    auto sy = cmd->sprite_size.y;
+    auto &layer_m = (mat4&)cmd->tfm;
+
+    float scalex = (cmd->flags & GK_SPRITELAYER_FLIPX) ? -1.0 : 1.0;
+    float scaley = (cmd->flags & GK_SPRITELAYER_FLIPY) ? -1.0 : 1.0;
+    auto scale_m = glm::scale(I4, vec3(scalex, scaley, 1.0));
+
+    LOG("layer is ", cmd->layer_size.x, "x", cmd->layer_size.y);
+
+    for(int j = 0; j < cmd->layer_size.y; ++j) {
+        for(int i = 0; i < cmd->layer_size.x; ++i) {
+            tr.x = i * sx;
+            tr.y = j * sy;
+
+            size_t index = j*layer_x + i;
+            size_t spriteno = cmd->sprites[index];
+
+            if(!spriteno) continue;
+            
+            m =  scale_m * glm::translate(layer_m, tr);
+            auto &sprite = sheet->sprites[spriteno];
+
+            gl3_append_quad(gk, &m, sprite.attr);
+        }
+    }
 }

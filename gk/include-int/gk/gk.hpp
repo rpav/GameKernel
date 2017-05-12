@@ -25,9 +25,10 @@ struct gk_context {
     struct {
         gk_cmd_type last_cmd;
 
-        void (*gl_begin_quad)(gk_context*, gk_bundle*, gk_cmd_quad*);
+        void (*gl_begin_quad)(gk_context*);
         void (*gl_cmd_quad)(gk_context*, gk_bundle*, gk_cmd_quad*);
         void (*gl_cmd_quadsprite)(gk_context*, gk_bundle*, gk_cmd_quadsprite*);
+        void (*gl_cmd_spritelayer)(gk_context*, gk_bundle*, gk_cmd_spritelayer*);
         void (*gl_end_quad)(gk_context*);
 
         void (*gl_cmd_rt_create)(gk_context*, gk_cmd_rt_create*);

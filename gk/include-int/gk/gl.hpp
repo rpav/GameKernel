@@ -2,6 +2,9 @@
 
 #include <GL/glew.h>
 #include <GL/gl.h>
+#include <glm/mat4x4.hpp>
+
+#define GK_GLM_CONVERSIONS
 
 #include "gk/gk.hpp"
 #include "gk/glprogram.hpp"
@@ -45,6 +48,7 @@ struct gl3_impl : public gl_impl_data {
 };
 
 /* Functions */
+std::ostream& operator<<(std::ostream &os, const glm::mat4 &m);
 
 bool gk_init_gl(gk_context *gk);
 void gk_fini_gl(gk_context *gk);
@@ -68,10 +72,12 @@ void gk_create_gl3(gk_context *gk);
 void gk_destroy_gl3(gk_context *gk);
 
 void gl3_quad_init(gk_context*);
-void gl3_begin_quad(gk_context*, gk_bundle*, gk_cmd_quad*);
+void gl3_begin_quad(gk_context*);
 void gl3_cmd_quad(gk_context*, gk_bundle*, gk_cmd_quad*);
 void gl3_cmd_quadsprite(gk_context*, gk_bundle*, gk_cmd_quadsprite*);
 void gl3_end_quad(gk_context*);
+
+void gl3_cmd_spritelayer(gk_context*, gk_bundle*, gk_cmd_spritelayer*);
 
 void gl3_rt_init(gk_context*);
 void gl3_cmd_rt_create(gk_context*, gk_cmd_rt_create*);
@@ -80,5 +86,7 @@ void gl3_cmd_rt_bind(gk_context*, gk_cmd_rt_bind*);
 void gl3_cmd_rt_unbind(gk_context*, gk_cmd_rt_unbind*);
 
 // tables
-
 extern const GLenum gk_filter_to_gl[];
+
+// consts
+extern const glm::mat4 I4;
