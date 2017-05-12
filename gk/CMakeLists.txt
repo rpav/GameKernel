@@ -45,6 +45,10 @@ file(GLOB_RECURSE GK_EXT_HEADER_GLOB
 source_group("Header Files\\Internal" FILES ${GK_INT_HEADER_GLOB})
 source_group("Header Files\\External" FILES ${GK_EXT_HEADER_GLOB})
 
+source_group("Source Files\\GL" FILES ${GK_SOURCE_GL})
+source_group("Source Files\\SpriteSheet" FILES ${GK_SOURCE_SPRITESHEET})
+
+
 set(GK_SOURCE_FILES
   c-api.cpp
   errors.cpp
