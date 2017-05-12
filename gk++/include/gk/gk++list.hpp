@@ -58,7 +58,7 @@ namespace gk {
 
     class ListGL : public ListTmpl<gk_list_gl, GK_SUB_GL> {
     public:
-        ListGL(int w = 0, int h = 0) : ListTmpl() {
+        ListGL(float w = 0, float h = 0) : ListTmpl() {
             list.width = w;
             list.height = h;
         }

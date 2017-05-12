@@ -25,19 +25,19 @@ void Bundle::handleError() {
 void SpriteSheet::rereadSheet() {
     _name_map.clear();
 
-    if(_sheet->names) {
-        for(size_t i = 0; i < _sheet->nsprites; ++i)
-            _name_map.emplace(_sheet->names[i], i);
+    if(sheet->names) {
+        for(size_t i = 0; i < sheet->nsprites; ++i)
+            _name_map.emplace(sheet->names[i], i);
     }
 }
 
-SpriteSheet::SpriteSheet(gk_spritesheet *sheet)
-    : _sheet(sheet) {
+SpriteSheet::SpriteSheet(gk_spritesheet *sheet_)
+    : sheet(sheet_) {
     rereadSheet();
 }
 
 SpriteSheet::SpriteSheet(CmdSpriteSheetCreate &cmd)
-    : _sheet(cmd.cmd.sheet) {
+    : sheet(cmd.cmd.sheet) {
     rereadSheet();
 }
 

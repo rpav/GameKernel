@@ -262,18 +262,19 @@ namespace gk {
     class CmdSpriteSheetDestroy;
 
     class SpriteSheet {
-        gk_spritesheet *_sheet;
         std::map<std::string,int32_t> _name_map;
 
     public:
+        gk_spritesheet *sheet;
+
         SpriteSheet(gk_spritesheet *sheet);
         SpriteSheet(CmdSpriteSheetCreate &cmd);
 
-        operator gk_spritesheet*() { return _sheet; }
+        operator gk_spritesheet*() { return sheet; }
 
         void rereadSheet();
 
-        inline int32_t lookup(const std::string &name, int32_t errval = -1) {
+        inline size_t lookup(const std::string &name, size_t errval = ~0) {
             auto v = _name_map.find(name);
             if(v == _name_map.end()) return errval;
             return v->second;

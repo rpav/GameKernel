@@ -62,6 +62,70 @@ namespace gk {
         }
     };
 
+    template <typename T, gk_cmd_type ID>
+    class CmdTF : public CmdTmpl<T, ID> {
+    public:
+        CmdTF() : CmdTmpl() {
+            gk_cmd_tf *tf = (gk_cmd_tf*)&cmd;
+            tf->prior = nullptr;
+            tf->out = nullptr;
+        }
+
+        inline void setOut(gk_mat4 &m) {
+            gk_cmd_tf *tf = (gk_cmd_tf*)&cmd;
+            tf->out = &m;
+        }
+
+        inline void setPrior(gk_mat4 &m) {
+            gk_cmd_tf *tf = (gk_cmd_tf*)&cmd;
+            tf->prior = &m;
+        }
+    };
+
+    // gk::CmdTFOrtho
+    class CmdTFOrtho : public CmdTF<gk_cmd_tf_ortho, GK_CMD_TF_ORTHO> {
+    public:
+        CmdTFOrtho(float left, float right, float bottom, float top, float near, float far)
+            : CmdTF()
+        {
+            cmd.left = left;
+            cmd.right = right;
+            cmd.bottom = bottom;
+            cmd.top = top;
+            cmd.near = near;
+            cmd.far = far;
+        }
+    };
+
+    // gk::CmdTFTRS
+    class CmdTFTRS : public CmdTmpl<gk_cmd_tf_trs, GK_CMD_TF_TRS> {
+    public:
+        CmdTFTRS() : CmdTmpl() { }
+
+        void translate(const vec3 &v) {
+            cmd.translate = v;
+        }
+
+        void rotate(const vec3 &axis, float angle) {
+            if(angle) {
+                cmd.flags |= GK_TRS_ROTATE;
+                cmd.axis = axis;
+                cmd.angle = angle;
+            } else {
+                cmd.flags &= ~GK_TRS_ROTATE;
+            }
+        }
+
+        void scale(const vec3 &v) {
+            if(v.x == v.y == v.z == 1.0) {
+                cmd.flags &= ~GK_TRS_SCALE;
+            } else {
+                cmd.flags |= GK_TRS_SCALE;
+                cmd.scale = v;
+            }
+        }
+    };
+
     // gk::CmdQuad
     class CmdQuad : public CmdTmpl<gk_cmd_quad, GK_CMD_QUAD> {
     public:
@@ -116,6 +180,39 @@ namespace gk {
         }
 
         mat4* tfm() { return (mat4*)&cmd.tfm; }
+    };
+
+    class CmdSpriteLayer : public CmdTmpl<gk_cmd_spritelayer, GK_CMD_SPRITELAYER> {
+        std::vector<size_t> _sprites;
+    public:
+
+        CmdSpriteLayer(gk::SpriteSheet &sheet, vec2 layerSize, vec2 spriteSize, uint32_t flags = 0)
+            : CmdTmpl(), _sprites((size_t)layerSize.x * (size_t)layerSize.y, 0)
+        {
+            cmd.sheet = sheet;
+            cmd.layer_size = layerSize;
+            cmd.sprite_size = spriteSize;
+            cmd.sprites = _sprites.data();
+            cmd.flags = flags;
+        }
+
+        CmdSpriteLayer() : CmdTmpl() {
+            cmd.tfm = mat4(0);
+            cmd.sprites = nullptr;
+            cmd.sheet = nullptr;
+            cmd.layer_size = vec2(0,0);
+            cmd.sprite_size = vec2(0,0);
+            cmd.flags = 0;
+        }
+
+        void reserve(size_t size) {
+            _sprites.reserve(size);
+        }
+
+        void copy(const std::vector<size_t> &data) {
+            _sprites = data;
+            cmd.sprites = _sprites.data();
+        }
     };
 
     /* gk::CmdPath */
@@ -333,7 +430,7 @@ namespace gk {
     // gk::CmdB2DrawDebug
     class CmdB2DrawDebug : public CmdTmpl<gk_cmd_b2_draw_debug, GK_CMD_B2_DRAW_DEBUG> {
     public:
-        CmdB2DrawDebug(gk_b2_world &world, int width, int height)
+        CmdB2DrawDebug(gk_b2_world &world, float width, float height)
             : CmdTmpl() {
             cmd.world = &world;
             cmd.resolution.x = width;
@@ -447,7 +544,7 @@ namespace gk {
         UniformNameLocationMap _locations;
 
     public:
-        CmdUniformQuery(gk_program &program) {
+        CmdUniformQuery(gk_program &program) : CmdTmpl() {
             cmd.program = &program;
         }
         CmdUniformQuery(ProgramSource &source) : CmdUniformQuery(source.source.program) { }
@@ -502,11 +599,13 @@ namespace gk {
         SpriteSheetVector sheets;
 
     public:
-        CmdSpriteSheetDestroy(gk_spritesheet *sheet = nullptr) {
+        CmdSpriteSheetDestroy(gk_spritesheet *sheet = nullptr)
+            : CmdTmpl() {
             add(sheet);
         }
 
-        CmdSpriteSheetDestroy(SpriteSheet &sheet) {
+        CmdSpriteSheetDestroy(SpriteSheet &sheet)
+            : CmdTmpl() {
             add(sheet);
         }
 
