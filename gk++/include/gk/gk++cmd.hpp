@@ -98,9 +98,9 @@ namespace gk {
     };
 
     // gk::CmdTFTRS
-    class CmdTFTRS : public CmdTmpl<gk_cmd_tf_trs, GK_CMD_TF_TRS> {
+    class CmdTFTRS : public CmdTF<gk_cmd_tf_trs, GK_CMD_TF_TRS> {
     public:
-        CmdTFTRS() : CmdTmpl() { }
+        CmdTFTRS() : CmdTF() { }
 
         void translate(const vec3 &v) {
             cmd.translate = v;
