@@ -191,6 +191,7 @@ namespace gk {
         {
             cmd.sheet = sheet;
             cmd.layer_size = layerSize;
+            cmd.bounds = vec4(0,0,layerSize.x,layerSize.y);
             cmd.sprite_size = spriteSize;
             cmd.sprites = _sprites.data();
             cmd.flags = flags;
@@ -202,6 +203,7 @@ namespace gk {
             cmd.sheet = nullptr;
             cmd.layer_size = vec2(0,0);
             cmd.sprite_size = vec2(0,0);
+            cmd.bounds = vec4(0,0,0,0);
             cmd.flags = 0;
         }
 

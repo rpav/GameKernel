@@ -2,6 +2,7 @@
 #include <GL/gl.h>
 #include <cstring>
 
+#include <glm/glm.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -238,10 +239,30 @@ void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) 
     float scaley = (cmd->flags & GK_SPRITELAYER_FLIPY) ? -1.0 : 1.0;
     auto scale_m = glm::scale(I4, vec3(scalex, scaley, 1.0));
 
-    LOG("layer is ", cmd->layer_size.x, "x", cmd->layer_size.y);
+    int si=0,bx=0;
+    int sj=0,by=0;
 
-    for(int j = 0; j < cmd->layer_size.y; ++j) {
-        for(int i = 0; i < cmd->layer_size.x; ++i) {
+    if(cmd->flags & GK_SPRITELAYER_FLIPX) {
+        si = glm::clamp<int>(cmd->layer_size.x - cmd->bounds.z, 0, cmd->layer_size.x);
+        bx = glm::clamp<int>(si + cmd->bounds.z, 0, cmd->layer_size.x);
+    } else {
+        si = glm::clamp<int>(cmd->bounds.x, 0, cmd->layer_size.x);
+        bx = glm::clamp<int>(si + cmd->bounds.z, 0, cmd->layer_size.x);
+    }
+
+    if(cmd->flags & GK_SPRITELAYER_FLIPY) {
+        sj = glm::clamp<int>(cmd->layer_size.y - cmd->bounds.w, 0, cmd->layer_size.y);
+        by = glm::clamp<int>(sj + cmd->bounds.w, 0, cmd->layer_size.y);
+    } else {
+        sj = glm::clamp<int>(cmd->bounds.y, 0, cmd->layer_size.y);
+        by = glm::clamp<int>(sj + cmd->bounds.w, 0, cmd->layer_size.y);
+    }
+
+    LOG("i = ", si, " bx = ", bx);
+    LOG("j = ", sj, " by = ", by);
+
+    for(int j = sj; j < by; ++j) {
+        for(int i = si; i < bx; ++i) {
             tr.x = i * sx;
             tr.y = j * sy;
 

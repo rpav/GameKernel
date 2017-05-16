@@ -128,6 +128,7 @@ typedef struct gk_cmd_spritelayer {
 
     gk_vec2 layer_size;   // Integer WxH of sprites
     gk_vec2 sprite_size;  // Uniform sprite size
+    gk_vec4 bounds;       // x,y w,h for how much to render
     uint32_t flags;       // gk_spritelayer_flags
 
     // Provide this, a w*h array of sprite indexes for sheet
