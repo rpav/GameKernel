@@ -258,9 +258,6 @@ void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) 
         by = glm::clamp<int>(sj + cmd->bounds.w, 0, cmd->layer_size.y);
     }
 
-    LOG("i = ", si, " bx = ", bx);
-    LOG("j = ", sj, " by = ", by);
-
     for(int j = sj; j < by; ++j) {
         for(int i = si; i < bx; ++i) {
             tr.x = i * sx;
