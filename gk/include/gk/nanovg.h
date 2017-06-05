@@ -26,7 +26,7 @@ typedef struct gk_cmd_image_create {
     gk_cmd parent;
 
     const char *filename;
-    uint32_t flags;
+    uint32_t flags;            // gk_tex_flags
     gk_tex_filter min_filter;
     gk_tex_filter mag_filter;
 

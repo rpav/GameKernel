@@ -76,9 +76,9 @@ namespace gk {
             tf->out = &m;
         }
 
-        inline void setPrior(gk_mat4 &m) {
+        inline void setPrior(const gk_mat4 &m) {
             gk_cmd_tf *tf = (gk_cmd_tf*)&cmd;
-            tf->prior = &m;
+            tf->prior = const_cast<gk_mat4*>(&m);
         }
     };
 
@@ -137,17 +137,19 @@ namespace gk {
         }
 
         // For trivial quads
-        CmdQuad(int tex, float x0, float y0, float x1, float y1)
+        CmdQuad(int tex, float x0, float y0, float x1, float y1,
+            float u0 = 0.0, float v0 = 0.0,
+            float u1 = 1.0, float v1 = 1.0)
             : CmdQuad(tex) {
             setVertex(0, x0, y0);
             setVertex(1, x1, y0);
             setVertex(2, x0, y1);
             setVertex(3, x1, y1);
 
-            setUV(0, 0, 0);
-            setUV(1, 1, 0);
-            setUV(2, 0, 1);
-            setUV(3, 1, 1);
+            setUV(0, u0, v1);
+            setUV(1, u1, v1);
+            setUV(2, u0, v0);
+            setUV(3, u1, v0);
         }
 
         inline void setVertex(int n, gk_vec4 &v) {
@@ -272,6 +274,48 @@ namespace gk {
         CmdText(const char *string, gk_vec2 &pos) {
             cmd.str = string;
             cmd.pos = pos;
+        }
+    };
+
+    // gk::CmdImageCreate
+    class CmdImageCreate : public CmdTmpl<gk_cmd_image_create, GK_CMD_IMAGE_CREATE> {
+        std::string _filename;
+    public:
+        CmdImageCreate(const std::string filename,
+            uint32_t tex_flags = 0,
+            gk_tex_filter min = GK_TEX_FILTER_LINEAR,
+            gk_tex_filter mag = GK_TEX_FILTER_LINEAR) 
+            : CmdTmpl(), _filename(filename)
+        {
+            cmd.filename = _filename.c_str();
+            cmd.flags = tex_flags;
+            cmd.min_filter = min;
+            cmd.mag_filter = mag;
+        }
+
+        int id() const { return cmd.id; }
+    };
+
+    // gk::CmdImageDestroy
+    typedef std::vector<int> ImageIDVector;
+    class CmdImageDestroy : public CmdTmpl<gk_cmd_image_destroy, GK_CMD_IMAGE_DESTROY> {
+        ImageIDVector ids;
+    public:
+        CmdImageDestroy() : CmdTmpl() { }
+
+        CmdImageDestroy(CmdImageCreate &create)
+            : CmdImageDestroy() {
+            add(create);
+        }
+
+        void add(int id) {
+            ids.push_back(id);
+            cmd.ids = ids.data();
+            cmd.nids = ids.size();
+        }
+
+        void add(CmdImageCreate &cmd) {
+            add(cmd.id());
         }
     };
 
