@@ -117,7 +117,9 @@ namespace gk {
         }
 
         void scale(const vec3 &v) {
-            if(v.x == v.y == v.z == 1.0) {
+            if(v.x == 1.0 &&
+               v.y == 1.0 &&
+               v.z == 1.0) {
                 cmd.flags &= ~GK_TRS_SCALE;
             } else {
                 cmd.flags |= GK_TRS_SCALE;
