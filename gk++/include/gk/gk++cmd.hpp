@@ -65,19 +65,19 @@ namespace gk {
     template <typename T, gk_cmd_type ID>
     class CmdTF : public CmdTmpl<T, ID> {
     public:
-        CmdTF() : CmdTmpl() {
-            gk_cmd_tf *tf = (gk_cmd_tf*)&cmd;
+        CmdTF() : CmdTmpl<T,ID>() {
+            gk_cmd_tf *tf = (gk_cmd_tf*)&this->cmd;
             tf->prior = nullptr;
             tf->out = nullptr;
         }
 
         inline void setOut(gk_mat4 &m) {
-            gk_cmd_tf *tf = (gk_cmd_tf*)&cmd;
+            gk_cmd_tf *tf = (gk_cmd_tf*)&this->cmd;
             tf->out = &m;
         }
 
         inline void setPrior(const gk_mat4 &m) {
-            gk_cmd_tf *tf = (gk_cmd_tf*)&cmd;
+            gk_cmd_tf *tf = (gk_cmd_tf*)&this->cmd;
             tf->prior = const_cast<gk_mat4*>(&m);
         }
     };
