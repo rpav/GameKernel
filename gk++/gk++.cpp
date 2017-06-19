@@ -27,7 +27,7 @@ void SpriteSheet::rereadSheet() {
 
     if(sheet->names) {
         for(size_t i = 0; i < sheet->nsprites; ++i)
-            _name_map.emplace(sheet->names[i], i);
+            _name_map.emplace(sheet->names[i], i+1);
     }
 }
 

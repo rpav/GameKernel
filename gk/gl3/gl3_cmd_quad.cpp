@@ -235,10 +235,6 @@ void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) 
     auto sy = cmd->sprite_size.y;
     auto &layer_m = (mat4&)cmd->tfm;
 
-    float scalex = (cmd->flags & GK_SPRITELAYER_FLIPX) ? -1.0 : 1.0;
-    float scaley = (cmd->flags & GK_SPRITELAYER_FLIPY) ? -1.0 : 1.0;
-    auto scale_m = glm::scale(I4, vec3(scalex, scaley, 1.0));
-
     int si=0,bx=0;
     int sj=0,by=0;
 
@@ -263,13 +259,21 @@ void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) 
             tr.x = i * sx;
             tr.y = j * sy;
 
-            size_t index = j*layer_x + i;
+            size_t index = 0;
+
+            if(cmd->flags & GK_SPRITELAYER_FLIPY)
+                index = (by-j-1)*layer_x;
+            else
+                index = j*layer_x;
+
+            index += i;
+
             size_t spriteno = cmd->sprites[index];
 
             if(!spriteno) continue;
             
-            m =  scale_m * glm::translate(layer_m, tr);
-            auto &sprite = sheet->sprites[spriteno];
+            m = glm::translate(layer_m, tr);
+            auto &sprite = sheet->sprites[spriteno-1];
 
             gl3_append_quad(gk, &m, sprite.attr);
         }
