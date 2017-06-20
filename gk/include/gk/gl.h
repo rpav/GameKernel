@@ -121,7 +121,7 @@ typedef enum gk_spritelayer_flags {
 typedef struct gk_cmd_spritelayer {
     gk_cmd parent;
 
-    gk_mat4 tfm;          // Transform for the entire layer
+    gk_mat4 *tfm;         // Transform for the entire layer
     gk_spritesheet *sheet;
 
     gk_program_data_set *pds;  // Null means default

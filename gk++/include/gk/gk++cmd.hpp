@@ -202,7 +202,7 @@ namespace gk {
         }
 
         CmdSpriteLayer() : CmdTmpl() {
-            cmd.tfm = mat4(0);
+            cmd.tfm = nullptr;
             cmd.sprites = nullptr;
             cmd.sheet = nullptr;
             cmd.layer_size = vec2(0,0);

@@ -233,7 +233,7 @@ void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) 
     auto layer_x = (size_t)cmd->layer_size.x;
     auto sx = cmd->sprite_size.x;
     auto sy = cmd->sprite_size.y;
-    auto &layer_m = (mat4&)cmd->tfm;
+    auto *layer_m = (mat4*)cmd->tfm;
 
     int si=0,bx=0;
     int sj=0,by=0;
@@ -272,7 +272,7 @@ void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) 
 
             if(!spriteno) continue;
             
-            m = glm::translate(layer_m, tr);
+            m = glm::translate(*layer_m, tr);
             auto &sprite = sheet->sprites[spriteno-1];
 
             gl3_append_quad(gk, &m, sprite.attr);
