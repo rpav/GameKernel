@@ -7,14 +7,6 @@
 #include <map>
 
 namespace gk {
-    typedef std::vector<gk_cmd*> CmdVector;
-
-    class CmdBase {
-    public:
-        virtual ~CmdBase() { }
-        virtual gk_cmd* cmdPtr() = 0;
-    };
-
     template <typename T, gk_cmd_type ID>
     class CmdTmpl : public CmdBase {
     public:
@@ -43,6 +35,29 @@ namespace gk {
 
         inline void index(unsigned int index) { cmd.list_index = index; }
         inline void sort(gk_pass_sorting sort) { cmd.sort = sort; }
+    };
+
+    /* gk::Passes */
+    class Passes : public MultiCmd {
+        std::vector<CmdPass> _passes;
+    public:
+        
+        template<typename...Rest>
+        inline void add(unsigned int index, Rest...args) {
+            _passes.emplace_back(index);
+            add(args...);
+        }
+
+        inline void add() { }
+
+        CmdPass& operator[](size_t i) { return _passes[i]; }
+
+        void addToList(ListBase &list) override {
+            for(auto &cmd : _passes) {
+                list.addCmd(cmd);
+            }
+            list.updateList();
+        }
     };
 
     // gk::CmdClear

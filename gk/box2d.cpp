@@ -235,7 +235,7 @@ gk_b2_fixture_data* ensure_fixdata(b2FixtureDef *fixdef) {
 }
 
 void gk_process_b2_fixture_create(gk_context *, gk_cmd_b2_fixture_create *cmd) {
-    std::vector<gk_vec2> verts;
+    std::vector<b2Vec2> verts;
     auto body = cmd->body->data->body;
 
     b2FixtureDef fixdef;
@@ -266,6 +266,12 @@ void gk_process_b2_fixture_create(gk_context *, gk_cmd_b2_fixture_create *cmd) {
                 circle.m_radius = def[3];
                 fixdef.shape = &circle;
                 def += 3;
+                break;
+
+            case GK_PATH_MOVE_TO:
+            case GK_PATH_LINE_TO:
+                verts.emplace_back(def[0], def[1]);
+                def += 2;
                 break;
 
             case GK_PATH_DENSITY:
@@ -312,12 +318,21 @@ void gk_process_b2_fixture_create(gk_context *, gk_cmd_b2_fixture_create *cmd) {
             case GK_PATH_FILL:
                 if(fixdef.shape) {
                     body->CreateFixture(&fixdef);
+                } else {
+                    poly.Set(verts.data(), verts.size());
+                    fixdef.shape = &poly;
                 }
 
                 break;
 
+            case GK_PATH_STROKE:
+                chain.CreateChain(verts.data(), verts.size());
+                fixdef.shape = &chain;
+                break;
+
             case GK_PATH_BEGIN:
                 new (&fixdef) b2FixtureDef;
+                verts.clear();
                 break;
 
             // Don't worry about unusable bits for now on the off chance
@@ -356,8 +371,8 @@ void gk_process_b2_draw_debug(gk_context *gk, gk_cmd_b2_draw_debug *cmd) {
     auto world = cmd->world->data->world;
     auto draw = cmd->world->data->draw;
 
-    float xscale = cmd->scale.x ? cmd->scale.x : 100.0;
-    float yscale = cmd->scale.y ? cmd->scale.y : 100.0;
+    float xscale = cmd->scale.x ? cmd->scale.x : 1.0;
+    float yscale = cmd->scale.y ? cmd->scale.y : 1.0;
 
     draw->setSize(cmd->resolution.x, cmd->resolution.y, xscale, yscale);
 

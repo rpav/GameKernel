@@ -4,16 +4,46 @@
 
 namespace gk {
     typedef std::vector<gk_list*> ListVector;
+    typedef std::vector<gk_cmd*> CmdVector;
+
+    class ListBase;
+    
+    class CmdBase {
+    public:
+        virtual ~CmdBase() {}
+        virtual gk_cmd* cmdPtr() = 0;
+    };
+
+    class MultiCmd {
+    public:
+        virtual void addToList(ListBase&) = 0;
+    };
 
     class ListBase {
+    protected:
+        CmdVector cmds;
+
     public:
         virtual ~ListBase() { }
         virtual gk_list* listPtr() = 0;
+
+        void addCmd(CmdBase &cmd) {
+            cmds.push_back(cmd.cmdPtr());
+        }
+
+        void addCmd(MultiCmd &cmds) {
+            cmds.addToList(*this);
+        }
+
+        void updateList() {
+            auto l = listPtr();
+            l->ncmds = cmds.size();
+            l->cmds = cmds.data();
+        }
     };
 
     template <typename T, gk_subsystem SYS>
     class ListTmpl : public ListBase {
-        CmdVector cmds;
 
     public:
         T list;
@@ -28,15 +58,17 @@ namespace gk {
 
         template<typename...Rest>
         inline void add(CmdBase &cmd, Rest&...args) {
-            cmds.push_back(cmd.cmdPtr());
+            addCmd(cmd);
             add(args...);
         }
 
-        inline void add() {
-            gk_list *l = listPtr();
-            l->ncmds = cmds.size();
-            l->cmds = cmds.data();
+        template<typename...Rest>
+        inline void add(MultiCmd &cmds, Rest&...args) {
+            addCmd(cmds);
+            add(args...);
         }
+
+        inline void add() { updateList(); }
 
         inline void clear() {
             gk_list *l = listPtr();
