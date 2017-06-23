@@ -77,8 +77,14 @@ public:
         nvgStroke(nvg);
     }
 
-    void DrawSegment(const b2Vec2 &p1, const b2Vec2 &p2, const b2Color &color) {
-        LOG("draw segment");
+    void DrawSegment(const b2Vec2 &p1, const b2Vec2 &p2, const b2Color &c) {
+        auto nvg = _gk->nvg;
+        nvgBeginPath(nvg);
+        nvgMoveTo(nvg, p1.x, p1.y);
+        nvgLineTo(nvg, p2.x, p2.y);
+        nvgStrokeColor(nvg, nvgRGBAf(c.r, c.g, c.b, c.a));
+        nvgStrokeWidth(nvg, _linewidth/2);
+        nvgStroke(nvg);
     }
 
     void DrawTransform(const b2Transform &tf) {
@@ -270,7 +276,7 @@ void gk_process_b2_fixture_create(gk_context *, gk_cmd_b2_fixture_create *cmd) {
 
             case GK_PATH_MOVE_TO:
             case GK_PATH_LINE_TO:
-                verts.emplace_back(def[0], def[1]);
+                verts.emplace_back(def[1], def[2]);
                 def += 2;
                 break;
 
@@ -316,18 +322,18 @@ void gk_process_b2_fixture_create(gk_context *, gk_cmd_b2_fixture_create *cmd) {
                 break;
 
             case GK_PATH_FILL:
-                if(fixdef.shape) {
-                    body->CreateFixture(&fixdef);
-                } else {
+                if(!fixdef.shape) {
                     poly.Set(verts.data(), verts.size());
                     fixdef.shape = &poly;
                 }
 
+                body->CreateFixture(&fixdef);
                 break;
 
             case GK_PATH_STROKE:
                 chain.CreateChain(verts.data(), verts.size());
                 fixdef.shape = &chain;
+                body->CreateFixture(&fixdef);
                 break;
 
             case GK_PATH_BEGIN:
