@@ -26,7 +26,7 @@ public:
         _h = h;
         _xscale = xscale;
         _yscale = yscale;
-        _linewidth = 2.0/xscale;
+        _linewidth = 1.0/xscale;
     }
 
     void DrawPolygon(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color) {
@@ -83,7 +83,7 @@ public:
         nvgMoveTo(nvg, p1.x, p1.y);
         nvgLineTo(nvg, p2.x, p2.y);
         nvgStrokeColor(nvg, nvgRGBAf(c.r, c.g, c.b, c.a));
-        nvgStrokeWidth(nvg, _linewidth/2);
+        nvgStrokeWidth(nvg, _linewidth);
         nvgStroke(nvg);
     }
 
@@ -338,6 +338,9 @@ void gk_process_b2_fixture_create(gk_context *, gk_cmd_b2_fixture_create *cmd) {
 
             case GK_PATH_BEGIN:
                 new (&fixdef) b2FixtureDef;
+                new (&chain) b2ChainShape;
+                new (&poly) b2PolygonShape;
+
                 verts.clear();
                 break;
 
