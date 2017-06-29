@@ -349,7 +349,7 @@ namespace gk {
     /* gk::CmdB2WorldCreate */
     class CmdB2WorldCreate : public CmdTmpl<gk_cmd_b2_world_create, GK_CMD_B2_WORLD_CREATE> {
     public:
-        CmdB2WorldCreate(gk_b2_world &world, vec2 &gravity, bool doSleep)
+        CmdB2WorldCreate(gk_b2_world &world, const vec2 &gravity, bool doSleep)
             : CmdTmpl() {
             cmd.world = &world;
             cmd.gravity = gravity;
