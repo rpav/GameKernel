@@ -412,6 +412,14 @@ namespace gk {
         }
     };
 
+    // gk::CmdB2BodyUpdate
+    class CmdB2BodyUpdate : public CmdTmpl<gk_cmd_b2_body_update, GK_CMD_B2_BODY_UPDATE> {
+    public:
+        CmdB2BodyUpdate(gk_b2_body &body) : CmdTmpl() {
+            cmd.body = &body;
+        }
+    };
+
     // gk::CmdB2FixtureCreate
     class CmdB2FixtureCreate : public CmdTmpl<gk_cmd_b2_fixture_create, GK_CMD_B2_FIXTURE_CREATE> {
     public:
