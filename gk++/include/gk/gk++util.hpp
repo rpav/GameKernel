@@ -9,17 +9,50 @@ namespace gk {
     struct vec2 : public gk_vec2 {
         vec2() = default;
         vec2(float x_, float y_) { x = x_; y = y_; }
+
+        vec2 operator+(const gk_vec2 &v) const { return vec2(x + v.x, y + v.y); }
+        vec2& operator+=(const gk_vec2 &v) { x += v.x; y += v.y; return *this; }
+
+        vec2 operator-(const gk_vec2 &v) const { return vec2(x - v.x, y - v.y); }
+        vec2& operator-=(const gk_vec2 &v) { x -= v.x; y -= v.y; return *this; }
+
+        vec2 operator*(float f) const { return vec2(x * f, y * f); }
     };
 
     struct vec3 : public gk_vec3 {
         vec3() = default;
         vec3(float x_, float y_, float z_) { x = x_; y = y_; z = z_; }
+
+        vec3 operator+(const gk_vec3 &v) { return vec3(x + v.x, y + v.y, z + v.z); }
+        vec3& operator+=(const gk_vec3 &v) { 
+            x += v.x; y += v.y; z += v.z;
+            return *this;
+        }
+
+        vec3 operator-(const gk_vec3 &v) { return vec3(x - v.x, y - v.y, z - v.z); }
+        vec3& operator-=(const gk_vec3 &v) { 
+            x -= v.x; y -= v.y; z -= v.z;
+            return *this;
+        }
+
     };
 
     struct vec4 : public gk_vec4 {
         vec4() = default;
         vec4(float x_, float y_, float z_, float w_) {
             x = x_; y = y_; z = z_; w = w_;
+        }
+
+        vec4 operator+(const gk_vec4 &v) { return vec4(x + v.x, y + v.y, z + v.z, w + v.w); }
+        vec4& operator+=(const gk_vec4 &v) {
+            x += v.x; y += v.y; z += v.z; w += v.w;
+            return *this;
+        }
+
+        vec4 operator-(const gk_vec4 &v) { return vec4(x - v.x, y - v.y, z - v.z, w - v.w); }
+        vec4& operator-=(const gk_vec4 &v) {
+            x -= v.x; y -= v.y; z -= v.z; w -= v.w;
+            return *this;
         }
     };
 

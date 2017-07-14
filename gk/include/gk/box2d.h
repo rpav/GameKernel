@@ -129,6 +129,10 @@ typedef struct gk_cmd_b2_fixture_create {
          GK_PATH_LINE_TO:  Only use move-to for the first vertex.  Still subject
                            to Box2D polygon vertex limits.  Must be convex.
 
+         GK_PATH_TF_SCALE: Set scaling factor; defaults to 1.0 or whatever is specified
+                           in this command's `scale` field if non-zero.  Is not reset by
+                           GK_PATH_BEGIN.  Applies to coordinates only (e.g. not density etc).
+
          GK_PATH_BEGIN:    Reset values and start a new path/shape.
          GK_PATH_FILL:     End and create shape.
 
@@ -151,6 +155,8 @@ typedef struct gk_cmd_b2_fixture_create {
        You _can_ create multiple fixtures with one pathdef.  This is a
        large part of the point.
     */
+    float scale;
+
     size_t pathlen;
     float *pathdef;
 } gk_cmd_b2_fixture_create;

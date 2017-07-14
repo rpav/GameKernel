@@ -498,6 +498,15 @@ namespace gk {
         }
     };
 
+    class CmdB2SetVelocity : public CmdTmpl<gk_cmd_b2_set_velocity, GK_CMD_B2_SET_VELOCITY> {
+    public:
+        CmdB2SetVelocity(gk_b2_body &body, vec2 linear, float angular) {
+            cmd.body = &body;
+            cmd.linear = linear;
+            cmd.angular = angular;
+        }
+    };
+
     // gk::CmdB2DrawDebug
     class CmdB2DrawDebug : public CmdTmpl<gk_cmd_b2_draw_debug, GK_CMD_B2_DRAW_DEBUG> {
     public:

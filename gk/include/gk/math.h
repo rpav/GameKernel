@@ -20,6 +20,20 @@ typedef struct GK_CXX_API gk_vec2 {
 
     CXX_SET(float x, float y);
     CXX_SET(float*);
+
+#ifdef __cplusplus
+    gk_vec2() = default;
+
+    gk_vec2(float x_, float y_) : x(x_), y(y_) { }
+
+    gk_vec2 operator+(const gk_vec2 &v) const { return gk_vec2(x + v.x, y + v.y); }
+    gk_vec2& operator+=(const gk_vec2 &v) { x += v.x; y += v.y; return *this; }
+
+    gk_vec2 operator-(const gk_vec2 &v) const { return gk_vec2(x - v.x, y - v.y); }
+    gk_vec2& operator-=(const gk_vec2 &v) { x -= v.x; y -= v.y; return *this; }
+
+    gk_vec2 operator*(float f) const { return gk_vec2(x * f, y * f); }
+#endif
 } gk_vec2;
 
 typedef struct GK_CXX_API gk_vec3 {

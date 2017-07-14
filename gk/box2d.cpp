@@ -243,6 +243,7 @@ gk_b2_fixture_data* ensure_fixdata(b2FixtureDef *fixdef) {
 void gk_process_b2_fixture_create(gk_context *, gk_cmd_b2_fixture_create *cmd) {
     std::vector<b2Vec2> verts;
     auto body = cmd->body->data->body;
+    float scale = (cmd->scale != 0.0) ? cmd->scale : 1.0;
 
     b2FixtureDef fixdef;
 
@@ -259,8 +260,12 @@ void gk_process_b2_fixture_create(gk_context *, gk_cmd_b2_fixture_create *cmd) {
 
         switch(id) {
             case GK_PATH_RECT: {
-                float w = def[3]/2, h = def[4]/2;
-                b2Vec2 center(def[1] + w, def[2] + h);
+                float w = def[3]/2 * scale;
+                float h = def[4]/2 * scale;
+                float x = def[1] * scale;
+                float y = def[2] * scale;
+
+                b2Vec2 center(x + w, y + h);
                 poly.SetAsBox(w, h, center, 0.0);
                 fixdef.shape = &poly;
             }
@@ -268,15 +273,15 @@ void gk_process_b2_fixture_create(gk_context *, gk_cmd_b2_fixture_create *cmd) {
                 break;
 
             case GK_PATH_CIRCLE:
-                circle.m_p = b2Vec2(def[1], def[2]);
-                circle.m_radius = def[3];
+                circle.m_p = b2Vec2(def[1]*scale, def[2]*scale);
+                circle.m_radius = def[3] * scale;
                 fixdef.shape = &circle;
                 def += 3;
                 break;
 
             case GK_PATH_MOVE_TO:
             case GK_PATH_LINE_TO:
-                verts.emplace_back(def[1], def[2]);
+                verts.emplace_back(def[1]*scale, def[2]*scale);
                 def += 2;
                 break;
 
@@ -334,6 +339,11 @@ void gk_process_b2_fixture_create(gk_context *, gk_cmd_b2_fixture_create *cmd) {
                 chain.CreateChain(verts.data(), verts.size());
                 fixdef.shape = &chain;
                 body->CreateFixture(&fixdef);
+                break;
+
+            case GK_PATH_TF_SCALE:
+                scale = def[1];
+                def++;
                 break;
 
             case GK_PATH_BEGIN:
