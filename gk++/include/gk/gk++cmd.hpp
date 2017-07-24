@@ -439,6 +439,15 @@ namespace gk {
         }
     };
 
+    // gk::CmdB2FixtureUpdate
+    class CmdB2FixtureUpdate : public CmdTmpl<gk_cmd_b2_fixture_update, GK_CMD_B2_FIXTURE_UPDATE> {
+    public:
+        CmdB2FixtureUpdate(gk_b2_body &body, int id = 0) : CmdTmpl() {
+            cmd.body = &body;
+            cmd.id   = id;
+        }
+    };
+
     // gk::CmdB2Step
     class CmdB2Step : public CmdTmpl<gk_cmd_b2_step, GK_CMD_B2_STEP> {
     public:
