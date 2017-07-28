@@ -112,6 +112,9 @@ public:
     }
 
     ContactPair& add(b2Contact *c) {
+        b2WorldManifold manifold;
+        c->GetWorldManifold(&manifold);
+
         auto fixA = c->GetFixtureA();
         auto fixB = c->GetFixtureB();
 
@@ -126,7 +129,7 @@ public:
         if(fixDataA) idA = fixDataA->id;
         if(fixDataB) idB = fixDataB->id;
 
-        auto pair = new ContactPair(a, b, idA, idB);
+        auto pair = new ContactPair(a, b, idA, idB, *(gk_vec2*)&manifold.normal);
         _pairs.push_back(pair);
 
         return *pair;
