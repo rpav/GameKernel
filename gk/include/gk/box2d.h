@@ -201,16 +201,17 @@ typedef struct gk_b2_contact_pair {
     /* Contact > 0; Separation < 0 */
     int contact;
 
-    /* Contact normal */
+    /* Contact data */
     gk_vec2 normal;
 
     /* Ignore the man behind the curtains */
 #ifdef __cplusplus
     gk_b2_contact_pair() = default;
-    gk_b2_contact_pair(gk_b2_body *a_, gk_b2_body *b_, int fixa, int fixb, gk_vec2 normal_)
+    gk_b2_contact_pair(gk_b2_body *a_, gk_b2_body *b_, int fixa, int fixb)
       : a(a_), b(b_), id_a(fixa), id_b(fixb) {
         contact = 0;
-        normal = normal_;
+        normal.x = 0;
+        normal.y = 0;
     }
 #endif
 } gk_b2_contact_pair;
