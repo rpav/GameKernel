@@ -8,7 +8,9 @@
 namespace gk {
     struct vec2 : public gk_vec2 {
         vec2() = default;
+        vec2(int) { x = 0; y = 0; }
         vec2(float x_, float y_) { x = x_; y = y_; }
+        vec2(const gk_vec2 &v) { x = v.x; y = v.y; }
 
         vec2 operator+(const gk_vec2 &v) const { return vec2(x + v.x, y + v.y); }
         vec2& operator+=(const gk_vec2 &v) { x += v.x; y += v.y; return *this; }
@@ -21,6 +23,7 @@ namespace gk {
 
     struct vec3 : public gk_vec3 {
         vec3() = default;
+        vec3(int) { x = 0; y = 0; z = 0; }
         vec3(float x_, float y_, float z_) { x = x_; y = y_; z = z_; }
 
         vec3 operator+(const gk_vec3 &v) { return vec3(x + v.x, y + v.y, z + v.z); }
@@ -39,6 +42,7 @@ namespace gk {
 
     struct vec4 : public gk_vec4 {
         vec4() = default;
+        vec4(int) { x = 0; y = 0; z = 0; w = 0; }
         vec4(float x_, float y_, float z_, float w_) {
             x = x_; y = y_; z = z_; w = w_;
         }
