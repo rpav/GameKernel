@@ -375,7 +375,7 @@ void gk_process_b2_fixture_update(gk_context *, gk_cmd_b2_fixture_update* cmd) {
     // Not the best, but for now
     for(auto f = b->GetFixtureList(); f; f = f->GetNext()) {
         gk_b2_fixture_data *d = (gk_b2_fixture_data*)f->GetUserData();
-        if((d && d->id == id) || (!d && id == 0)) {
+        if((d && (d->id == id || id == 0)) || (!d && id == 0)) {
             if(mask & GK_B2_FIXTURE_UPDATE_DENSITY)    f->SetDensity(cmd->density);
             if(mask & GK_B2_FIXTURE_UPDATE_ELASTICITY) f->SetRestitution(cmd->elasticity);
             if(mask & GK_B2_FIXTURE_UPDATE_FRICTION)   f->SetFriction(cmd->friction);

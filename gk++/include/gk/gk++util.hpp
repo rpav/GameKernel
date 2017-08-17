@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstring>
+#include <cmath>
 
 #include <map>
 #include <string>
@@ -19,6 +20,37 @@ namespace gk {
         vec2& operator-=(const gk_vec2 &v) { x -= v.x; y -= v.y; return *this; }
 
         vec2 operator*(float f) const { return vec2(x * f, y * f); }
+
+        // Note: These are simple but not terribly efficient
+
+        // Requires a normalized vector
+        float angle(const gk_vec2 &v) const { return atan2(v.y,v.x) - atan2(y,x); }
+
+        float length() const {
+            return sqrt((x*x)+(y*y));
+        }
+
+        gk_vec2& normalize() {
+            auto scale = 1.0 / length();
+            
+            x *= scale;
+            y *= scale;
+
+            return *this;
+        }
+
+        gk_vec2& rotate(float radians) {
+            float c = cos(radians);
+            float s = sin(radians);
+
+            float _x = x*c - y*s;
+            float _y = x*s + y*c;
+
+            x = _x;
+            y = _y;
+
+            return *this;
+        }
     };
 
     struct vec3 : public gk_vec3 {
