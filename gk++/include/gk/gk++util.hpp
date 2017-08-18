@@ -20,6 +20,7 @@ namespace gk {
         vec2& operator-=(const gk_vec2 &v) { x -= v.x; y -= v.y; return *this; }
 
         vec2 operator*(float f) const { return vec2(x * f, y * f); }
+        vec2& operator*=(float f) { x *= f; y *= f; return *this; }
 
         // Note: These are simple but not terribly efficient
 

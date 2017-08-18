@@ -445,13 +445,24 @@ void gk_process_b2_iter_bodies(gk_context *, gk_cmd_b2_iter_bodies* cmd) {
 }
 
 void gk_process_b2_force(gk_context *, gk_cmd_b2_force* cmd) {
-    cmd->body->data->body->ApplyForce((b2Vec2&)cmd->force,
-                                      (b2Vec2&)cmd->point,
-                                      cmd->wake);
+    auto *body = cmd->body->data->body;
+    gk::vec2 force = cmd->force;
+
+    if(cmd->flags & GK_B2_FORCE_MASS_SCALE)
+        force *= body->GetMass();
+
+    body->ApplyForce(
+        (b2Vec2&)force,
+        (b2Vec2&)cmd->point,
+        cmd->flags & GK_B2_FORCE_WAKE);
 }
 
 void gk_process_b2_torque(gk_context *, gk_cmd_b2_torque* cmd) {
-    cmd->body->data->body->ApplyTorque(cmd->torque, cmd->wake);
+    auto *body = cmd->body->data->body;
+
+    body->ApplyTorque(
+        (cmd->flags & GK_B2_FORCE_MASS_SCALE ? cmd->torque * body->GetMass() : cmd->torque),
+        cmd->flags & GK_B2_FORCE_WAKE);
 }
 
 void gk_process_b2_linear_impulse(gk_context *, gk_cmd_b2_linear_impulse* cmd) {

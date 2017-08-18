@@ -202,6 +202,8 @@ typedef struct gk_b2_contact_pair {
     int contact;
 
     /* Contact data */
+    uint8_t npoints;
+    gk_vec2 point[2];
     gk_vec2 normal;
 
     /* Ignore the man behind the curtains */
@@ -234,13 +236,19 @@ typedef struct gk_cmd_b2_iter_bodies {
 
 
 /* Forces */
+enum gk_b2_force_flags {
+    GK_B2_FORCE_WAKE       = 1 << 0,
+    GK_B2_FORCE_MASS_SCALE = 1 << 1,
+};
+
 typedef struct gk_cmd_b2_force {
     gk_cmd parent;
 
     gk_b2_body *body;
     gk_vec2 force;
     gk_vec2 point;
-    bool wake;
+    
+    uint8_t flags;
 } gk_cmd_b2_force;
 
 typedef struct gk_cmd_b2_torque {
@@ -248,7 +256,8 @@ typedef struct gk_cmd_b2_torque {
 
     gk_b2_body *body;
     float torque;
-    bool wake;
+
+    uint8_t flags;
 } gk_cmd_b2_torque;
 
 typedef struct gk_cmd_b2_linear_impulse {

@@ -473,15 +473,15 @@ namespace gk {
 
     class CmdB2Force : public CmdTmpl<gk_cmd_b2_force, GK_CMD_B2_FORCE> {
     public:
-        CmdB2Force(vec2 force, vec2 point, bool wake = true) 
+        CmdB2Force(vec2 force, vec2 point, uint8_t flags = 0) 
             : CmdTmpl() {
             cmd.force = (gk_vec2)force;
             cmd.point = (gk_vec2)point;
-            cmd.wake = wake;
+            cmd.flags = flags;
         }
 
-        CmdB2Force(gk_b2_body &body, vec2 force, vec2 point, bool wake = true)
-            : CmdB2Force(force, point, wake) {
+        CmdB2Force(gk_b2_body &body, vec2 force, vec2 point, uint8_t flags = 0)
+            : CmdB2Force(force, point, flags) {
             setBody(body);
         }
 
@@ -490,16 +490,15 @@ namespace gk {
 
     class CmdB2Torque : public CmdTmpl<gk_cmd_b2_torque, GK_CMD_B2_TORQUE> {
     public:
-        CmdB2Torque(float torque, bool wake = true)
+        CmdB2Torque(float torque, uint8_t flags = 0)
             : CmdTmpl() {
             cmd.torque = torque;
-            cmd.wake = wake;
+            cmd.flags = flags;
         }
 
-        CmdB2Torque(gk_b2_body &body, float torque, bool wake = true)
-            : CmdB2Torque(torque, wake)  {
+        CmdB2Torque(gk_b2_body &body, float torque, uint8_t flags = 0)
+            : CmdB2Torque(torque, flags)  {
             setBody(body);
-
         }
 
         inline void setBody(gk_b2_body &body) { cmd.body = &body; }
