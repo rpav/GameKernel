@@ -172,9 +172,18 @@ typedef enum gk_b2_fixture_update_flags {
 typedef struct gk_cmd_b2_fixture_update {
     gk_cmd parent;
 
-    /* This will update EVERY fixture with this ID */
+    /* - Update *every* fixture with the given ID or IDs.
+       - When `ids` is NULL, a single ID may be specified by `id`, otherwise
+         `nids` specifies the array size as elsewhere
+       - When `id` is -1, all fixtures will be updated.  This does not apply to `ids`.
+    */
     gk_b2_body *body;
-    int id;
+    int *ids;
+
+    union {
+        size_t nids;
+        int id;
+    };
 
     /* gk_b2_fixture_update_flags */
     unsigned int update;

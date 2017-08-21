@@ -367,28 +367,60 @@ void gk_process_b2_fixture_create(gk_context *, gk_cmd_b2_fixture_create *cmd) {
     }
 }
 
-void gk_process_b2_fixture_update(gk_context *, gk_cmd_b2_fixture_update* cmd) {
-    auto b = ((gk_b2_body_data*)cmd->body->data)->body;
+static void process_one_fixture(b2Fixture *f, gk_cmd_b2_fixture_update *cmd) {
     auto mask = cmd->update;
     auto id = cmd->id;
 
-    // Not the best, but for now
-    for(auto f = b->GetFixtureList(); f; f = f->GetNext()) {
-        gk_b2_fixture_data *d = (gk_b2_fixture_data*)f->GetUserData();
-        if((d && (d->id == id || id == 0)) || (!d && id == 0)) {
-            if(mask & GK_B2_FIXTURE_UPDATE_DENSITY)    f->SetDensity(cmd->density);
-            if(mask & GK_B2_FIXTURE_UPDATE_ELASTICITY) f->SetRestitution(cmd->elasticity);
-            if(mask & GK_B2_FIXTURE_UPDATE_FRICTION)   f->SetFriction(cmd->friction);
-            if(mask & GK_B2_FIXTURE_UPDATE_SENSOR)     f->SetSensor(cmd->sensor);
+    if(mask & GK_B2_FIXTURE_UPDATE_DENSITY)    f->SetDensity(cmd->density);
+    if(mask & GK_B2_FIXTURE_UPDATE_ELASTICITY) f->SetRestitution(cmd->elasticity);
+    if(mask & GK_B2_FIXTURE_UPDATE_FRICTION)   f->SetFriction(cmd->friction);
+    if(mask & GK_B2_FIXTURE_UPDATE_SENSOR)     f->SetSensor(cmd->sensor);
 
-            if(mask & GK_B2_FIXTURE_UPDATE_FILTER) {
-                b2Filter filt;
-                filt.categoryBits = cmd->category;
-                filt.maskBits = cmd->mask;
-                filt.groupIndex = cmd->group;
-                f->SetFilterData(filt);
+    if(mask & GK_B2_FIXTURE_UPDATE_FILTER) {
+        b2Filter filt;
+        filt.categoryBits = cmd->category;
+        filt.maskBits = cmd->mask;
+        filt.groupIndex = cmd->group;
+        f->SetFilterData(filt);
+    }
+}
+
+void gk_process_b2_fixture_update(gk_context *, gk_cmd_b2_fixture_update *cmd) {
+    auto b = ((gk_b2_body_data*)cmd->body->data)->body;
+
+    std::vector<b2Fixture*> fixtures;
+
+    if(cmd->ids != nullptr) {
+        /* FIXME? This is O(n*m) */
+        for(auto f = b->GetFixtureList(); f; f = f->GetNext()) {
+            gk_b2_fixture_data *d = (gk_b2_fixture_data*)f->GetUserData();
+
+            if(!d) continue;
+
+            for(int i = 0; i < cmd->nids; ++i) {
+                if(d->id == cmd->ids[i]) {
+                    fixtures.push_back(f);
+                }
             }
         }
+    } else {
+        for(auto f = b->GetFixtureList(); f; f = f->GetNext()) {
+            gk_b2_fixture_data *d = (gk_b2_fixture_data*)f->GetUserData();
+
+            if(!d) {
+                if(cmd->id == -1)
+                    fixtures.push_back(f);
+
+                continue;
+            }
+
+            if(cmd->id == -1 || cmd->id == d->id)
+                fixtures.push_back(f);
+        }
+    }
+
+    for(auto f : fixtures) {
+        process_one_fixture(f, cmd);
     }
 }
 

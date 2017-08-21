@@ -442,14 +442,20 @@ namespace gk {
     // gk::CmdB2FixtureUpdate
     class CmdB2FixtureUpdate : public CmdTmpl<gk_cmd_b2_fixture_update, GK_CMD_B2_FIXTURE_UPDATE> {
     public:
-        CmdB2FixtureUpdate(gk_b2_body &body, int id = 0) : CmdTmpl() {
+        CmdB2FixtureUpdate(gk_b2_body &body, int id) : CmdTmpl() {
             setBody(body);
             cmd.id   = id;
         }
 
-        CmdB2FixtureUpdate(int id = 0) : CmdTmpl() {
+        CmdB2FixtureUpdate(gk_b2_body &body) : CmdTmpl() {
+            setBody(body);
+        }
+
+        CmdB2FixtureUpdate(int id) : CmdTmpl() {
             cmd.id = id;
         }
+
+        CmdB2FixtureUpdate() : CmdTmpl() { }
 
         inline void setBody(gk_b2_body &body) { cmd.body = &body; }
     };
