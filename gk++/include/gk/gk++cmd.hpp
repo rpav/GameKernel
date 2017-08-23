@@ -238,7 +238,10 @@ namespace gk {
 
     /* gk::CmdPath */
 
-    typedef std::vector<float> PathDef;
+    class PathDef : public std::vector<float> {
+    public:
+        inline PathDef& append(const std::initializer_list<float> list) { insert(end(), list); return *this; }
+    };
 
     class CmdPath : public CmdTmpl<gk_cmd_path, GK_CMD_PATH> {
     public:
