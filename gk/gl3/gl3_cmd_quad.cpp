@@ -230,7 +230,8 @@ void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) 
     vec3 tr;
 
     gl3_quad_ensure_state(gk, sheet->tex, cmd->pds);
-    auto layer_x = (size_t)cmd->layer_size.x;
+    auto layer_x = cmd->layer_size.x;
+    auto layer_y = cmd->layer_size.y;
     auto sx = cmd->sprite_size.x;
     auto sy = cmd->sprite_size.y;
     auto *layer_m = (mat4*)cmd->tfm;
@@ -246,13 +247,8 @@ void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) 
         bx = glm::clamp<int>(si + cmd->bounds.z, 0, cmd->layer_size.x);
     }
 
-    if(cmd->flags & GK_SPRITELAYER_FLIPY) {
-        sj = glm::clamp<int>(cmd->layer_size.y - cmd->bounds.w, 0, cmd->layer_size.y);
-        by = glm::clamp<int>(sj + cmd->bounds.w, 0, cmd->layer_size.y);
-    } else {
-        sj = glm::clamp<int>(cmd->bounds.y, 0, cmd->layer_size.y);
-        by = glm::clamp<int>(sj + cmd->bounds.w, 0, cmd->layer_size.y);
-    }
+    sj = glm::clamp<int>(cmd->bounds.y, 0, cmd->layer_size.y);
+    by = glm::clamp<int>(sj + cmd->bounds.w, 0, cmd->layer_size.y);
 
     for(int j = sj; j < by; ++j) {
         for(int i = si; i < bx; ++i) {
@@ -262,7 +258,7 @@ void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) 
             size_t index = 0;
 
             if(cmd->flags & GK_SPRITELAYER_FLIPY)
-                index = (by-j-1)*layer_x;
+                index = (layer_y-j-1)*layer_x;
             else
                 index = j*layer_x;
 
