@@ -350,4 +350,23 @@ namespace gk {
             return v->second;
         }
     };
+
+    class SpriteLayerConfig : public gk_spritelayer_config {
+    public:
+        SpriteLayerConfig() {
+            sheet = nullptr;
+            layer_size = { 0, 0 };
+            sprite_size = { 0, 0 };
+        }
+    };
+
+    class SpriteLayerRender : public gk_spritelayer_render {
+    public:
+        SpriteLayerRender() {
+            pds = nullptr;
+            tfm = mat4(0);
+            bounds = { 0, 0, 0, 0 };
+            flags = 0;
+        }
+    };
 }

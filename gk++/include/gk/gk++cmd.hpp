@@ -205,25 +205,19 @@ namespace gk {
         std::vector<size_t> _sprites;
     public:
 
-        CmdSpriteLayer(gk::SpriteSheet &sheet, vec2 layerSize, vec2 spriteSize, uint32_t flags = 0)
-            : CmdTmpl(), _sprites((size_t)layerSize.x * (size_t)layerSize.y, 0)
+        CmdSpriteLayer(gk_spritelayer_config *config, gk_spritelayer_render *render)
+            : CmdTmpl()
+            , _sprites((size_t)config->layer_size.x * (size_t)config->layer_size.y, 0)
         {
-            cmd.sheet = sheet;
-            cmd.layer_size = layerSize;
-            cmd.bounds = vec4(0,0,layerSize.x,layerSize.y);
-            cmd.sprite_size = spriteSize;
-            cmd.sprites = _sprites.data();
-            cmd.flags = flags;
+            cmd.config = config;
+            cmd.render = render;
+            cmd.sprites = nullptr;
         }
 
         CmdSpriteLayer() : CmdTmpl() {
-            cmd.tfm = nullptr;
+            cmd.config = nullptr;
+            cmd.render = nullptr;
             cmd.sprites = nullptr;
-            cmd.sheet = nullptr;
-            cmd.layer_size = vec2(0,0);
-            cmd.sprite_size = vec2(0,0);
-            cmd.bounds = vec4(0,0,0,0);
-            cmd.flags = 0;
         }
 
         void reserve(size_t size) {

@@ -118,18 +118,27 @@ typedef enum gk_spritelayer_flags {
     GK_SPRITELAYER_FLIPY = 1 << 1,
 } gk_spritelayer_flags;
 
-typedef struct gk_cmd_spritelayer {
-    gk_cmd parent;
-
-    gk_mat4 *tfm;         // Transform for the entire layer
+typedef struct gk_spritelayer_config {
     gk_spritesheet *sheet;
-
-    gk_program_data_set *pds;  // Null means default
 
     gk_vec2 layer_size;   // Integer WxH of sprites
     gk_vec2 sprite_size;  // Uniform sprite size
-    gk_vec4 bounds;       // x,y w,h for how much to render
+} gk_spritelayer_config;
+
+typedef struct gk_spritelayer_render {
+    gk_program_data_set *pds;  // Null means default
+
+    gk_mat4 tfm;         // Transform for the entire layer
+    gk_vec4 bounds;      // x,y w,h for how much to render
     uint32_t flags;       // gk_spritelayer_flags
+};
+
+typedef struct gk_cmd_spritelayer {
+    gk_cmd parent;
+
+    // Data for rendering etc; many layers can link one config
+    gk_spritelayer_config *config;
+    gk_spritelayer_render *render;
 
     // Provide this, a w*h array of sprite indexes for sheet
     size_t *sprites;

@@ -225,30 +225,33 @@ void gl3_end_quad(gk_context *gk) {
 }
 
 void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) {
-    auto *sheet = cmd->sheet;
+    auto *sheet = cmd->config->sheet;
+    auto *cfg   = cmd->config;
+    auto *r     = cmd->render;
+
     mat4 m;
     vec3 tr;
 
-    gl3_quad_ensure_state(gk, sheet->tex, cmd->pds);
-    auto layer_x = cmd->layer_size.x;
-    auto layer_y = cmd->layer_size.y;
-    auto sx = cmd->sprite_size.x;
-    auto sy = cmd->sprite_size.y;
-    auto *layer_m = (mat4*)cmd->tfm;
+    gl3_quad_ensure_state(gk, sheet->tex, r->pds);
+    auto layer_x = cfg->layer_size.x;
+    auto layer_y = cfg->layer_size.y;
+    auto sx = cfg->sprite_size.x;
+    auto sy = cfg->sprite_size.y;
+    auto *layer_m = (mat4*)&(cmd->render->tfm);
 
     int si=0,bx=0;
     int sj=0,by=0;
 
-    if(cmd->flags & GK_SPRITELAYER_FLIPX) {
-        si = glm::clamp<int>(cmd->layer_size.x - cmd->bounds.z, 0, cmd->layer_size.x);
-        bx = glm::clamp<int>(si + cmd->bounds.z, 0, cmd->layer_size.x);
+    if(cmd->render->flags & GK_SPRITELAYER_FLIPX) {
+        si = glm::clamp<int>(cfg->layer_size.x - r->bounds.z, 0, cfg->layer_size.x);
+        bx = glm::clamp<int>(si + r->bounds.z, 0, cfg->layer_size.x);
     } else {
-        si = glm::clamp<int>(cmd->bounds.x, 0, cmd->layer_size.x);
-        bx = glm::clamp<int>(si + cmd->bounds.z, 0, cmd->layer_size.x);
+        si = glm::clamp<int>(r->bounds.x, 0, cfg->layer_size.x);
+        bx = glm::clamp<int>(si + r->bounds.z, 0, cfg->layer_size.x);
     }
 
-    sj = glm::clamp<int>(cmd->bounds.y, 0, cmd->layer_size.y);
-    by = glm::clamp<int>(sj + cmd->bounds.w, 0, cmd->layer_size.y);
+    sj = glm::clamp<int>(r->bounds.y, 0, cfg->layer_size.y);
+    by = glm::clamp<int>(sj + r->bounds.w, 0, cfg->layer_size.y);
 
     for(int j = sj; j < by; ++j) {
         for(int i = si; i < bx; ++i) {
@@ -257,7 +260,7 @@ void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) 
 
             size_t index = 0;
 
-            if(cmd->flags & GK_SPRITELAYER_FLIPY)
+            if(r->flags & GK_SPRITELAYER_FLIPY)
                 index = (layer_y-j-1)*layer_x;
             else
                 index = j*layer_x;
