@@ -131,7 +131,7 @@ typedef struct gk_spritelayer_render {
     gk_mat4 tfm;         // Transform for the entire layer
     gk_vec4 bounds;      // x,y w,h for how much to render
     uint32_t flags;       // gk_spritelayer_flags
-};
+} gk_spritelayer_render;
 
 typedef struct gk_cmd_spritelayer {
     gk_cmd parent;

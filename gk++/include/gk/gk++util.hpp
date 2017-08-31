@@ -32,7 +32,7 @@ namespace gk {
         }
 
         gk_vec2& normalize() {
-            auto scale = 1.0 / length();
+            float scale = 1.0 / length();
             
             x *= scale;
             y *= scale;

@@ -26,7 +26,7 @@ public:
         _h = h;
         _xscale = xscale;
         _yscale = yscale;
-        _linewidth = 1.0/xscale;
+        _linewidth = 1.0f/xscale;
     }
 
     void DrawPolygon(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color) {
@@ -249,7 +249,7 @@ gk_b2_fixture_data* ensure_fixdata(b2FixtureDef *fixdef) {
 void gk_process_b2_fixture_create(gk_context *, gk_cmd_b2_fixture_create *cmd) {
     std::vector<b2Vec2> verts;
     auto body = cmd->body->data->body;
-    float scale = (cmd->scale != 0.0) ? cmd->scale : 1.0;
+    float scale = (cmd->scale != 0.0f) ? cmd->scale : 1.0f;
 
     b2FixtureDef fixdef;
 
