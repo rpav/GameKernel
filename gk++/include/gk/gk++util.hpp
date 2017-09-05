@@ -7,99 +7,10 @@
 #include <string>
 
 namespace gk {
-    struct vec2 : public gk_vec2 {
-        vec2() = default;
-        vec2(int) { x = 0; y = 0; }
-        vec2(float x_, float y_) { x = x_; y = y_; }
-        vec2(const gk_vec2 &v) { x = v.x; y = v.y; }
-
-        vec2 operator+(const gk_vec2 &v) const { return vec2(x + v.x, y + v.y); }
-        vec2& operator+=(const gk_vec2 &v) { x += v.x; y += v.y; return *this; }
-
-        vec2 operator-(const gk_vec2 &v) const { return vec2(x - v.x, y - v.y); }
-        vec2& operator-=(const gk_vec2 &v) { x -= v.x; y -= v.y; return *this; }
-
-        vec2 operator*(float f) const { return vec2(x * f, y * f); }
-        vec2& operator*=(float f) { x *= f; y *= f; return *this; }
-
-        // Note: These are simple but not terribly efficient
-
-        // Requires a normalized vector
-        float angle(const gk_vec2 &v) const { return atan2(v.y,v.x) - atan2(y,x); }
-
-        float length() const {
-            return sqrt((x*x)+(y*y));
-        }
-
-        gk_vec2& normalize() {
-            float scale = 1.0 / length();
-            
-            x *= scale;
-            y *= scale;
-
-            return *this;
-        }
-
-        gk_vec2& rotate(float radians) {
-            float c = cos(radians);
-            float s = sin(radians);
-
-            float _x = x*c - y*s;
-            float _y = x*s + y*c;
-
-            x = _x;
-            y = _y;
-
-            return *this;
-        }
-    };
-
-    struct vec3 : public gk_vec3 {
-        vec3() = default;
-        vec3(int) { x = 0; y = 0; z = 0; }
-        vec3(float x_, float y_, float z_) { x = x_; y = y_; z = z_; }
-
-        vec3 operator+(const gk_vec3 &v) { return vec3(x + v.x, y + v.y, z + v.z); }
-        vec3& operator+=(const gk_vec3 &v) { 
-            x += v.x; y += v.y; z += v.z;
-            return *this;
-        }
-
-        vec3 operator-(const gk_vec3 &v) { return vec3(x - v.x, y - v.y, z - v.z); }
-        vec3& operator-=(const gk_vec3 &v) { 
-            x -= v.x; y -= v.y; z -= v.z;
-            return *this;
-        }
-
-    };
-
-    struct vec4 : public gk_vec4 {
-        vec4() = default;
-        vec4(int) { x = 0; y = 0; z = 0; w = 0; }
-        vec4(float x_, float y_, float z_, float w_) {
-            x = x_; y = y_; z = z_; w = w_;
-        }
-
-        vec4 operator+(const gk_vec4 &v) { return vec4(x + v.x, y + v.y, z + v.z, w + v.w); }
-        vec4& operator+=(const gk_vec4 &v) {
-            x += v.x; y += v.y; z += v.z; w += v.w;
-            return *this;
-        }
-
-        vec4 operator-(const gk_vec4 &v) { return vec4(x - v.x, y - v.y, z - v.z, w - v.w); }
-        vec4& operator-=(const gk_vec4 &v) {
-            x -= v.x; y -= v.y; z -= v.z; w -= v.w;
-            return *this;
-        }
-    };
-
-    struct mat4 : public gk_mat4 {
-        mat4() = default;
-        mat4(int) {
-            memset(this, 0, sizeof(mat4));
-            a00 = a11 = a22 = a33 = 1;
-        }
-    };
+    using vec2 = gk_vec2;
+    using vec3 = gk_vec3;
+    using vec4 = gk_vec4;
+    using mat4 = gk_mat4;
 
     template<typename T>
     inline T* ptr(T &x) { return &x; }
