@@ -141,6 +141,7 @@ typedef struct GK_CXX_API gk_mat4 {
 #endif
 
 #if defined(__cplusplus) && defined(GK_GLM_CONVERSIONS)
+    gk_mat4(const glm::mat4 &m) { *this = *(gk_mat4*)&m; }
     inline operator glm::mat4&() { return (glm::mat4&)*this; }
 #endif
 } gk_mat4;

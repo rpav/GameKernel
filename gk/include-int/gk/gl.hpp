@@ -56,6 +56,7 @@ void gk_fini_gl(gk_context *gk);
 void gk_process_gl(gk_context *gk, gk_bundle *bundle, gk_list_gl *list);
 void gk_process_cmd_tf_trs(gk_context *gk, gk_cmd_tf_trs *cmd);
 void gk_process_cmd_tf_ortho(gk_context *gk, gk_cmd_tf_ortho *cmd);
+void gk_process_cmd_tf_m(gk_context *, gk_cmd_tf_m * cmd);
 
 // Any GL
 void gl_cmd_clear(gk_context *gk, gk_cmd_clear *cmd);

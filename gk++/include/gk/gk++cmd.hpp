@@ -143,6 +143,18 @@ namespace gk {
         }
     };
 
+    // gk::CmdTFM
+    class CmdTFM : public CmdTF<gk_cmd_tf_m, GK_CMD_TF_M> {
+    public:
+        CmdTFM(mat4 *m = nullptr) : CmdTF() {
+            cmd.m = m;
+        }
+
+        void setM(mat4 *m) {
+            cmd.m = m;
+        }
+    };
+
     // gk::CmdQuad
     class CmdQuad : public CmdTmpl<gk_cmd_quad, GK_CMD_QUAD> {
     public:

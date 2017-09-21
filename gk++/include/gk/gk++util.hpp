@@ -3,14 +3,19 @@
 #include <cstring>
 #include <cmath>
 
+#include <vector>
 #include <map>
 #include <string>
+
+#include "gk/gk.h"
 
 namespace gk {
     using vec2 = gk_vec2;
     using vec3 = gk_vec3;
     using vec4 = gk_vec4;
     using mat4 = gk_mat4;
+
+    extern const mat4 IDENTITY;
 
     template<typename T>
     inline T* ptr(T &x) { return &x; }

@@ -12,6 +12,8 @@ using vec2 = glm::vec2;
 
 #include <string.h>
 
+#define GK_GLM_CONVERSIONS
+
 #include "gk/gk.h"
 #include "gk/gl.hpp"
 #include "gk/log.hpp"
@@ -47,4 +49,12 @@ void gk_process_cmd_tf_ortho(gk_context *, gk_cmd_tf_ortho *cmd) {
 
     *tf = glm::ortho<float>(cmd->left, cmd->right, cmd->bottom, cmd->top,
                             cmd->near, cmd->far);
+}
+
+void gk_process_cmd_tf_m(gk_context *, gk_cmd_tf_m *cmd) {
+    glm::mat4 &prior = *cmd->parent.prior;
+    glm::mat4 &m     = *cmd->m;
+    glm::mat4 &out   = *cmd->parent.out;
+
+    out = prior * m;
 }

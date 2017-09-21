@@ -5,6 +5,8 @@
 
 BEGIN_NS_GK;
 
+const mat4 IDENTITY(0);
+
 Bundle::Bundle(unsigned int start, gk_pass_sorting sort) {
     memset(&bundle, 0, sizeof(gk_bundle));
 

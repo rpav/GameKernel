@@ -131,6 +131,9 @@ bool gk_process_cmd_general(const char *listname, gk_context *gk, gk_bundle *b, 
         case GK_CMD_TF_ORTHO:
             gk_process_cmd_tf_ortho(gk, (gk_cmd_tf_ortho*)cmd);
             break;
+        case GK_CMD_TF_M:
+            gk_process_cmd_tf_m(gk, (gk_cmd_tf_m*)cmd);
+            break;
 
         case GK_CMD_CLEAR:
             gl_cmd_clear(gk, (gk_cmd_clear*)cmd);

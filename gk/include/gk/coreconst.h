@@ -17,6 +17,7 @@ typedef enum gk_cmd_type {
     /* Transforms */
     GK_CMD_TF_TRS,
     GK_CMD_TF_ORTHO,
+    GK_CMD_TF_M,
 
     /* GL */
     GK_CMD_CLEAR,

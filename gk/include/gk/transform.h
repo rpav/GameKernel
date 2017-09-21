@@ -46,4 +46,11 @@ typedef struct gk_cmd_tf_ortho {
     float near, far;
 } gk_cmd_tf_ortho;
 
+typedef struct gk_cmd_tf_m {
+    gk_cmd_tf parent;
+
+    /* out = prior * m */
+    gk_mat4 *m;
+};
+
 #endif /* __GAMEKERNEL_TFM_H__ */
