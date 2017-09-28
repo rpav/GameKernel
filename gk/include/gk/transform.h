@@ -51,6 +51,6 @@ typedef struct gk_cmd_tf_m {
 
     /* out = prior * m */
     gk_mat4 *m;
-};
+} gk_cmd_tf_m;
 
 #endif /* __GAMEKERNEL_TFM_H__ */
