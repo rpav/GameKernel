@@ -34,6 +34,9 @@ typedef struct GK_CXX_API gk_vec2 {
     gk_vec2 operator*(float f) const { return gk_vec2(x * f, y * f); }
     gk_vec2& operator*=(float f) { x *= f; y *= f; return *this; }
 
+    gk_vec2 operator/(float f) const { return gk_vec2(x / f, y / f); }
+    gk_vec2& operator/=(float f) { x /= f; y /= f; return *this; }
+
     gk_vec2& operator=(const gk_vec2 &v) { x = v.x; y = v.y; return *this; }
 
     void set(float x, float y);
