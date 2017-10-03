@@ -149,6 +149,9 @@ typedef struct gk_cmd_b2_fixture_create {
          GK_PATH_CATEGORY_MASK,
          GK_PATH_GROUP:    Category/group values.
 
+         GK_PATH_FIXTURE_ID:
+                           Set the ID for the current fixture.
+
        Other path commands are not supported.  Also these are more limited than
        with NVG; e.g. you cannot add multiple shapes to a single path.
 
