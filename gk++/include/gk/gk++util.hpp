@@ -2,6 +2,7 @@
 
 #include <cstring>
 #include <cmath>
+#include <cstdint>
 
 #include <vector>
 #include <map>
