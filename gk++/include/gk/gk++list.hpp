@@ -100,18 +100,20 @@ namespace gk {
     class ListNvg : public ListTmpl<gk_list_nvg, GK_SUB_NVG> {
     public:
         ListNvg() : ListTmpl() { }
-        ListNvg(unsigned int width, unsigned int height, float ratio = 1.0)
+        ListNvg(unsigned int width, unsigned int height, float ratio = 1.0, gk_origin origin = GK_ORIGIN_Y_DOWN)
             : ListTmpl()
         {
             list.width = width;
             list.height = height;
             list.ratio = ratio;
+            list.origin = origin;
         }
         virtual ~ListNvg() { }
 
         void width(unsigned int w) { list.width = w; }
         void height(unsigned int h) { list.height = h; }
-        void ration(float r) { list.ratio = r; }
+        void ratio(float r) { list.ratio = r; }
+        void origin(gk_origin o) { list.origin = o; }
     };
 
     class ListB2 : public ListTmpl<gk_list, GK_SUB_BOX2D> {

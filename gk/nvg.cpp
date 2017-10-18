@@ -7,8 +7,8 @@
 #include "gk/nvg.hpp"
 #include "gk/log.hpp"
 
-static void gk_process_nvg_path(gk_context *gk, gk_bundle *bundle, gk_cmd_path *cmd);
-static void gk_process_nvg_text(gk_context *gk, gk_cmd_text *cmd);
+static void gk_process_nvg_path(gk_context *gk, gk_bundle *bundle, gk_list_nvg *list, gk_cmd_path *cmd);
+static void gk_process_nvg_text(gk_context *gk, gk_list_nvg *list, gk_cmd_text *cmd);
 
 static inline void ensure_nvg_inframe(gk_context *gk, int w, int h, float r) {
     if(gk->nvg_inframe) return;
@@ -43,11 +43,11 @@ void gk_process_nvg(gk_context *gk, gk_bundle *bundle, gk_list_nvg *list_nvg) {
                 break;
             case GK_CMD_PATH:
                 ensure_nvg_inframe(gk, w, h, r);
-                gk_process_nvg_path(gk, bundle, (gk_cmd_path*)cmd);
+                gk_process_nvg_path(gk, bundle, list_nvg, (gk_cmd_path*)cmd);
                 break;
             case GK_CMD_TEXT:
                 ensure_nvg_inframe(gk, w, h, r);
-                gk_process_nvg_text(gk, (gk_cmd_text*)cmd);
+                gk_process_nvg_text(gk, list_nvg, (gk_cmd_text*)cmd);
                 break;
             case GK_CMD_FONT_FACE:
                 ensure_nvg_inframe(gk, w, h, r);
@@ -73,10 +73,18 @@ void gk_process_nvg(gk_context *gk, gk_bundle *bundle, gk_list_nvg *list_nvg) {
     ensure_nvg_outframe(gk);
 }
 
-void gk_process_nvg_path(gk_context *gk, gk_bundle*, gk_cmd_path *cmd) {
+void gk_process_nvg_path(gk_context *gk, gk_bundle*, gk_list_nvg *list, gk_cmd_path *cmd) {
     auto def = cmd->pathdef;
     auto end = def + cmd->pathlen;
     auto nvg = gk->nvg;
+
+    float _Y = (list->origin == GK_ORIGIN_Y_DOWN ? 1.0 : -1.0);
+
+    nvgSave(nvg);
+
+    if(_Y < 0.0) {
+        nvgTranslate(nvg, 0.0, list->height);
+    }
 
     for(; def < end ; ++def) {
         int id = (int)def[0];
@@ -87,12 +95,12 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle*, gk_cmd_path *cmd) {
                 break;
 
             case GK_PATH_RECT:
-                nvgRect(nvg, def[1], def[2], def[3], def[4]);
+                nvgRect(nvg, def[1], _Y*def[2], def[3], _Y*def[4]);
                 def += 4;
                 break;
 
             case GK_PATH_CIRCLE:
-                nvgCircle(nvg, def[1], def[2], def[3]);
+                nvgCircle(nvg, def[1], _Y*def[2], def[3]);
                 def += 3;
                 break;
 
@@ -183,8 +191,14 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle*, gk_cmd_path *cmd) {
                 break;
 
             case GK_PATH_TF_ROTATE:
-                nvgRotate(nvg, def[1]);
+                nvgRotate(nvg, _Y*def[1]);
                 ++def;
+                break;
+
+            case GK_PATH_TF_SCALE:
+                // Do not negate scaling with _Y
+                nvgScale(nvg, def[1], def[2]);
+                def += 2;
                 break;
 
             case GK_PATH_TF_SKEW_X:
@@ -202,6 +216,8 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle*, gk_cmd_path *cmd) {
                 return;
         }
     }
+
+    nvgRestore(nvg);
 }
 
 void gk_process_nvg_font_create(gk_context *gk, gk_cmd_font_create *cmd) {
@@ -253,13 +269,23 @@ void gk_process_nvg_font_style(gk_context *gk, gk_cmd_font_style *cmd) {
     if(cmd->align > 0)       nvgTextAlign(nvg, cmd->align);
 }
 
-void gk_process_nvg_text(gk_context *gk, gk_cmd_text *cmd) {
+void gk_process_nvg_text(gk_context *gk, gk_list_nvg *list, gk_cmd_text *cmd) {
     auto nvg = gk->nvg;
 
+    float _Y = (list->origin == GK_ORIGIN_Y_DOWN ? 1.0 : -1.0);
+
+    nvgSave(nvg);
+
+    if(_Y < 0.0) {
+        nvgTranslate(nvg, 0.0, -list->height);
+    }
+
     if(cmd->break_width > 0.0) {
-        nvgTextBox(nvg, cmd->pos.x, cmd->pos.y,
+        nvgTextBox(nvg, cmd->pos.x, _Y*cmd->pos.y,
                    cmd->break_width, cmd->str, cmd->end);
     } else {
-        nvgText(nvg, cmd->pos.x, cmd->pos.y, cmd->str, cmd->end);
+        nvgText(nvg, cmd->pos.x, _Y*cmd->pos.y, cmd->str, cmd->end);
     }
+
+    nvgRestore(nvg);
 }

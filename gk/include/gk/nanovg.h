@@ -10,6 +10,8 @@ typedef struct gk_list_nvg {
     int width;
     int height;
     float ratio;
+
+    gk_origin origin;
 } gk_list_nvg;
 
 typedef struct gk_cmd_font_create {

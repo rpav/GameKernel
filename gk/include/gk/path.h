@@ -101,6 +101,12 @@ typedef enum gk_pathdef_linecap {
     GK_LINECAP_MITER
 } gk_pathdef_linecap;
 
+/* This currently only works in limited form with NanoVG */
+typedef enum gk_origin {
+    GK_ORIGIN_Y_DOWN = 0,
+    GK_ORIGIN_Y_UP   = 1 << 0,
+} gk_origin;
+
 /* This should precisely mask NanoVG-passed-through flags */
 #define GK_TEX_FLAGS_NANOVG_MASK 0x1F
 
