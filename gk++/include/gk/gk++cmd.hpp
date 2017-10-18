@@ -247,6 +247,69 @@ namespace gk {
     class PathDef : public std::vector<float> {
     public:
         inline PathDef& append(const std::initializer_list<float> list) { insert(end(), list); return *this; }
+
+        inline PathDef& begin() { append({ GK_PATH_BEGIN }); return *this; }
+        inline PathDef& stroke() { append({ GK_PATH_STROKE }); return *this; }
+        inline PathDef& fill() { append({ GK_PATH_FILL }); return *this; }
+
+        inline PathDef& rect(float x, float y, float h, float w) {
+            append({ GK_PATH_RECT, x, y, h, w });
+            return *this;
+        }
+
+        inline PathDef& circle(float x, float y, float r) {
+            append({ GK_PATH_CIRCLE, x, y, r });
+            return *this;
+        }
+
+        inline PathDef& lineTo(float x, float y) {
+            append({ GK_PATH_LINE_TO, x, y });
+            return *this;
+        }
+
+        inline PathDef& moveTo(float x, float y) {
+            append({ GK_PATH_MOVE_TO, x, y });
+            return *this;
+        }
+
+        inline PathDef& translate(float x, float y) {
+            append({ GK_PATH_TF_TRANSLATE, x, y });
+            return *this;
+        }
+
+        inline PathDef& rotate(float r) {
+            append({ GK_PATH_TF_ROTATE, r });
+            return *this;
+        }
+
+        inline PathDef& scale(float x, float y) {
+            append({ GK_PATH_TF_SCALE, x, y });
+            return *this;
+        }
+
+        inline PathDef& fillColorF(float r, float g, float b, float a = 1.0) {
+            append({ GK_PATH_FILL_COLOR_RGBAF, r, g, b, a });
+            return *this;
+        }
+
+        inline PathDef& fillColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) {
+            append({ GK_PATH_FILL_COLOR_RGBA, (float)r, (float)g, (float)b, (float)a });
+            return *this;
+        }
+
+        inline PathDef& strokeColorF(float r, float g, float b, float a = 1.0) {
+            append({ GK_PATH_STROKE_COLOR_RGBAF, r, g, b, a });
+            return *this;
+        }
+
+        inline PathDef& strokeColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255) {
+            append({ GK_PATH_STROKE_COLOR_RGBA, (float)r, (float)g, (float)b, (float)a });
+            return *this;
+        }
+
+        inline PathDef& close() { append({ GK_PATH_CLOSE }); return *this; }
+
+        /* FIXME: add more */
     };
 
     class CmdPath : public CmdTmpl<gk_cmd_path, GK_CMD_PATH> {

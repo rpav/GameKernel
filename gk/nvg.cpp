@@ -94,6 +94,16 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle*, gk_list_nvg *list, gk_cmd_p
                 nvgBeginPath(nvg);
                 break;
 
+            case GK_PATH_MOVE_TO:
+                nvgMoveTo(nvg, def[1], _Y*def[2]);
+                def += 2;
+                break;
+
+            case GK_PATH_LINE_TO:
+                nvgLineTo(nvg, def[1], _Y*def[2]);
+                def +=2;
+                break;
+
             case GK_PATH_RECT:
                 nvgRect(nvg, def[1], _Y*def[2], def[3], _Y*def[4]);
                 def += 4;
@@ -186,7 +196,7 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle*, gk_list_nvg *list, gk_cmd_p
                 break;
 
             case GK_PATH_TF_TRANSLATE:
-                nvgTranslate(nvg, def[1], def[2]);
+                nvgTranslate(nvg, def[1], _Y*def[2]);
                 def += 2;
                 break;
 
