@@ -247,8 +247,14 @@ namespace gk {
     class PathDef : public std::vector<float> {
     public:
         inline PathDef& append(const std::initializer_list<float> list) { insert(end(), list); return *this; }
+        inline PathDef& append(const PathDef &other) {
+            insert(end(), other.cbegin(), other.cend());
+            return *this;
+        }
 
         inline PathDef& begin() { append({ GK_PATH_BEGIN }); return *this; }
+        inline PathDef& save() { append({ GK_PATH_SAVE }); return *this; }
+        inline PathDef& restore() { append({ GK_PATH_RESTORE }); return *this; }
         inline PathDef& stroke() { append({ GK_PATH_STROKE }); return *this; }
         inline PathDef& fill() { append({ GK_PATH_FILL }); return *this; }
 
@@ -257,8 +263,18 @@ namespace gk {
             return *this;
         }
 
+        inline PathDef& rect(const vec2 &pos, const vec2 &size) {
+            append({ GK_PATH_RECT, pos.x, pos.y, size.x, size.y });
+            return *this;
+        }
+
         inline PathDef& circle(float x, float y, float r) {
             append({ GK_PATH_CIRCLE, x, y, r });
+            return *this;
+        }
+
+        inline PathDef& circle(const vec2 &pos, float r) {
+            append({ GK_PATH_CIRCLE, pos.x, pos.y, r });
             return *this;
         }
 
@@ -267,13 +283,28 @@ namespace gk {
             return *this;
         }
 
+        inline PathDef& lineTo(const vec2 &v) {
+            append({ GK_PATH_LINE_TO, v.x, v.y });
+            return *this;
+        }
+
         inline PathDef& moveTo(float x, float y) {
             append({ GK_PATH_MOVE_TO, x, y });
             return *this;
         }
 
+        inline PathDef& moveTo(const vec2 &v) {
+            append({ GK_PATH_MOVE_TO, v.x, v.y });
+            return *this;
+        }
+
         inline PathDef& translate(float x, float y) {
             append({ GK_PATH_TF_TRANSLATE, x, y });
+            return *this;
+        }
+
+        inline PathDef& translate(const vec2 &v) {
+            append({ GK_PATH_TF_TRANSLATE, v.x, v.y });
             return *this;
         }
 
@@ -284,6 +315,11 @@ namespace gk {
 
         inline PathDef& scale(float x, float y) {
             append({ GK_PATH_TF_SCALE, x, y });
+            return *this;
+        }
+
+        inline PathDef& identity() {
+            append({ GK_PATH_TF_IDENTITY });
             return *this;
         }
 
@@ -308,6 +344,42 @@ namespace gk {
         }
 
         inline PathDef& close() { append({ GK_PATH_CLOSE }); return *this; }
+
+        /* Physics */
+        inline PathDef& fixtureId(int id) {
+            append({ GK_PATH_FIXTURE_ID, (float)id });
+            return *this;
+        }
+
+        inline PathDef& category(unsigned int c) {
+            append({ GK_PATH_CATEGORY, (float)c });
+            return *this;
+        }
+
+        inline PathDef& categoryMask(unsigned short m) {
+            append({ GK_PATH_CATEGORY_MASK, (float)m });
+            return *this;
+        }
+
+        inline PathDef& group(int16_t group) {
+            append({ GK_PATH_GROUP, (float)group });
+            return *this;
+        }
+
+        inline PathDef& density(float f) {
+            append({ GK_PATH_DENSITY, f });
+            return *this;
+        }
+
+        inline PathDef& friction(float f) {
+            append({ GK_PATH_FRICTION, f });
+            return *this;
+        }
+
+        inline PathDef& sensor() {
+            append({ GK_PATH_SENSOR });
+            return *this;
+        }
 
         /* FIXME: add more */
     };

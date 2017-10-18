@@ -22,6 +22,10 @@
 typedef enum gk_pathdef_cmds {
     GK_PATH_BEGIN,
 
+    /* Transform stack */
+    GK_PATH_SAVE,
+    GK_PATH_RESTORE,
+
     /* Path */
     GK_PATH_MOVE_TO,
     GK_PATH_LINE_TO,

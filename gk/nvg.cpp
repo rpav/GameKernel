@@ -94,6 +94,14 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle*, gk_list_nvg *list, gk_cmd_p
                 nvgBeginPath(nvg);
                 break;
 
+            case GK_PATH_SAVE:
+                nvgSave(nvg);
+                break;
+
+            case GK_PATH_RESTORE:
+                nvgRestore(nvg);
+                break;
+
             case GK_PATH_MOVE_TO:
                 nvgMoveTo(nvg, def[1], _Y*def[2]);
                 def += 2;
