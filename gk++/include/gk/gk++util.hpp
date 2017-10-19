@@ -254,7 +254,7 @@ namespace gk {
     public:
         gk_spritesheet *sheet;
 
-        SpriteSheet(gk_spritesheet *sheet);
+        SpriteSheet(gk_spritesheet *sheet = nullptr);
         SpriteSheet(CmdSpriteSheetCreate &cmd);
 
         operator gk_spritesheet*() { return sheet; }

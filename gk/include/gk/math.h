@@ -52,7 +52,7 @@ typedef struct GK_CXX_API gk_vec2 {
     }
 
     gk_vec2& normalize() {
-        float scale = 1.0 / length();
+        float scale = 1.0f / length();
 
         x *= scale;
         y *= scale;

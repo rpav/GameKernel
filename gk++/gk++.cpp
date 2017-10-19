@@ -25,6 +25,8 @@ void Bundle::handleError() {
 }
 
 void SpriteSheet::rereadSheet() {
+    if(!sheet) return;
+
     _name_map.clear();
 
     if(sheet->names) {
