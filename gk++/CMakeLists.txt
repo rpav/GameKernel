@@ -22,9 +22,16 @@ set(GKPP_SOURCE_FILES
   ${GKPP_SOURCE_GLOB}
   )
 
+file(GLOB GKPP_HEADER_CORE
+  ${PROJ_ROOT}/core/include/gk/*.hpp
+  )
+
 set(GKPP_HEADER_FILES
+  ${GKPP_HEADER_CORE}
   ${GKPP_HEADER_GLOB}
   )
+
+source_group("Header Files\\Core" FILES ${GKPP_HEADER_CORE})
 
 if(GK_BUILD_SHARED)
   add_library(${LIB_NAME}-shared SHARED ${GKPP_SOURCE_FILES} ${GKPP_HEADER_FILES})

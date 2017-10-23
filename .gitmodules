@@ -4,3 +4,6 @@
 [submodule "third-party/Box2D"]
 	path = third-party/Box2D
 	url = https://github.com/erincatto/Box2D.git
+[submodule "core"]
+	path = core
+	url = git@github.com:rpav/GameKernelCore.git

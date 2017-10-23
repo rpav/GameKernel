@@ -56,6 +56,7 @@ endif()
 include_directories(
   ${PROJ_ROOT}/third-party/nanovg/src
   ${PROJ_ROOT}/third-party/json
+  ${PROJ_ROOT}/core/include
   ${PROJ_ROOT}/gk/include
   ${PROJ_ROOT}/gk/include-int
   ${PROJ_ROOT}/gk++/include

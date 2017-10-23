@@ -33,6 +33,10 @@ file(GLOB_RECURSE GK_SOURCE_SPRITESHEET
   ${GK_ROOT}/spritesheet/*.cpp
   )
 
+file(GLOB GK_HEADER_CORE
+  ${PROJ_ROOT}/core/include/gk/*.h
+  )
+
 file(GLOB_RECURSE GK_INT_HEADER_GLOB
   ${GK_ROOT}/include-int/**/*.hpp
   ${GK_ROOT}/include-int/**/*.h
@@ -41,6 +45,8 @@ file(GLOB_RECURSE GK_INT_HEADER_GLOB
 file(GLOB_RECURSE GK_EXT_HEADER_GLOB
   ${GK_ROOT}/include/**/*.h
 )
+
+source_group("Header Files\\Core" FILES ${GK_HEADER_CORE})
 
 source_group("Header Files\\Internal" FILES ${GK_INT_HEADER_GLOB})
 source_group("Header Files\\External" FILES ${GK_EXT_HEADER_GLOB})
@@ -64,6 +70,7 @@ set(GK_SOURCE_FILES
   )
 
 set(GK_HEADER_FILES
+  ${GK_HEADER_CORE}
   ${GK_INT_HEADER_GLOB}
   ${GK_EXT_HEADER_GLOB}
   )

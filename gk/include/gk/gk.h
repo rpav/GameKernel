@@ -27,13 +27,14 @@
 #define GK_API
 #endif
 
+#include "gk/core.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "gk/coreconst.h"
-#include "gk/core.h"
-#include "gk/math.h"
+#include "gk/constants.h"
+#include "gk/base.h"
 #include "gk/transform.h"
 #include "gk/gl.h"
 #include "gk/path.h"
