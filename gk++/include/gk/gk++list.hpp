@@ -1,6 +1,9 @@
 #pragma once
 
 #include <cstring>
+#include <vector>
+
+#include "gk/gk.h"
 
 namespace gk {
     typedef std::vector<gk_list*> ListVector;

@@ -6,7 +6,7 @@ set(LIB_NAME gk)
 project(${LIB_NAME})
 
 set(GK_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 ### Modules ###############################################################
 
@@ -46,15 +46,6 @@ file(GLOB_RECURSE GK_EXT_HEADER_GLOB
   ${GK_ROOT}/include/**/*.h
 )
 
-source_group("Header Files\\Core" FILES ${GK_HEADER_CORE})
-
-source_group("Header Files\\Internal" FILES ${GK_INT_HEADER_GLOB})
-source_group("Header Files\\External" FILES ${GK_EXT_HEADER_GLOB})
-
-source_group("Source Files\\GL" FILES ${GK_SOURCE_GL})
-source_group("Source Files\\SpriteSheet" FILES ${GK_SOURCE_SPRITESHEET})
-
-
 set(GK_SOURCE_FILES
   c-api.cpp
   errors.cpp
@@ -78,7 +69,14 @@ set(GK_HEADER_FILES
 if(GK_BUILD_SHARED)
   add_library(${LIB_NAME}-shared SHARED ${GK_SOURCE_FILES} ${GK_HEADER_FILES})
   set_target_properties(${LIB_NAME}-shared PROPERTIES OUTPUT_NAME ${LIB_NAME})
-  target_link_libraries(${LIB_NAME}-shared ${GK_LIBS_SHARED})
+  target_include_directories(${LIB_NAME}-shared
+    PUBLIC ${PROJ_ROOT}/gk/include
+    )
+  target_link_libraries(${LIB_NAME}-shared
+    PUBLIC rpav::GameKernelCore
+    PUBLIC ${GL}
+    PRIVATE Box2D
+    )
 
   if(WIN32)
     add_definitions(-DGK_EXPORT)
@@ -96,10 +94,17 @@ endif()
 if(GK_BUILD_STATIC)
   add_library(${LIB_NAME}-static STATIC ${GK_SOURCE_FILES} ${GK_HEADER_FILES})
   set_target_properties(${LIB_NAME}-static PROPERTIES OUTPUT_NAME ${LIB_NAME})
-  target_link_libraries(${LIB_NAME}-static ${GK_LIBS_STATIC})
+  target_include_directories(${LIB_NAME}-static
+    PUBLIC ${PROJ_ROOT}/gk/include
+    )
+  target_link_libraries(${LIB_NAME}-static
+    PUBLIC rpav::GameKernelCore
+    PUBLIC ${GL}
+    PRIVATE Box2D
+    )
 
   if(NOT WIN32)
-    cotire(${LIB_NAME}-static)
+    #cotire(${LIB_NAME}-static)
   endif()
 
   if(GK_INSTALL)

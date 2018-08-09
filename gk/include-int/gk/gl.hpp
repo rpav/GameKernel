@@ -24,7 +24,7 @@ namespace gk {
         GLStateBuffer vbo;
 
         QuadStateConfig()
-            : tex(0, GL_TEXTURE_2D), vbo(BUFFER_ARRAY), pds(default_pds) {
+            : tex(0, GL_TEXTURE_2D), pds(default_pds), vbo(BUFFER_ARRAY) {
             add(tex, pds, vao, vbo);
         }
     };

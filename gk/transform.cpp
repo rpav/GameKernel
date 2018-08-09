@@ -20,15 +20,6 @@ using vec2 = glm::vec2;
 
 const mat4 I4(1.0);
 
-void gk_vec2::set(float x_, float y_) { x = x_; y = y_; }
-void gk_vec3::set(float x_, float y_, float z_) { x = x_; y = y_; z = z_; }
-void gk_vec4::set(float x_, float y_, float z_, float w_) { x = x_; y = y_; z = z_; w = w_; }
-
-void gk_vec2::set(float *ptr) { memcpy(this, ptr, sizeof(gk_vec2)); }
-void gk_vec3::set(float *ptr) { memcpy(this, ptr, sizeof(gk_vec3)); }
-void gk_vec4::set(float *ptr) { memcpy(this, ptr, sizeof(gk_vec4)); }
-void gk_mat4::set(float *ptr) { memcpy(this, ptr, sizeof(gk_mat4)); }
-
 void gk_process_cmd_tf_trs(gk_context *, gk_cmd_tf_trs *cmd) {
     const mat4 *prior = (mat4*)cmd->parent.prior;
     mat4 *tf = (mat4*)cmd->parent.out;
@@ -52,9 +43,8 @@ void gk_process_cmd_tf_ortho(gk_context *, gk_cmd_tf_ortho *cmd) {
 }
 
 void gk_process_cmd_tf_m(gk_context *, gk_cmd_tf_m *cmd) {
-    glm::mat4 &prior = *cmd->parent.prior;
-    glm::mat4 &m     = *cmd->m;
-    glm::mat4 &out   = *cmd->parent.out;
+    glm::mat4 prior = *cmd->parent.prior;
+    glm::mat4 m     = *cmd->m;
 
-    out = prior * m;
+    *cmd->parent.out = prior * m;
 }

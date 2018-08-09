@@ -27,7 +27,11 @@
 #define GK_API
 #endif
 
+#ifndef __cplusplus
 #include "gk/core.h"
+#else
+#include "gk/core.hpp"
+#endif
 
 #ifdef __cplusplus
 extern "C" {

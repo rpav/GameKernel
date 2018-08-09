@@ -6,6 +6,9 @@
 #include <vector>
 #include <map>
 
+#include "gk/gk.h"
+#include "gk/gk++list.hpp"
+
 namespace gk {
     template <typename T, gk_cmd_type ID>
     class CmdTmpl : public CmdBase {
@@ -160,7 +163,7 @@ namespace gk {
     public:
         CmdQuad(int tex = 0) : CmdTmpl() {
             cmd.tex = tex;
-            cmd.tfm = gk::mat4(0);
+            cmd.tfm = gk::mat4{};
         }
 
         // For trivial quads
@@ -205,7 +208,7 @@ namespace gk {
         CmdQuadSprite(gk::SpriteSheet &sheet, unsigned int index)
             : CmdTmpl()
         {
-            cmd.tfm = gk::mat4(0);
+            cmd.tfm = gk::mat4{};
             cmd.sheet = sheet;
             cmd.index = index;
         }

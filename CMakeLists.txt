@@ -30,8 +30,9 @@ if(GLEW_FOUND)
 endif()
 
 if(WIN32)
-  set(GK_LIBS_STATIC ${GK_LIBS_STATIC} opengl32.lib)
-  set(GK_LIBS_SHARED ${GK_LIBS_SHARED} opengl32.lib)
+  set(GK_GL_LIB opengl32.lib)
+else()
+  set(GK_GL_LIB GL)
 endif()
 
 if(GK_USE_BOX2D)
@@ -45,8 +46,6 @@ if(GK_USE_BOX2D)
   include_directories(
     ${PROJ_ROOT}/third-party/Box2D/Box2D
     )
-  set(GK_LIBS_STATIC ${GK_LIBS_STATIC} Box2D)
-  set(GK_LIBS_SHARED ${GK_LIBS_SHARED} Box2D)
 endif()
 
 if(GK_USE_TEXTUREPACKER)
@@ -56,7 +55,6 @@ endif()
 include_directories(
   ${PROJ_ROOT}/third-party/nanovg/src
   ${PROJ_ROOT}/third-party/json
-  ${PROJ_ROOT}/core/include
   ${PROJ_ROOT}/gk/include
   ${PROJ_ROOT}/gk/include-int
   ${PROJ_ROOT}/gk++/include
