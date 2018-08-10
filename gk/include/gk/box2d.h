@@ -9,11 +9,11 @@ typedef struct gk_b2_world_data gk_b2_world_data;
 
 typedef struct gk_b2_world {
     float timestep;
-    int velocity_iterations;
-    int position_iterations;
+    int   velocity_iterations;
+    int   position_iterations;
 
     /* Internal data */
-    gk_b2_world_data *data;
+    gk_b2_world_data* data;
 } gk_b2_world;
 
 /* These should correspond to b2BodyType */
@@ -26,26 +26,25 @@ typedef enum gk_b2_body_type {
 typedef struct gk_b2_body_data gk_b2_body_data;
 
 typedef struct gk_b2_body {
-    /* Set or zero these.  If set (e.g., point them to members in a
-       gk_cmd_tf_trs), the internal Box2D body values will be copied
-       there during a gk_cmd_b2_iter_bodies, if the body is not
+    /* Internal Box2D body values will be copied
+       here during a gk_cmd_b2_iter_bodies, if the body is not
        asleep. */
-    gk_vec2 *position;
-    float *angle;
+    gk_vec2 position;
+    float   angle;
 
     /* These aren't pointers because they take about the same space
        and you probably don't need the values elsewhere */
     gk_vec2 velocity;
-    float angular_velocity;
+    float   angular_velocity;
 
     /* These will be assigned/updated during gk_cmd_b2_iter_bodies. */
     bool is_awake;
 
     /* Whatever you want */
-    void *user_data;
+    void* user_data;
 
     /* Internal */
-    gk_b2_body_data *data;
+    gk_b2_body_data* data;
 } gk_b2_body;
 
 typedef struct gk_b2_bodydef {
@@ -53,7 +52,7 @@ typedef struct gk_b2_bodydef {
 
     gk_vec2 position;
     gk_vec2 linear_velocity;
-    float linear_damping;
+    float   linear_damping;
 
     float angle;
     float angular_velocity;
@@ -68,55 +67,55 @@ typedef struct gk_b2_bodydef {
     bool allow_sleep;
 
     /* Provide this */
-    gk_b2_body *body;
+    gk_b2_body* body;
 } gk_b2_bodydef;
 
 typedef struct gk_cmd_b2_world_create {
     gk_cmd parent;
 
     /* Provide this */
-    gk_b2_world *world;
+    gk_b2_world* world;
 
     /* Settings */
     gk_vec2 gravity;
-    bool do_sleep;
+    bool    do_sleep;
 } gk_cmd_b2_world_create;
 
 typedef struct gk_cmd_b2_world_destroy {
     gk_cmd parent;
 
     /* Provide this */
-    gk_b2_world *world;
+    gk_b2_world* world;
 } gk_cmd_b2_world_destroy;
 
 typedef struct gk_cmd_b2_body_create {
     gk_cmd parent;
 
-    gk_b2_world *world;
+    gk_b2_world* world;
 
-    size_t ndefs;
-    gk_b2_bodydef **defs;
+    size_t          ndefs;
+    gk_b2_bodydef** defs;
 } gk_cmd_b2_body_create;
 
 typedef struct gk_cmd_b2_body_update {
     gk_cmd parent;
 
-    gk_b2_body *body;
-    gk_vec2 translate;
-    float angle;
+    gk_b2_body* body;
+    gk_vec2     translate;
+    float       angle;
 } gk_cmd_b2_body_update;
 
 typedef struct gk_cmd_b2_body_destroy {
     gk_cmd parent;
 
-    gk_b2_world *world;
-    gk_b2_body *body;
+    gk_b2_world* world;
+    gk_b2_body*  body;
 } gk_cmd_b2_body_destroy;
 
 typedef struct gk_cmd_b2_fixture_create {
     gk_cmd parent;
 
-    gk_b2_body *body;
+    gk_b2_body* body;
 
     /* Fixtures are created by specifying paths. Supported:
 
@@ -131,7 +130,8 @@ typedef struct gk_cmd_b2_fixture_create {
 
          GK_PATH_TF_SCALE: Set scaling factor; defaults to 1.0 or whatever is specified
                            in this command's `scale` field if non-zero.  Is not reset by
-                           GK_PATH_BEGIN.  Applies to coordinates only (e.g. not density etc).
+                           GK_PATH_BEGIN.  Applies to coordinates only (e.g. not density
+       etc).
 
          GK_PATH_BEGIN:    Reset values and start a new path/shape.
          GK_PATH_FILL:     End and create shape.
@@ -161,15 +161,15 @@ typedef struct gk_cmd_b2_fixture_create {
     float scale;
 
     size_t pathlen;
-    float *pathdef;
+    float* pathdef;
 } gk_cmd_b2_fixture_create;
 
 typedef enum gk_b2_fixture_update_flags {
-    GK_B2_FIXTURE_UPDATE_DENSITY    = (1<<0),
-    GK_B2_FIXTURE_UPDATE_ELASTICITY = (1<<1),
-    GK_B2_FIXTURE_UPDATE_FRICTION   = (1<<2),
-    GK_B2_FIXTURE_UPDATE_SENSOR     = (1<<3),
-    GK_B2_FIXTURE_UPDATE_FILTER     = (1<<4)
+    GK_B2_FIXTURE_UPDATE_DENSITY    = (1 << 0),
+    GK_B2_FIXTURE_UPDATE_ELASTICITY = (1 << 1),
+    GK_B2_FIXTURE_UPDATE_FRICTION   = (1 << 2),
+    GK_B2_FIXTURE_UPDATE_SENSOR     = (1 << 3),
+    GK_B2_FIXTURE_UPDATE_FILTER     = (1 << 4)
 } gk_b2_fixture_update_flags;
 
 typedef struct gk_cmd_b2_fixture_update {
@@ -180,12 +180,12 @@ typedef struct gk_cmd_b2_fixture_update {
          `nids` specifies the array size as elsewhere
        - When `id` is -1, all fixtures will be updated.  This does not apply to `ids`.
     */
-    gk_b2_body *body;
-    int *ids;
+    gk_b2_body* body;
+    int*        ids;
 
     union {
         size_t nids;
-        int id;
+        int    id;
     };
 
     /* gk_b2_fixture_update_flags */
@@ -194,17 +194,17 @@ typedef struct gk_cmd_b2_fixture_update {
     float density;
     float elasticity;
     float friction;
-    bool sensor;
+    bool  sensor;
 
     uint16_t category;
     uint16_t mask;
-    int16_t group;
+    int16_t  group;
 } gk_cmd_b2_fixture_update;
 
 typedef struct gk_b2_contact_pair {
     /* You get A and B; they may be in any order. */
-    gk_b2_body *a;
-    gk_b2_body *b;
+    gk_b2_body* a;
+    gk_b2_body* b;
 
     /* Fixture IDs, if created with IDs, or 0 */
     int id_a;
@@ -221,9 +221,10 @@ typedef struct gk_b2_contact_pair {
     /* Ignore the man behind the curtains */
 #ifdef __cplusplus
     gk_b2_contact_pair() = default;
-    gk_b2_contact_pair(gk_b2_body *a_, gk_b2_body *b_, int fixa, int fixb)
-      : a(a_), b(b_), id_a(fixa), id_b(fixb) {
-        contact = 0;
+    gk_b2_contact_pair(gk_b2_body* a_, gk_b2_body* b_, int fixa, int fixb)
+        : a(a_), b(b_), id_a(fixa), id_b(fixb)
+    {
+        contact  = 0;
         normal.x = 0;
         normal.y = 0;
     }
@@ -231,21 +232,20 @@ typedef struct gk_b2_contact_pair {
 } gk_b2_contact_pair;
 
 typedef struct gk_cmd_b2_step {
-    gk_cmd parent;
-    gk_b2_world *world;
+    gk_cmd       parent;
+    gk_b2_world* world;
 
     /* This collision list is managed internally.  Do not
        free it.  The contents of this are *only* valid until
        you issue another gk_cmd_b2_step on the same world. */
-    gk_b2_contact_pair **collisions;
-    size_t ncollisions;
+    gk_b2_contact_pair** collisions;
+    size_t               ncollisions;
 } gk_cmd_b2_step;
 
 typedef struct gk_cmd_b2_iter_bodies {
-    gk_cmd parent;
-    gk_b2_world *world;
+    gk_cmd       parent;
+    gk_b2_world* world;
 } gk_cmd_b2_iter_bodies;
-
 
 /* Forces */
 enum gk_b2_force_flags {
@@ -256,18 +256,18 @@ enum gk_b2_force_flags {
 typedef struct gk_cmd_b2_force {
     gk_cmd parent;
 
-    gk_b2_body *body;
-    gk_vec2 force;
-    gk_vec2 point;
-    
+    gk_b2_body* body;
+    gk_vec2     force;
+    gk_vec2     point;
+
     uint8_t flags;
 } gk_cmd_b2_force;
 
 typedef struct gk_cmd_b2_torque {
     gk_cmd parent;
 
-    gk_b2_body *body;
-    float torque;
+    gk_b2_body* body;
+    float       torque;
 
     uint8_t flags;
 } gk_cmd_b2_torque;
@@ -275,38 +275,36 @@ typedef struct gk_cmd_b2_torque {
 typedef struct gk_cmd_b2_linear_impulse {
     gk_cmd parent;
 
-    gk_b2_body *body;
-    gk_vec2 impulse;
-    gk_vec2 point;
-    bool wake;
+    gk_b2_body* body;
+    gk_vec2     impulse;
+    gk_vec2     point;
+    bool        wake;
 } gk_cmd_b2_linear_impulse;
 
 typedef struct gk_cmd_b2_angular_impulse {
     gk_cmd parent;
 
-    gk_b2_body *body;
-    float impulse;
-    bool wake;
+    gk_b2_body* body;
+    float       impulse;
+    bool        wake;
 } gk_cmd_b2_angular_impulse;
-
 
 typedef struct gk_cmd_b2_set_velocity {
     gk_cmd parent;
 
-    gk_b2_body *body;
-    gk_vec2 linear;
-    float angular;
+    gk_b2_body* body;
+    gk_vec2     linear;
+    float       angular;
 } gk_cmd_b2_set_velocity;
 
 /* Debug Draw */
 typedef struct gk_cmd_b2_draw_debug {
     gk_cmd parent;
 
-    gk_b2_world *world;
-    gk_vec2 resolution;
-    gk_vec2 translate;
-    gk_vec2 scale;
+    gk_b2_world* world;
+    gk_vec2      resolution;
+    gk_vec2      translate;
+    gk_vec2      scale;
 } gk_cmd_b2_draw_debug;
 
-
-#endif  /* __GAMEKERNEL_BOX2D_H__ */
+#endif /* __GAMEKERNEL_BOX2D_H__ */

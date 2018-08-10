@@ -515,13 +515,6 @@ namespace gk {
     // gk::B2Body
     struct B2Body : public gk_b2_body {
         B2Body() { memset(this, 0, sizeof(*this)); }
-
-        B2Body(gk_vec2 &pos_, float &angle_)
-            : B2Body()
-        {
-            position = &pos_;
-            angle = &angle_;
-        }
     };
 
     struct B2BodyDef : public gk_b2_bodydef {

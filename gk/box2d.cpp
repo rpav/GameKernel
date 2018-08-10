@@ -466,10 +466,8 @@ void gk_process_b2_iter_bodies(gk_context *, gk_cmd_b2_iter_bodies* cmd) {
         auto isAwake = b->is_awake = body->IsAwake();
 
         if(isAwake) {
-            if(b->position)
-                *(b2Vec2*)(b->position) = body->GetPosition();
-            if(b->angle)
-                *(b->angle) = body->GetAngle();
+            *(b2Vec2*)(&b->position) = body->GetPosition();
+            b->angle = body->GetAngle();
             (b2Vec2&)(b->velocity) = body->GetLinearVelocity();
             b->angular_velocity = body->GetAngularVelocity();
         }
