@@ -109,7 +109,8 @@ typedef struct gk_cmd_b2_body_destroy {
     gk_cmd parent;
 
     gk_b2_world* world;
-    gk_b2_body*  body;
+    gk_b2_body** bodies;
+    size_t       nbodies;
 } gk_cmd_b2_body_destroy;
 
 typedef struct gk_cmd_b2_fixture_create {
@@ -238,8 +239,8 @@ typedef struct gk_cmd_b2_step {
     /* This collision list is managed internally.  Do not
        free it.  The contents of this are *only* valid until
        you issue another gk_cmd_b2_step on the same world. */
-    gk_b2_contact_pair** collisions;
-    size_t               ncollisions;
+    gk_b2_contact_pair* collisions;
+    size_t              ncollisions;
 } gk_cmd_b2_step;
 
 typedef struct gk_cmd_b2_iter_bodies {

@@ -552,6 +552,28 @@ namespace gk {
         }
     };
 
+    class CmdB2BodyDestroy : public CmdTmpl<gk_cmd_b2_body_destroy, GK_CMD_B2_BODY_DESTROY> {
+        std::vector<gk_b2_body*> bodies;
+
+    public:
+        CmdB2BodyDestroy(gk_b2_world &world)
+            : CmdTmpl()
+        {
+            cmd.world = &world;
+        }
+
+        template<typename...Rest>
+        inline void add(gk_b2_body &bd, Rest&&...args) {
+            bodies.push_back(&bd);
+            add(args...);
+        }
+
+        inline void add() {
+            cmd.nbodies = bodies.size();
+            cmd.bodies = bodies.data();
+        }
+    };
+
     // gk::CmdB2BodyUpdate
     class CmdB2BodyUpdate : public CmdTmpl<gk_cmd_b2_body_update, GK_CMD_B2_BODY_UPDATE> {
     public:

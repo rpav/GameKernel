@@ -5,6 +5,8 @@
 #include <vector>
 #include <set>
 #include <utility>
+#include <memory>
+
 #include <gk/gk.hpp>
 #include "gk/log.hpp"
 #include "Box2D/Box2D.h"
@@ -93,7 +95,7 @@ public:
 };
 
 typedef struct gk_b2_contact_pair ContactPair;
-typedef std::vector<ContactPair*> GkContactPtrVector;
+typedef std::vector<ContactPair> GkContactPtrVector;
 
 struct gk_b2_body_data {
     b2Body *body;
@@ -130,12 +132,10 @@ public:
         if(fixDataA) idA = fixDataA->id;
         if(fixDataB) idB = fixDataB->id;
 
-        auto pair = new ContactPair(a, b, idA, idB);
-        pair->normal = *(gk_vec2*)&manifold.normal;
+        auto &&pair = _pairs.emplace_back(a, b, idA, idB);
+        pair.normal = *(gk_vec2*)&manifold.normal;
 
-        _pairs.push_back(pair);
-
-        return *pair;
+        return pair;
     }
 
     virtual void BeginContact(b2Contact *c) {
@@ -160,42 +160,36 @@ public:
 };
 
 struct gk_b2_world_data {
-    b2World *world;
-    GK_B2NvgDraw *draw;
-    GK_B2ContactListener *listen;
+    std::unique_ptr<b2World> world;
+    std::unique_ptr<GK_B2NvgDraw> draw;
+    std::unique_ptr<GK_B2ContactListener> listen;
 };
 
 void gk_process_b2_world_create(gk_context *gk, gk_cmd_b2_world_create *cmd) {
+    auto data = new gk_b2_world_data;
+
     b2Vec2 gravity(cmd->gravity.x, cmd->gravity.y);
 
-    auto draw = new GK_B2NvgDraw(gk);
-    draw->SetFlags(b2Draw::e_shapeBit);
+    data->draw = std::make_unique<GK_B2NvgDraw>(gk);
+    data->draw->SetFlags(b2Draw::e_shapeBit);
 
-    auto world = new b2World(gravity);
-    world->SetAllowSleeping(cmd->do_sleep);
-    world->SetDebugDraw(draw);
+    data->world = std::make_unique<b2World>(gravity);
+    data->world->SetAllowSleeping(cmd->do_sleep);
+    data->world->SetDebugDraw(data->draw.get());
 
-    auto listen = new GK_B2ContactListener;
-    world->SetContactListener(listen);
-
-    auto data = new gk_b2_world_data;
-    data->world = world;
-    data->draw = draw;
-    data->listen = listen;
+    data->listen = std::make_unique<GK_B2ContactListener>();
+    data->world->SetContactListener(data->listen.get());
 
     cmd->world->data = data;
 }
 
 void gk_process_b2_world_destroy(gk_context *, gk_cmd_b2_world_destroy *cmd) {
-    delete cmd->world->data->world;
-    delete cmd->world->data->draw;
-    delete cmd->world->data->listen;
-
+    delete cmd->world->data;
     cmd->world->data = nullptr;
 }
 
 void gk_process_b2_body_create(gk_context *, gk_cmd_b2_body_create *cmd) {
-    auto world = cmd->world->data->world;
+    auto &&world = *cmd->world->data->world;
 
     for(size_t i = 0; i < cmd->ndefs; ++i) {
         b2BodyDef def;
@@ -218,8 +212,8 @@ void gk_process_b2_body_create(gk_context *, gk_cmd_b2_body_create *cmd) {
         def.type             = (b2BodyType)src.type;
         def.userData         = src.body;
 
-        auto body = world->CreateBody(&def);
-        auto bodyData = new gk_b2_body_data;
+        auto *body = world.CreateBody(&def);
+        auto *bodyData = new gk_b2_body_data;
 
         bodyData->body = body;
         src.body->data = bodyData;
@@ -227,14 +221,19 @@ void gk_process_b2_body_create(gk_context *, gk_cmd_b2_body_create *cmd) {
 }
 
 void gk_process_b2_body_update(gk_context *, gk_cmd_b2_body_update *cmd) {
-    auto body = cmd->body->data->body;
-    body->SetTransform((b2Vec2&)cmd->translate, cmd->angle);
+    auto &body = *cmd->body->data->body;
+    body.SetTransform((b2Vec2&)cmd->translate, cmd->angle);
 }
 
 void gk_process_b2_body_destroy(gk_context *, gk_cmd_b2_body_destroy *cmd) {
-    auto world = cmd->world->data->world;
-    auto body = cmd->body->data->body;
-    world->DestroyBody(body);
+    auto *world = cmd->world->data->world.get();
+
+    for(size_t i = 0; i < cmd->nbodies; ++i) {
+        auto* body = cmd->bodies[i];
+        world->DestroyBody(body->data->body);
+        delete body->data;
+        body->data = nullptr;
+    }
 }
 
 gk_b2_fixture_data* ensure_fixdata(b2FixtureDef *fixdef) {
@@ -425,13 +424,13 @@ void gk_process_b2_fixture_update(gk_context *, gk_cmd_b2_fixture_update *cmd) {
 }
 
 void gk_process_b2_draw_debug(gk_context *gk, gk_cmd_b2_draw_debug *cmd) {
-    auto world = cmd->world->data->world;
-    auto draw = cmd->world->data->draw;
+    auto &world = *cmd->world->data->world;
+    auto &draw = *cmd->world->data->draw;
 
     float xscale = cmd->scale.x ? cmd->scale.x : 1.0;
     float yscale = cmd->scale.y ? cmd->scale.y : 1.0;
 
-    draw->setSize(cmd->resolution.x, cmd->resolution.y, xscale, yscale);
+    draw.setSize(cmd->resolution.x, cmd->resolution.y, xscale, yscale);
 
     glEnable(GL_STENCIL_TEST);
     glClear(GL_STENCIL_BUFFER_BIT);
@@ -442,26 +441,26 @@ void gk_process_b2_draw_debug(gk_context *gk, gk_cmd_b2_draw_debug *cmd) {
     nvgScale(gk->nvg, xscale, yscale);
     nvgTranslate(gk->nvg, cmd->translate.x, cmd->translate.y);
 
-    world->DrawDebugData();
+    world.DrawDebugData();
     nvgEndFrame(gk->nvg);
 }
 
 void gk_process_b2_step(gk_context *, gk_cmd_b2_step *cmd) {
-    auto world = cmd->world;
-    auto data = world->data;
-    auto b2world = data->world;
-    auto listen = data->listen;
-    listen->begin();
-    b2world->Step(world->timestep,
-                  world->velocity_iterations,
-                  world->position_iterations);
-    listen->finish(cmd);
+    auto *world = cmd->world;
+    auto *data = world->data;
+    auto &b2world = *data->world;
+    auto &listen = *data->listen;
+    listen.begin();
+    b2world.Step(world->timestep,
+                 world->velocity_iterations,
+                 world->position_iterations);
+    listen.finish(cmd);
 }
 
 void gk_process_b2_iter_bodies(gk_context *, gk_cmd_b2_iter_bodies* cmd) {
-    auto world = cmd->world->data->world;
+    auto &world = *cmd->world->data->world;
 
-    for(auto body = world->GetBodyList(); body; body = body->GetNext()) {
+    for(auto *body = world.GetBodyList(); body; body = body->GetNext()) {
         auto *b = (gk_b2_body*)body->GetUserData();
         auto isAwake = b->is_awake = body->IsAwake();
 

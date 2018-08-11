@@ -24,7 +24,7 @@ void gk_destroy_gl3(gk_context *gk) {
 
     gl3->quad_state.clean(gl3->glstate);
 
-    delete gl3->quadbuf;
+    delete[] gl3->quadbuf;
     delete gl3;
 
     nvgDeleteGL3(gk->nvg);
