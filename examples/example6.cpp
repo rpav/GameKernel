@@ -2,7 +2,7 @@
 #include <GL/gl.h>
 #include <SDL2/SDL.h>
 #include "gk/gk++.hpp"
-#include "gk/log.hpp"
+#include <rpav/log.hpp>
 #include "example.hpp"
 
 static const char *shader_geom_quad =
@@ -121,13 +121,13 @@ void example_main() {
 
     progDestroy.add(progCreate);
 
-    LOG("framebuffer = ", bind.cmd.framebuffer, " tex = ", rtCreate.cmd.tex);
+    say("framebuffer = ", bind.cmd.framebuffer, " tex = ", rtCreate.cmd.tex);
 
     for(size_t i = 0; i < uniforms.cmd.nuniforms; ++i)
-        LOG("uniform ", uniforms.cmd.names[i], " = ", uniforms.cmd.uniforms[i]);
+        say("uniform ", uniforms.cmd.names[i], " = ", uniforms.cmd.uniforms[i]);
 
     uniforms.index();
-    LOG("uniform tex = ", uniforms.find("tex"));
+    say("uniform tex = ", uniforms.find("tex"));
 
     bundle.clear();
     bundle.add(nvg);

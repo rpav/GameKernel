@@ -1,33 +1,35 @@
+#include <algorithm>
+#include <fstream>
+
+#include <rpav/log.hpp>
 #include <stdlib.h>
 #include <string.h>
-
-#include <fstream>
-#include <algorithm>
-
-#include "nanovg.h"
 
 #include "gk/gk.hpp"
 #include "gk/gl.hpp"
 #include "gk/spritesheet.hpp"
-#include "gk/log.hpp"
 #include "json.hpp"
+#include "nanovg.h"
 
+using namespace rpav;
 using json = nlohmann::json;
 
-static inline float translate_anchor(float a, float w, float nx, float nw) {
+static inline float translate_anchor(float a, float w, float nx, float nw)
+{
     float p = a * w;
     return (p - nx) / nw;
 }
 
-static void parse_texturepacker_frame(const json &meta,
-                                      const json &frame,
-                                      gk_sprite *sprite,
-                                      unsigned int flags) {
-    auto &rect    = frame["frame"];
-    auto &srcRect = frame["spriteSourceSize"];
-    auto &anchor  = frame["pivot"];
-    auto &vsize   = frame["sourceSize"];
-    bool rotated  = frame["rotated"];
+static void parse_texturepacker_frame(const json&  meta,
+                                      const json&  frame,
+                                      gk_sprite*   sprite,
+                                      unsigned int flags)
+{
+    auto& rect    = frame["frame"];
+    auto& srcRect = frame["spriteSourceSize"];
+    auto& anchor  = frame["pivot"];
+    auto& vsize   = frame["sourceSize"];
+    bool  rotated = frame["rotated"];
 
     float mw = meta["size"]["w"];
     float mh = meta["size"]["h"];
@@ -47,12 +49,12 @@ static void parse_texturepacker_frame(const json &meta,
     float nax = translate_anchor(ax, vw, srcRect["x"], w);
     float nay = translate_anchor(ay, vh, srcRect["y"], h);
 
-    auto *qv = sprite->attr;
+    auto* qv = sprite->attr;
 
     float fx0, fy0, fx1, fy1;
     fx1 = (1 - nax) * w;
     fx0 = fx1 - w;
-    
+
     fy1 = (1 - nay) * h;
     fy0 = fy1 - h;
 
@@ -74,16 +76,16 @@ static void parse_texturepacker_frame(const json &meta,
     if(rotated) std::swap(w, h);
 
     float u0, v0, u1, v1;
-    u0 = x/mw;
-    v0 = y/mh;
-    u1 = (x+w)/mw;
-    v1 = (y+h)/mh;
+    u0 = x / mw;
+    v0 = y / mh;
+    u1 = (x + w) / mw;
+    v1 = (y + h) / mh;
 
     if(rotated) {
         qv[0].uv.set(u1, v0);
         qv[1].uv.set(u1, v1);
         qv[2].uv.set(u0, v0);
-        qv[3].uv.set(u0, v1);        
+        qv[3].uv.set(u0, v1);
     } else {
         qv[0].uv.set(u0, v0);
         qv[1].uv.set(u1, v0);
@@ -92,18 +94,20 @@ static void parse_texturepacker_frame(const json &meta,
     }
 }
 
-void gk_load_ssf_texturepacker_json(gk_context *gk, gk_cmd_spritesheet_create *cmd,
-                                    gk_spritesheet *sheet) {
+void gk_load_ssf_texturepacker_json(gk_context*                gk,
+                                    gk_cmd_spritesheet_create* cmd,
+                                    gk_spritesheet*            sheet)
+{
     std::ifstream f(cmd->path);
-    json j;
+    json          j;
     f >> j;
-    auto &frames = j["frames"];
-    auto &meta = j["meta"];
+    auto& frames = j["frames"];
+    auto& meta   = j["meta"];
 
     std::string path(cmd->path);
-    auto dirname = path.substr(0, path.find_last_of("\\/")+1);
-    auto imagefile = dirname + meta["image"].get<std::string>();
-    int i = 0;
+    auto        dirname   = path.substr(0, path.find_last_of("\\/") + 1);
+    auto        imagefile = dirname + meta["image"].get<std::string>();
+    int         i         = 0;
 
     sheet->tex = nvgCreateImage(gk->nvg, imagefile.c_str(), 0);
     glBindTexture(GL_TEXTURE_2D, sheet->tex);
@@ -129,9 +133,8 @@ void gk_load_ssf_texturepacker_json(gk_context *gk, gk_cmd_spritesheet_create *c
 
     return;
 
- gl_error:
-    if(sheet->tex)
-        glDeleteTextures(1, &sheet->tex);
+gl_error:
+    if(sheet->tex) glDeleteTextures(1, &sheet->tex);
 
     return;
 }

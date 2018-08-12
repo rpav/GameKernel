@@ -21,7 +21,7 @@ using vec2 = glm::vec2;
 #include <functional>
 
 #include "gk/gk.h"
-#include "gk/log.hpp"
+#include <rpav/log.hpp>
 #include "example.hpp"
 
 const int MAXCMD = 5000;
@@ -39,7 +39,7 @@ struct CmdVector {
 
     void add(gk_cmd *cmd) {
         if(fill >= size) {
-            LOG("CmdVector overflow!");
+            say("CmdVector overflow!");
             return;
         }
         vector[fill] = cmd;
@@ -135,7 +135,7 @@ void example_main() {
     gk_process(gk, &bundle_cfg);
     free_list(&list_cfg);
     free_bundle(&bundle_cfg);
-    LOG("img_create.id = ", img_create.id);
+    say("img_create.id = ", img_create.id);
 
     /* Render sprites */
     init_bundle(&bundle_render, 0, 1);

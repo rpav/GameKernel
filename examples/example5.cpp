@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include "gk/gk++.hpp"
-#include "gk/log.hpp"
+#include <rpav/log.hpp>
 #include "example.hpp"
 
 
@@ -44,7 +44,7 @@ void example_main() {
     gk::CmdRtBind bind(rtCreate);
     gk::CmdRtDestroy rtDestroy(rtCreate);
 
-    LOG("framebuffer = ", bind.cmd.framebuffer, " tex = ", rtCreate.cmd.tex);
+    say("framebuffer = ", bind.cmd.framebuffer, " tex = ", rtCreate.cmd.tex);
 
     gk::List passes;
     gk::CmdPass passNvg(1);

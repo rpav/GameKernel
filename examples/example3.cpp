@@ -13,7 +13,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "gk/gk.h"
-#include "gk/log.hpp"
+#include <rpav/log.hpp>
 #include "example.hpp"
 
 using mat4 = glm::mat4;
@@ -64,7 +64,7 @@ void example_main() {
     // e.g. 'foo_10' comes before 'foo_2'.
     f_min = frames["walk_0.png"];
     f_max = frames["walk_7.png"];
-    LOG("Animating indexes ", f_min, " - ", f_max);
+    say("Animating indexes ", f_min, " - ", f_max);
 
     // Draw
     auto *sheet = c.sheet;

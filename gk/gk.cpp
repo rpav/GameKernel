@@ -1,15 +1,19 @@
 #include <algorithm>
+#include <rpav/log.hpp>
 
 #include "gk/gk.hpp"
+
+#include "gk/b2.hpp"
 #include "gk/gl.hpp"
 #include "gk/nvg.hpp"
 #include "gk/spritesheet.hpp"
-#include "gk/b2.hpp"
-#include "gk/log.hpp"
 
-bool gk_mark(gk_context *gk, gk_list *list) {
+using namespace rpav;
+
+bool gk_mark(gk_context* gk, gk_list* list)
+{
     if(list->in_use) {
-        LOG("Error: recursively trying to process list ", list);
+        say("Error: recursively trying to process list ", list);
         gk_seterror(gk, GK_ERROR_LIST_RECURSION);
         return false;
     }
@@ -17,34 +21,37 @@ bool gk_mark(gk_context *gk, gk_list *list) {
     return true;
 }
 
-bool gk_unmark(gk_context *gk, gk_list *list) {
+bool gk_unmark(gk_context* gk, gk_list* list)
+{
     if(!list->in_use) {
-        LOG("Error: trying to unmark already-unmarked list ", list);
+        say("Error: trying to unmark already-unmarked list ", list);
         gk_seterror(gk, GK_ERROR_LIST_CORRUPT);
         return false;
     }
     list->in_use = false;
     return true;
-
 }
 
-void gk_seterror(gk_context *gk, gk_error_code c) {
-    gk_bundle *b = gk->current_bundle;
+void gk_seterror(gk_context* gk, gk_error_code c)
+{
+    gk_bundle* b = gk->current_bundle;
 
     if(b) {
-        b->error.code = c;
+        b->error.code    = c;
         b->error.message = gk_error_strings[c];
     }
 }
 
-bool gk_haserror(gk_context *gk) {
+bool gk_haserror(gk_context* gk)
+{
     return gk->current_bundle && (gk->current_bundle->error.code != GK_ERROR_NONE);
 }
 
-static bool pass_asc_f (gk_cmd *a, gk_cmd *b) { return a->key < b->key; }
-static bool pass_desc_f(gk_cmd *a, gk_cmd *b) { return b->key < a->key; }
+static bool pass_asc_f(gk_cmd* a, gk_cmd* b) { return a->key < b->key; }
+static bool pass_desc_f(gk_cmd* a, gk_cmd* b) { return b->key < a->key; }
 
-bool gk_process_pass(gk_context *gk, gk_bundle *b, gk_pass *pass) {
+bool gk_process_pass(gk_context* gk, gk_bundle* b, gk_pass* pass)
+{
     if(pass->list_index >= b->nlists) {
         gk_seterror(gk, GK_ERROR_PASS_BADLIST);
         return false;
@@ -79,7 +86,8 @@ bool gk_process_pass(gk_context *gk, gk_bundle *b, gk_pass *pass) {
     return gk_process_list(gk, b, list);
 }
 
-bool gk_process_list(gk_context *gk, gk_bundle *b, gk_list *list) {
+bool gk_process_list(gk_context* gk, gk_bundle* b, gk_list* list)
+{
     if(!gk_mark(gk, list)) return false;
 
     if(list->sub != gk->last_sub) {
@@ -101,7 +109,7 @@ bool gk_process_list(gk_context *gk, gk_bundle *b, gk_list *list) {
             gk_process_config(gk, b, list);
             break;
         default:
-            LOG("Error: unknown list type: ", list->sub);
+            say("Error: unknown list type: ", list->sub);
             gk_seterror(gk, GK_ERROR_LIST_UNKNOWN);
             gk_unmark(gk, list);
             return false;
@@ -111,14 +119,19 @@ bool gk_process_list(gk_context *gk, gk_bundle *b, gk_list *list) {
     return true;
 }
 
-void gk_process_config(gk_context *gk, gk_bundle *b, gk_list *list) {
+void gk_process_config(gk_context* gk, gk_bundle* b, gk_list* list)
+{
     for(size_t i = 0; i < list->ncmds; ++i) {
         auto cmd = list->cmds[i];
         gk_process_cmd_general("GK_LIST_CONFIG", gk, b, cmd);
     }
 }
 
-bool gk_process_cmd_general(const char *listname, gk_context *gk, gk_bundle *b, gk_cmd *cmd) {
+bool gk_process_cmd_general(const char* listname,
+                            gk_context* gk,
+                            gk_bundle*  b,
+                            gk_cmd*     cmd)
+{
 
     switch(GK_CMD_TYPE(cmd)) {
         case GK_CMD_PASS:
@@ -199,8 +212,7 @@ bool gk_process_cmd_general(const char *listname, gk_context *gk, gk_bundle *b, 
 #endif // GK_USE_BOX2D
 
         default:
-            LOG("Unknown or invalid command type for ", listname, ": ",
-                GK_CMD_TYPE(cmd));
+            say("Unknown or invalid command type for ", listname, ": ", GK_CMD_TYPE(cmd));
             gk_seterror(gk, GK_ERROR_CMD_UNKNOWN);
             return false;
     }

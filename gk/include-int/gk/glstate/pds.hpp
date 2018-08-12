@@ -45,7 +45,7 @@ namespace gk {
                             GL_CHECK(glUniformMatrix4fv(v.location, 1, false, (float*)v.value.data));
                             break;
                         default:
-                            LOG("gk: bad uniform v type: ", v.type);
+                            rpav::say("gk: bad uniform v type: ", v.type);
                             break;
                     }
                 } else {
@@ -57,7 +57,7 @@ namespace gk {
                             GL_CHECK(glUniformMatrix4fv(v.location, 1, false, (float*)v.value.data));
                             break;
                         default:
-                            LOG("gk: bad uniform v type: ", v.type);
+                            rpav::say("gk: bad uniform v type: ", v.type);
                             break;
                     }
                 }

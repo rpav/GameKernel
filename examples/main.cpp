@@ -6,7 +6,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include "gk/log.hpp"
+#include <rpav/log.hpp>
 #include "example.hpp"
 
 using mat4 = glm::mat4;
@@ -57,8 +57,8 @@ int main() {
     int major, minor;
     glGetIntegerv(GL_MAJOR_VERSION, &major);
     glGetIntegerv(GL_MINOR_VERSION, &minor);
-    LOG(glGetString(GL_VENDOR), " - ", glGetString(GL_RENDERER));
-    LOG("GL ", major, ".", minor);
+    say(glGetString(GL_VENDOR), " - ", glGetString(GL_RENDERER));
+    say("GL ", major, ".", minor);
 
     example_main();
               
@@ -69,7 +69,7 @@ void printm(const mat4 &m) {
     const float *v = (const float*)glm::value_ptr(m);
 
     for(int i = 0; i < 4; ++i)
-        LOG(v[i], " ", v[i+4], " ", v[i+8], " ", v[i+12]);
+        say(v[i], " ", v[i+4], " ", v[i+8], " ", v[i+12]);
 }
 
 void init_bundle(gk_bundle *bundle, unsigned int start, int nlists) {

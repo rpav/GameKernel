@@ -1,31 +1,34 @@
+#include <vector>
+
 #include <GL/glew.h>
+
 #include <GL/gl.h>
+#include <rpav/log.hpp>
 
 #include "gk/gk.hpp"
 #include "gk/gl.hpp"
-#include "gk/log.hpp"
 
-#include <vector>
+using namespace rpav;
 
-const GLenum gk_filter_to_gl[] = {
-    GL_NEAREST,
-    GL_LINEAR,
-    GL_NEAREST_MIPMAP_NEAREST,
-    GL_LINEAR_MIPMAP_NEAREST,
-    GL_NEAREST_MIPMAP_LINEAR,
-    GL_LINEAR_MIPMAP_LINEAR
-};
+const GLenum gk_filter_to_gl[] = {GL_NEAREST,
+                                  GL_LINEAR,
+                                  GL_NEAREST_MIPMAP_NEAREST,
+                                  GL_LINEAR_MIPMAP_NEAREST,
+                                  GL_NEAREST_MIPMAP_LINEAR,
+                                  GL_LINEAR_MIPMAP_LINEAR};
 
-bool gk_gl_checkerror(const char *expr, const char *file, int line) {
+bool gk_gl_checkerror(const char* expr, const char* file, int line)
+{
     auto err = glGetError();
     if(err != GL_NO_ERROR) {
-        LOG("GL error ", err, " at ", file, ":", line, " ", expr);
+        say("GL error ", err, " at ", file, ":", line, " ", expr);
         return true;
     }
     return false;
 }
 
-GLuint gk_gl_compile_shader(GLenum type, const char *text) {
+GLuint gk_gl_compile_shader(GLenum type, const char* text)
+{
     auto shader = glCreateShader(type);
     GL_CHECK(glShaderSource(shader, 1, &text, nullptr));
     GL_CHECK(glCompileShader(shader));
@@ -33,40 +36,41 @@ GLuint gk_gl_compile_shader(GLenum type, const char *text) {
     GLint res;
     GL_CHECK(glGetShaderiv(shader, GL_COMPILE_STATUS, &res));
     if(res != GL_TRUE) {
-        LOG("GLSL error:");
+        say("GLSL error:");
         GL_CHECK(glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &res));
-        char *log = new char[res+1];
+        char* log = new char[res + 1];
 
         GL_CHECK(glGetShaderInfoLog(shader, res, nullptr, log));
-        LOG(log);
+        say(log);
         delete[] log;
         goto gl_error;
     }
 
     return shader;
 
- gl_error:
+gl_error:
     glDeleteShader(shader);
     return 0;
 }
 
-GLuint gk_gl_link_program(int numshaders, GLuint *shaders) {
-    auto prog = glCreateProgram(); GL_CHECKERR(glCreateProgram);
+GLuint gk_gl_link_program(int numshaders, GLuint* shaders)
+{
+    auto prog = glCreateProgram();
+    GL_CHECKERR(glCreateProgram);
 
-    for(int i = 0; i < numshaders; ++i)
-        GL_CHECK(glAttachShader(prog, shaders[i]));
+    for(int i = 0; i < numshaders; ++i) GL_CHECK(glAttachShader(prog, shaders[i]));
 
     GL_CHECK(glLinkProgram(prog));
 
     GLint res;
     GL_CHECK(glGetProgramiv(prog, GL_LINK_STATUS, &res));
     if(res != GL_TRUE) {
-        LOG("GLSL error linking program:");
+        say("GLSL error linking program:");
         GL_CHECK(glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &res));
-        char *log = new char[res+1];
+        char* log = new char[res + 1];
 
         GL_CHECK(glGetProgramInfoLog(prog, res, nullptr, log));
-        LOG(log);
+        say(log);
         delete[] log;
         goto gl_error;
     }
@@ -78,35 +82,35 @@ GLuint gk_gl_link_program(int numshaders, GLuint *shaders) {
 
     return prog;
 
- gl_error:
+gl_error:
     if(prog) glDeleteProgram(prog);
-    for(int i = 0; i < numshaders; ++i)
-        glDeleteShader(shaders[i]);
+    for(int i = 0; i < numshaders; ++i) glDeleteShader(shaders[i]);
     return 0;
 }
 
-std::ostream & operator<<(std::ostream & os, const glm::mat4x4 & m) {
+std::ostream& operator<<(std::ostream& os, const glm::mat4x4& m)
+{
     os << "[";
 
     for(int i = 0; i < 4; ++i) {
         os << "[";
-        os << m[i][0] << ", " << m[i][1] << ", "
-            << m[i][2] << ", " << m[i][3]
-            << "]";
+        os << m[i][0] << ", " << m[i][1] << ", " << m[i][2] << ", " << m[i][3] << "]";
     }
     os << "]";
     return os;
 }
 
-bool gk_init_gl(gk_context *gk) {
+bool gk_init_gl(gk_context* gk)
+{
     glewExperimental = GL_TRUE;
-    GLenum err = glewInit();
-    if (err != GLEW_OK) {
-        LOG("Error initializing GLEW: ", glewGetErrorString(err));
+    GLenum err       = glewInit();
+    if(err != GLEW_OK) {
+        say("Error initializing GLEW: ", glewGetErrorString(err));
         return false;
     }
     /* GLEW can return INVALID_ENUM */
-    while(glGetError() != GL_NO_ERROR);
+    while(glGetError() != GL_NO_ERROR)
+        ;
 
     switch(gk->impl) {
         case GK_GL2:
@@ -118,7 +122,7 @@ bool gk_init_gl(gk_context *gk) {
             break;
 
         default:
-            LOG("GK error: Unknown impl: ", gk->impl);
+            say("GK error: Unknown impl: ", gk->impl);
             return false;
     };
 
@@ -129,7 +133,8 @@ bool gk_init_gl(gk_context *gk) {
     return true;
 }
 
-void gk_fini_gl(gk_context *gk) {
+void gk_fini_gl(gk_context* gk)
+{
     switch(gk->impl) {
         case GK_GL2:
             gk_destroy_gl2(gk);
@@ -140,11 +145,15 @@ void gk_fini_gl(gk_context *gk) {
             break;
 
         default:
-            LOG("GK warning: Unknown impl: ", gk->impl);
+            say("GK warning: Unknown impl: ", gk->impl);
     };
 }
 
-static void gk_gl_process_begin(gk_context *gk, gk_bundle *bundle, gk_cmd_type type, gk_cmd *cmd) {
+static void gk_gl_process_begin(gk_context* gk,
+                                gk_bundle*  bundle,
+                                gk_cmd_type type,
+                                gk_cmd*     cmd)
+{
     switch(type) {
         case GK_CMD_QUAD:
         case GK_CMD_QUADSPRITE:
@@ -152,32 +161,42 @@ static void gk_gl_process_begin(gk_context *gk, gk_bundle *bundle, gk_cmd_type t
             gk->gl.gl_begin_quad(gk);
             return;
 
-        default: return;
+        default:
+            return;
     }
 }
 
-static bool gk_gl_process_should_transition(gk_cmd_type last, gk_cmd_type next) {
+static bool gk_gl_process_should_transition(gk_cmd_type last, gk_cmd_type next)
+{
     switch(last) {
         case GK_CMD_QUAD:
             switch(next) {
-                case GK_CMD_QUADSPRITE: return false;
-                case GK_CMD_SPRITELAYER: return false;
-                default: break;
+                case GK_CMD_QUADSPRITE:
+                    return false;
+                case GK_CMD_SPRITELAYER:
+                    return false;
+                default:
+                    break;
             }
             break;
         case GK_CMD_QUADSPRITE:
             switch(next) {
-                case GK_CMD_QUAD: return false;
-                case GK_CMD_SPRITELAYER: return false;
-                default: break;
+                case GK_CMD_QUAD:
+                    return false;
+                case GK_CMD_SPRITELAYER:
+                    return false;
+                default:
+                    break;
             }
             break;
-        default: break;
+        default:
+            break;
     }
     return true;
 }
 
-static void gk_gl_process_end(gk_context *gk, gk_bundle *, gk_cmd_type type) {
+static void gk_gl_process_end(gk_context* gk, gk_bundle*, gk_cmd_type type)
+{
     switch(type) {
         case GK_CMD_QUAD:
         case GK_CMD_QUADSPRITE:
@@ -185,21 +204,24 @@ static void gk_gl_process_end(gk_context *gk, gk_bundle *, gk_cmd_type type) {
             gk->gl.gl_end_quad(gk);
             return;
 
-        default: return;
+        default:
+            return;
     }
 }
 
-void gk_process_gl(gk_context *gk, gk_bundle *bundle, gk_list_gl *list_gl) {
+void gk_process_gl(gk_context* gk, gk_bundle* bundle, gk_list_gl* list_gl)
+{
     auto list = GK_LIST(list_gl);
 
     if(list_gl->width && list_gl->height)
         glViewport(0, 0, list_gl->width, list_gl->height);
 
     for(size_t j = 0; j < list->ncmds; ++j) {
-        auto cmd = list->cmds[j];
+        auto cmd  = list->cmds[j];
         auto type = GK_CMD_TYPE(cmd);
 
-        if(gk->gl.last_cmd != type && gk_gl_process_should_transition(gk->gl.last_cmd, type)) {
+        if(gk->gl.last_cmd != type
+           && gk_gl_process_should_transition(gk->gl.last_cmd, type)) {
             gk_gl_process_end(gk, bundle, gk->gl.last_cmd);
             gk_gl_process_begin(gk, bundle, type, cmd);
             gk->gl.last_cmd = type;
@@ -230,7 +252,8 @@ void gk_process_gl(gk_context *gk, gk_bundle *bundle, gk_list_gl *list_gl) {
     glFlush();
 }
 
-void gl_cmd_clear(gk_context*, gk_cmd_clear *cmd) {
+void gl_cmd_clear(gk_context*, gk_cmd_clear* cmd)
+{
     GLenum flags = 0;
 
     if(cmd->flags & GK_CLEAR_COLOR) {
@@ -251,29 +274,27 @@ void gl_cmd_clear(gk_context*, gk_cmd_clear *cmd) {
     GL_CHECK(glClear(flags));
     return;
 
- gl_error:
+gl_error:
     return;
 }
 
-static const GLenum gk_to_gl_shader[] = {
-    GL_VERTEX_SHADER,
-    GL_TESS_CONTROL_SHADER,
-    GL_TESS_EVALUATION_SHADER,
-    GL_GEOMETRY_SHADER,
-    GL_FRAGMENT_SHADER,
-    GL_COMPUTE_SHADER,
+static const GLenum gk_to_gl_shader[] = {GL_VERTEX_SHADER,
+                                         GL_TESS_CONTROL_SHADER,
+                                         GL_TESS_EVALUATION_SHADER,
+                                         GL_GEOMETRY_SHADER,
+                                         GL_FRAGMENT_SHADER,
+                                         GL_COMPUTE_SHADER,
 
-    0
-};
+                                         0};
 
-static void build_one_program(gk_context *gk, gk_program_source *progsrc) {
+static void build_one_program(gk_context* gk, gk_program_source* progsrc)
+{
     std::vector<GLuint> shaders;
     shaders.reserve(GK_SHADER_MAX);
 
     for(size_t i = 0; i < progsrc->nsources; ++i) {
-        auto *src = progsrc->source[i];
-        auto s = gk_gl_compile_shader(gk_to_gl_shader[src->type],
-                                      src->source);
+        auto* src = progsrc->source[i];
+        auto  s   = gk_gl_compile_shader(gk_to_gl_shader[src->type], src->source);
 
         if(s) {
             shaders.push_back(s);
@@ -286,26 +307,29 @@ static void build_one_program(gk_context *gk, gk_program_source *progsrc) {
     progsrc->program = gk_gl_link_program(shaders.size(), shaders.data());
 }
 
-void gl_cmd_program_create(gk_context *gk, gk_cmd_program_create *cmd) {
+void gl_cmd_program_create(gk_context* gk, gk_cmd_program_create* cmd)
+{
     for(size_t i = 0; i < cmd->nsources; ++i) {
         build_one_program(gk, cmd->source[i]);
         if(gk_haserror(gk)) return;
     }
 }
 
-void gl_cmd_program_destroy(gk_context *gk, gk_cmd_program_destroy *cmd) {
+void gl_cmd_program_destroy(gk_context* gk, gk_cmd_program_destroy* cmd)
+{
     for(size_t i = 0; i < cmd->nprograms; ++i) {
         GL_CHECK(glDeleteProgram(cmd->program[i]));
     }
     return;
 
- gl_error:
+gl_error:
     gk_seterror(gk, GK_ERROR_DESTROYING_PROGRAM);
     return;
 }
 
-void gl_cmd_uniform_query(gk_context*, gk_cmd_uniform_query *cmd) {
-    auto &program = *cmd->program;
+void gl_cmd_uniform_query(gk_context*, gk_cmd_uniform_query* cmd)
+{
+    auto& program = *cmd->program;
 
     for(size_t i = 0; i < cmd->nuniforms; ++i) {
         cmd->uniforms[i] = glGetUniformLocation(program, cmd->names[i]);

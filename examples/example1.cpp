@@ -3,9 +3,10 @@
 
 #undef GK_EXPORT
 #include "gk/gk.h"
-#include "gk/log.hpp"
+#include <rpav/log.hpp>
 #include "example.hpp"
 
+using namespace rpav;
 
 void example_main() {
     glClearColor(0,0,0,1);

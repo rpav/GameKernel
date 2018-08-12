@@ -20,7 +20,7 @@ inline std::string str(First arg, Rest...args) {
 
 #if 1
 #include <iostream>
-#define LOG log_print
+#define say log_print
 
 template<typename...Rest>
 inline void log_print(Rest...args) {

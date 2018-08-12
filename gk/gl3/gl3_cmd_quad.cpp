@@ -1,6 +1,9 @@
+#include <cstring>
+
 #include <GL/glew.h>
 #include <GL/gl.h>
-#include <cstring>
+
+#include <rpav/log.hpp>
 
 #include <glm/glm.hpp>
 #include <glm/vec2.hpp>
@@ -12,12 +15,13 @@
 
 #include "gk/gk.hpp"
 #include "gk/gl.hpp"
-#include "gk/log.hpp"
 
 using mat4 = glm::mat4;
 using vec4 = glm::vec4;
 using vec3 = glm::vec3;
 using vec2 = glm::vec2;
+
+using namespace rpav;
 
 static const char *shader_geom_quad = R"(
 #version 330 core

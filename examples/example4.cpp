@@ -2,7 +2,7 @@
 #include <GL/gl.h>
 #include <SDL2/SDL.h>
 #include "gk/gk++.hpp"
-#include "gk/log.hpp"
+#include <rpav/log.hpp>
 #include "example.hpp"
 
 void example_main() {
@@ -102,7 +102,7 @@ void example_main() {
         if(step.cmd.ncollisions > 0) {
             for(int i = 0; i < step.cmd.ncollisions; ++i) {
                 auto c = step.cmd.collisions[i];
-                LOG(frame, " collide ", c->a, "(", c->id_a, ") <-> ", c->b, "(", c->id_b, ") with ",
+                say(frame, " collide ", c->a, "(", c->id_a, ") <-> ", c->b, "(", c->id_b, ") with ",
                     c->contact);
             }
         }

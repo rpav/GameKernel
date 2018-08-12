@@ -8,12 +8,14 @@
 #include <memory>
 
 #include <gk/gk.hpp>
-#include "gk/log.hpp"
+#include <rpav/log.hpp>
 #include "Box2D/Box2D.h"
 
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include "nanovg.h"
+
+using namespace rpav;
 
 class GK_B2NvgDraw : public b2Draw {
     gk_context *_gk;
@@ -32,7 +34,7 @@ public:
     }
 
     void DrawPolygon(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color) {
-        LOG("draw poly?");
+        say("draw poly?");
     }
 
     void DrawSolidPolygon(const b2Vec2 *verts, int32 vertexCount, const b2Color &c) {
@@ -90,7 +92,7 @@ public:
     }
 
     void DrawTransform(const b2Transform &tf) {
-        LOG("Draw Transform ", tf.p.x, ",", tf.p.y, " ∠ ", tf.q.GetAngle());
+        say("Draw Transform ", tf.p.x, ",", tf.p.y, " ∠ ", tf.q.GetAngle());
     }
 };
 

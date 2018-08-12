@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include "gk/gk++.hpp"
-#include "gk/log.hpp"
+#include <rpav/log.hpp>
 #include "example.hpp"
 
 

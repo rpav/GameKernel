@@ -1,16 +1,23 @@
 #include <GL/glew.h>
-#include <GL/gl.h>
 
-#include "nanovg.h"
+#include <GL/gl.h>
+#include <rpav/log.hpp>
+
 #include "gk/gk.hpp"
 #include "gk/gl.hpp"
 #include "gk/nvg.hpp"
-#include "gk/log.hpp"
+#include "nanovg.h"
 
-static void gk_process_nvg_path(gk_context *gk, gk_bundle *bundle, gk_list_nvg *list, gk_cmd_path *cmd);
-static void gk_process_nvg_text(gk_context *gk, gk_list_nvg *list, gk_cmd_text *cmd);
+using namespace rpav;
 
-static inline void ensure_nvg_inframe(gk_context *gk, int w, int h, float r) {
+static void gk_process_nvg_path(gk_context*  gk,
+                                gk_bundle*   bundle,
+                                gk_list_nvg* list,
+                                gk_cmd_path* cmd);
+static void gk_process_nvg_text(gk_context* gk, gk_list_nvg* list, gk_cmd_text* cmd);
+
+static inline void ensure_nvg_inframe(gk_context* gk, int w, int h, float r)
+{
     if(gk->nvg_inframe) return;
 
     glViewport(0, 0, w, h);
@@ -20,7 +27,8 @@ static inline void ensure_nvg_inframe(gk_context *gk, int w, int h, float r) {
     gk->nvg_inframe = true;
 }
 
-static inline void ensure_nvg_outframe(gk_context *gk) {
+static inline void ensure_nvg_outframe(gk_context* gk)
+{
     if(!gk->nvg_inframe) return;
 
     nvgEndFrame(gk->nvg);
@@ -28,12 +36,13 @@ static inline void ensure_nvg_outframe(gk_context *gk) {
     gk_gl_reset_state(gk);
 }
 
-void gk_process_nvg(gk_context *gk, gk_bundle *bundle, gk_list_nvg *list_nvg) {
-    auto nvg = gk->nvg;
+void gk_process_nvg(gk_context* gk, gk_bundle* bundle, gk_list_nvg* list_nvg)
+{
+    auto nvg  = gk->nvg;
     auto list = GK_LIST(list_nvg);
-    auto w = list_nvg->width;
-    auto h = list_nvg->height;
-    auto r = list_nvg->ratio;
+    auto w    = list_nvg->width;
+    auto h    = list_nvg->height;
+    auto r    = list_nvg->ratio;
 
     for(size_t i = 0; i < list->ncmds; ++i) {
         auto cmd = list->cmds[i];
@@ -65,15 +74,15 @@ void gk_process_nvg(gk_context *gk, gk_bundle *bundle, gk_list_nvg *list_nvg) {
             default:
                 ensure_nvg_outframe(gk);
                 gk_process_cmd_general("GK_LIST_NVG", gk, bundle, cmd);
-                nvgBeginFrame(nvg, list_nvg->width, list_nvg->height,
-                              list_nvg->ratio);
+                nvgBeginFrame(nvg, list_nvg->width, list_nvg->height, list_nvg->ratio);
                 break;
         }
     }
     ensure_nvg_outframe(gk);
 }
 
-void gk_process_nvg_path(gk_context *gk, gk_bundle*, gk_list_nvg *list, gk_cmd_path *cmd) {
+void gk_process_nvg_path(gk_context* gk, gk_bundle*, gk_list_nvg* list, gk_cmd_path* cmd)
+{
     auto def = cmd->pathdef;
     auto end = def + cmd->pathlen;
     auto nvg = gk->nvg;
@@ -86,7 +95,7 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle*, gk_list_nvg *list, gk_cmd_p
         nvgTranslate(nvg, 0.0, list->height);
     }
 
-    for(; def < end ; ++def) {
+    for(; def < end; ++def) {
         int id = (int)def[0];
 
         switch(id) {
@@ -103,22 +112,22 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle*, gk_list_nvg *list, gk_cmd_p
                 break;
 
             case GK_PATH_MOVE_TO:
-                nvgMoveTo(nvg, def[1], _Y*def[2]);
+                nvgMoveTo(nvg, def[1], _Y * def[2]);
                 def += 2;
                 break;
 
             case GK_PATH_LINE_TO:
-                nvgLineTo(nvg, def[1], _Y*def[2]);
-                def +=2;
+                nvgLineTo(nvg, def[1], _Y * def[2]);
+                def += 2;
                 break;
 
             case GK_PATH_RECT:
-                nvgRect(nvg, def[1], _Y*def[2], def[3], _Y*def[4]);
+                nvgRect(nvg, def[1], _Y * def[2], def[3], _Y * def[4]);
                 def += 4;
                 break;
 
             case GK_PATH_CIRCLE:
-                nvgCircle(nvg, def[1], _Y*def[2], def[3]);
+                nvgCircle(nvg, def[1], _Y * def[2], def[3]);
                 def += 3;
                 break;
 
@@ -180,23 +189,28 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle*, gk_list_nvg *list, gk_cmd_p
                 break;
 
             case GK_PATH_FONT_SIZE:
-                nvgFontSize(nvg, def[1]); ++def;
+                nvgFontSize(nvg, def[1]);
+                ++def;
                 break;
 
             case GK_PATH_FONT_BLUR:
-                nvgFontBlur(nvg, def[1]); ++def;
+                nvgFontBlur(nvg, def[1]);
+                ++def;
                 break;
-                
+
             case GK_PATH_FONT_SPACING:
-                nvgTextLetterSpacing(nvg, def[1]); ++def;
+                nvgTextLetterSpacing(nvg, def[1]);
+                ++def;
                 break;
-                
+
             case GK_PATH_FONT_LINE_HEIGHT:
-                nvgTextLineHeight(nvg, def[1]); ++def;
+                nvgTextLineHeight(nvg, def[1]);
+                ++def;
                 break;
-                
+
             case GK_PATH_FONT_ALIGN:
-                nvgTextAlign(nvg, def[1]); ++def;
+                nvgTextAlign(nvg, def[1]);
+                ++def;
                 break;
 
             case GK_PATH_TF_IDENTITY:
@@ -204,12 +218,12 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle*, gk_list_nvg *list, gk_cmd_p
                 break;
 
             case GK_PATH_TF_TRANSLATE:
-                nvgTranslate(nvg, def[1], _Y*def[2]);
+                nvgTranslate(nvg, def[1], _Y * def[2]);
                 def += 2;
                 break;
 
             case GK_PATH_TF_ROTATE:
-                nvgRotate(nvg, _Y*def[1]);
+                nvgRotate(nvg, _Y * def[1]);
                 ++def;
                 break;
 
@@ -230,7 +244,7 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle*, gk_list_nvg *list, gk_cmd_p
                 break;
 
             default:
-                LOG("GK_NVG: Don't know how to handle path command ", id);
+                say("GK_NVG: Don't know how to handle path command ", id);
                 return;
         }
     }
@@ -238,12 +252,14 @@ void gk_process_nvg_path(gk_context *gk, gk_bundle*, gk_list_nvg *list, gk_cmd_p
     nvgRestore(nvg);
 }
 
-void gk_process_nvg_font_create(gk_context *gk, gk_cmd_font_create *cmd) {
+void gk_process_nvg_font_create(gk_context* gk, gk_cmd_font_create* cmd)
+{
     auto nvg = gk->nvg;
-    cmd->id = nvgCreateFont(nvg, cmd->name, cmd->filename);
+    cmd->id  = nvgCreateFont(nvg, cmd->name, cmd->filename);
 }
 
-void gk_process_nvg_font_face(gk_context *gk, gk_cmd_font_face* cmd) {
+void gk_process_nvg_font_face(gk_context* gk, gk_cmd_font_face* cmd)
+{
     auto nvg = gk->nvg;
 
     switch(cmd->type) {
@@ -257,37 +273,42 @@ void gk_process_nvg_font_face(gk_context *gk, gk_cmd_font_face* cmd) {
     }
 }
 
-void gk_process_nvg_image_create(gk_context *gk, gk_cmd_image_create *cmd) {
-    auto nvg = gk->nvg;
-    int flags = cmd->flags & GK_TEX_FLAGS_NANOVG_MASK;
+void gk_process_nvg_image_create(gk_context* gk, gk_cmd_image_create* cmd)
+{
+    auto nvg   = gk->nvg;
+    int  flags = cmd->flags & GK_TEX_FLAGS_NANOVG_MASK;
 
     cmd->id = nvgCreateImage(nvg, cmd->filename, flags);
     GL_CHECK(glBindTexture(GL_TEXTURE_2D, cmd->id));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gk_filter_to_gl[cmd->min_filter]));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gk_filter_to_gl[cmd->mag_filter]));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                             gk_filter_to_gl[cmd->min_filter]));
+    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                             gk_filter_to_gl[cmd->mag_filter]));
     return;
 
- gl_error:
+gl_error:
     return;
 }
 
-void gk_process_nvg_image_destroy(gk_context *gk, gk_cmd_image_destroy *cmd) {
+void gk_process_nvg_image_destroy(gk_context* gk, gk_cmd_image_destroy* cmd)
+{
     auto nvg = gk->nvg;
 
-    for(size_t i = 0; i < cmd->nids; ++i)
-        nvgDeleteImage(nvg, cmd->ids[i]);
+    for(size_t i = 0; i < cmd->nids; ++i) nvgDeleteImage(nvg, cmd->ids[i]);
 }
 
-void gk_process_nvg_font_style(gk_context *gk, gk_cmd_font_style *cmd) {
+void gk_process_nvg_font_style(gk_context* gk, gk_cmd_font_style* cmd)
+{
     auto nvg = gk->nvg;
-    if(cmd->size > 0)        nvgFontSize(nvg, cmd->size);
-    if(cmd->blur >= 0)       nvgFontBlur(nvg, cmd->blur);
-    if(cmd->spacing > 0)     nvgTextLetterSpacing(nvg, cmd->spacing);
+    if(cmd->size > 0) nvgFontSize(nvg, cmd->size);
+    if(cmd->blur >= 0) nvgFontBlur(nvg, cmd->blur);
+    if(cmd->spacing > 0) nvgTextLetterSpacing(nvg, cmd->spacing);
     if(cmd->line_height > 0) nvgTextLineHeight(nvg, cmd->line_height);
-    if(cmd->align > 0)       nvgTextAlign(nvg, cmd->align);
+    if(cmd->align > 0) nvgTextAlign(nvg, cmd->align);
 }
 
-void gk_process_nvg_text(gk_context *gk, gk_list_nvg *list, gk_cmd_text *cmd) {
+void gk_process_nvg_text(gk_context* gk, gk_list_nvg* list, gk_cmd_text* cmd)
+{
     auto nvg = gk->nvg;
 
     float _Y = (list->origin == GK_ORIGIN_Y_DOWN ? 1.0 : -1.0);
@@ -299,10 +320,10 @@ void gk_process_nvg_text(gk_context *gk, gk_list_nvg *list, gk_cmd_text *cmd) {
     }
 
     if(cmd->break_width > 0.0) {
-        nvgTextBox(nvg, cmd->pos.x, _Y*cmd->pos.y,
-                   cmd->break_width, cmd->str, cmd->end);
+        nvgTextBox(nvg, cmd->pos.x, _Y * cmd->pos.y, cmd->break_width, cmd->str,
+                   cmd->end);
     } else {
-        nvgText(nvg, cmd->pos.x, _Y*cmd->pos.y, cmd->str, cmd->end);
+        nvgText(nvg, cmd->pos.x, _Y * cmd->pos.y, cmd->str, cmd->end);
     }
 
     nvgRestore(nvg);
