@@ -2,7 +2,7 @@
 
 #include <chrono>
 
-#include <glm/mat4x4.hpp>
+#include <rpav/str/gk.hpp>
 #include <rpav/log.hpp>
 
 #include "gk/gk.h"
@@ -23,11 +23,10 @@ using namespace rpav;
         exit(1);                                                                         \
     }
 
-void        printm(const glm::mat4x4& m);
 void        swap();
 void        wait();
 bool        check_input();
-extern void example_main();
+extern void example_main(int argc, const char* argv[]);
 
 /* Note these do not alloc/free the *passed* object, only its *direct*
    contents. */

@@ -66,7 +66,7 @@ void main() {
 }
 )";
 
-void example_main() {
+void example_main(int, const char**) {
     checkrc(SDL_GL_SetSwapInterval(1));
 
     auto gk = gk::create(GK_GL3);

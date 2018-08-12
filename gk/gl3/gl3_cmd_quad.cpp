@@ -3,23 +3,18 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 
+#include <rpav/util.hpp>
+#include <rpav/algorithm.hpp>
+#include <rpav/str/gk.hpp>
 #include <rpav/log.hpp>
-
-#include <glm/glm.hpp>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include "gk/gk.hpp"
 #include "gk/gl.hpp"
 
-using mat4 = glm::mat4;
-using vec4 = glm::vec4;
-using vec3 = glm::vec3;
-using vec2 = glm::vec2;
+using mat4 = gk::mat4;
+using vec4 = gk::vec4;
+using vec3 = gk::vec3;
+using vec2 = gk::vec2;
 
 using namespace rpav;
 
@@ -173,14 +168,14 @@ void gl3_begin_quad(gk_context *gk) {
     return;
 }
 
-static void gl3_append_quad(gk_context *gk, mat4 *tfm, gk_quadvert *attr) {
+static void gl3_append_quad(gk_context *gk, const mat4 *tfm, gk_quadvert *attr) {
     auto gl3 = (gl3_impl*)gk->impl_data;
     gk_quadvert *out = (gk_quadvert*)(gl3->quadbuf + (gl3->quadcount * QUADBUF_VALS_PER_VERT * 4));
 
-    *(vec4*)(&out[0].vertex) = (*tfm) * *(vec4*)&attr[0].vertex;
-    *(vec4*)(&out[1].vertex) = (*tfm) * *(vec4*)&attr[1].vertex;
-    *(vec4*)(&out[2].vertex) = (*tfm) * *(vec4*)&attr[2].vertex;
-    *(vec4*)(&out[3].vertex) = (*tfm) * *(vec4*)&attr[3].vertex;
+    out[0].vertex = (*tfm) * attr[0].vertex;
+    out[1].vertex = (*tfm) * attr[1].vertex;
+    out[2].vertex = (*tfm) * attr[2].vertex;
+    out[3].vertex = (*tfm) * attr[3].vertex;
     out[0].uv = attr[0].uv;
     out[1].uv = attr[1].uv;
     out[2].uv = attr[2].uv;
@@ -247,15 +242,15 @@ void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) 
     int sj=0,by=0;
 
     if(cmd->render->flags & GK_SPRITELAYER_FLIPX) {
-        si = glm::clamp<int>(cfg->layer_size.x - r->bounds.z, 0, cfg->layer_size.x);
-        bx = glm::clamp<int>(si + r->bounds.z, 0, cfg->layer_size.x);
+        si = clamp<int>(cfg->layer_size.x - r->bounds.z, 0, cfg->layer_size.x);
+        bx = clamp<int>(si + r->bounds.z, 0, cfg->layer_size.x);
     } else {
-        si = glm::clamp<int>(r->bounds.x, 0, cfg->layer_size.x);
-        bx = glm::clamp<int>(si + r->bounds.z, 0, cfg->layer_size.x);
+        si = clamp<int>(r->bounds.x, 0, cfg->layer_size.x);
+        bx = clamp<int>(si + r->bounds.z, 0, cfg->layer_size.x);
     }
 
-    sj = glm::clamp<int>(r->bounds.y, 0, cfg->layer_size.y);
-    by = glm::clamp<int>(sj + r->bounds.w, 0, cfg->layer_size.y);
+    sj = clamp<int>(r->bounds.y, 0, cfg->layer_size.y);
+    by = clamp<int>(sj + r->bounds.w, 0, cfg->layer_size.y);
 
     for(int j = sj; j < by; ++j) {
         for(int i = si; i < bx; ++i) {
@@ -275,7 +270,7 @@ void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) 
 
             if(!spriteno) continue;
             
-            m = glm::translate(*layer_m, tr);
+            m = *layer_m * gk::mat4::translate(tr);
             auto &sprite = sheet->sprites[spriteno-1];
 
             gl3_append_quad(gk, &m, sprite.attr);

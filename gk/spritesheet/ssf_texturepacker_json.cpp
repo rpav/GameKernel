@@ -42,9 +42,9 @@ static void parse_texturepacker_frame(const json&  meta,
     float vw = vsize["w"], vh = vsize["h"];
     float x = rect["x"], y = rect["y"], w = rect["w"], h = rect["h"];
 
-    sprite->size.set(w, h);
-    sprite->vsize.set(vw, vh);
-    sprite->anchor.set(ax, ay, 0);
+    sprite->size   = {w, h};
+    sprite->vsize  = {vw, vh};
+    sprite->anchor = {ax, ay, 0};
 
     float nax = translate_anchor(ax, vw, srcRect["x"], w);
     float nay = translate_anchor(ay, vh, srcRect["y"], h);
@@ -68,10 +68,10 @@ static void parse_texturepacker_frame(const json&  meta,
         fy1 = -fy1;
     }
 
-    qv[0].vertex.set(fx0, fy0, 0, 1);
-    qv[1].vertex.set(fx1, fy0, 0, 1);
-    qv[2].vertex.set(fx0, fy1, 0, 1);
-    qv[3].vertex.set(fx1, fy1, 0, 1);
+    qv[0].vertex = {fx0, fy0, 0, 1};
+    qv[1].vertex = {fx1, fy0, 0, 1};
+    qv[2].vertex = {fx0, fy1, 0, 1};
+    qv[3].vertex = {fx1, fy1, 0, 1};
 
     if(rotated) std::swap(w, h);
 
@@ -82,15 +82,15 @@ static void parse_texturepacker_frame(const json&  meta,
     v1 = (y + h) / mh;
 
     if(rotated) {
-        qv[0].uv.set(u1, v0);
-        qv[1].uv.set(u1, v1);
-        qv[2].uv.set(u0, v0);
-        qv[3].uv.set(u0, v1);
+        qv[0].uv = {u1, v0};
+        qv[1].uv = {u1, v1};
+        qv[2].uv = {u0, v0};
+        qv[3].uv = {u0, v1};
     } else {
-        qv[0].uv.set(u0, v0);
-        qv[1].uv.set(u1, v0);
-        qv[2].uv.set(u0, v1);
-        qv[3].uv.set(u1, v1);
+        qv[0].uv = {u0, v0};
+        qv[1].uv = {u1, v0};
+        qv[2].uv = {u0, v1};
+        qv[3].uv = {u1, v1};
     }
 }
 

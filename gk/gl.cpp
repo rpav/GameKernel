@@ -88,18 +88,6 @@ gl_error:
     return 0;
 }
 
-std::ostream& operator<<(std::ostream& os, const glm::mat4x4& m)
-{
-    os << "[";
-
-    for(int i = 0; i < 4; ++i) {
-        os << "[";
-        os << m[i][0] << ", " << m[i][1] << ", " << m[i][2] << ", " << m[i][3] << "]";
-    }
-    os << "]";
-    return os;
-}
-
 bool gk_init_gl(gk_context* gk)
 {
     glewExperimental = GL_TRUE;

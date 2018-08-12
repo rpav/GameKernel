@@ -5,7 +5,7 @@
 #include <rpav/log.hpp>
 #include "example.hpp"
 
-void example_main() {
+void example_main(int, const char**) {
     // Don't want unbounded framerate (at least right now)
     checkrc(SDL_GL_SetSwapInterval(1));
 
@@ -24,7 +24,10 @@ void example_main() {
     gk::vec2 b_pos;
     float b_angle;
 
-    gk::B2Body body(b_pos, b_angle);
+    gk::B2Body body;
+    body.position = b_pos;
+    body.angle = b_angle;
+
     gk::B2BodyDef bdef(body, GK_B2_BODY_TYPE_DYNAMIC);
     gk::CmdB2BodyCreate bodyCreate(world);
     bdef.angle = 0.2;
@@ -75,6 +78,8 @@ void example_main() {
     gk::CmdB2DrawDebug ddraw(world, 1280, 720);
     gk::CmdB2IterBodies iterBodies(world);
 
+    ddraw.cmd.scale = {64,64};
+
     // Bundle it all up
     bundle.add(phys);
 
@@ -102,8 +107,8 @@ void example_main() {
         if(step.cmd.ncollisions > 0) {
             for(int i = 0; i < step.cmd.ncollisions; ++i) {
                 auto c = step.cmd.collisions[i];
-                say(frame, " collide ", c->a, "(", c->id_a, ") <-> ", c->b, "(", c->id_b, ") with ",
-                    c->contact);
+                say(frame, " collide ", c.a, "(", c.id_a, ") <. ", c.b, "(", c.id_b, ") with ",
+                    c.contact);
             }
         }
 

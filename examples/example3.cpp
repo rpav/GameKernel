@@ -5,23 +5,16 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 #include "gk/gk.h"
 #include <rpav/log.hpp>
 #include "example.hpp"
 
-using mat4 = glm::mat4;
-using vec4 = glm::vec4;
-using vec3 = glm::vec3;
-using vec2 = glm::vec2;
+using mat4 = gk::mat4;
+using vec4 = gk::vec4;
+using vec3 = gk::vec3;
+using vec2 = gk::vec2;
 
-void example_main() {
+void example_main(int, const char**) {
     gk_context *gk = gk_create(GK_GL3);
     gk_bundle b;
     gk_list_gl l;
@@ -31,7 +24,7 @@ void example_main() {
     l.width = l.height = 0;
 
     //mat4 proj = glm::ortho<float>(0, WIDTH, HEIGHT, 0, -1, 1);
-    mat4 proj = glm::ortho<float>(0, WIDTH, 0, HEIGHT, -1, 1);
+    mat4 proj = gk::mat4::ortho(0, WIDTH, 0, HEIGHT, -1, 1);
 
     gk_cmd_tf_trs tf;
     gk_cmd_quadsprite qs;
@@ -46,8 +39,7 @@ void example_main() {
     GK_CMD_TYPE(&c) = GK_CMD_SPRITESHEET_CREATE;
     //c.flags = 0;
     c.flags = GK_SCF_FLIP_Y;
-    c.path = "../examples/res/";
-    c.filename = "platformer_sprites.json";
+    c.path = "res/platformer_sprites.json";
     c.format = GK_SSF_TEXTUREPACKER_JSON;
 
     gk_process(gk, &b);
@@ -102,7 +94,9 @@ void example_main() {
     
     // Destroy the sheet.
     GK_CMD_TYPE(&d) = GK_CMD_SPRITESHEET_DESTROY;
-    d.sheet = c.sheet;
+    gk_spritesheet* sheets[] = { c.sheet };
+    d.nsheets = 1;
+    d.sheets = sheets;
     l.parent.sub = GK_SUB_CONFIG;
     l.parent.ncmds = 1;
     l.parent.cmds[0] = GK_CMD(&d);

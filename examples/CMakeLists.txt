@@ -9,26 +9,54 @@ else()
 endif()
 
 add_executable(gk_example1 example1.cpp main.cpp)
-target_link_libraries(gk_example1 SDL2 ${GL} gk-static)
+target_link_libraries(gk_example1
+  PRIVATE rpav::cxxutils
+  PRIVATE SDL2
+  PRIVATE ${GL}
+  PRIVATE gk-static)
 
 if(GK_BUILD_GKPP)
   add_executable(gk_example1a example1a.cpp main.cpp)
-  target_link_libraries(gk_example1a SDL2 ${GL} gk-static gk++-static)
+  target_link_libraries(gk_example1a
+    PRIVATE rpav::cxxutils
+    PRIVATE SDL2
+    PRIVATE ${GL}
+    PRIVATE gk++-static)
 endif()
 
 add_executable(gk_example2 example2.cpp main.cpp)
-target_link_libraries(gk_example2 SDL2 ${GL} gk-shared)
+target_link_libraries(gk_example2
+  PRIVATE rpav::cxxutils
+  PRIVATE SDL2
+  PRIVATE ${GL}
+  PRIVATE gk-static)
 
 add_executable(gk_example3 example3.cpp main.cpp)
-target_link_libraries(gk_example3 SDL2 ${GL} gk-static)
+target_link_libraries(gk_example3
+  PRIVATE rpav::cxxutils
+  PRIVATE SDL2
+  PRIVATE ${GL}
+  PRIVATE gk-static)
 
 if(GK_BUILD_GKPP)
   add_executable(gk_example4 example4.cpp main.cpp)
-  target_link_libraries(gk_example4 SDL2 ${GL} gk-static gk++-static)
+  target_link_libraries(gk_example4
+    PRIVATE rpav::cxxutils
+    PRIVATE SDL2
+    PRIVATE ${GL}
+    PRIVATE gk++-static)
 
   add_executable(gk_example5 example5.cpp main.cpp)
-  target_link_libraries(gk_example5 SDL2 ${GL} gk-static gk++-static)
+  target_link_libraries(gk_example5
+    PRIVATE rpav::cxxutils
+    PRIVATE SDL2
+    PRIVATE ${GL}
+    PRIVATE gk++-static)
 
   add_executable(gk_example6 example6.cpp main.cpp)
-  target_link_libraries(gk_example6 SDL2 ${GL} gk-static gk++-static)
+  target_link_libraries(gk_example6
+    PRIVATE rpav::cxxutils
+    PRIVATE SDL2
+    PRIVATE ${GL}
+    PRIVATE gk++-static)
 endif()

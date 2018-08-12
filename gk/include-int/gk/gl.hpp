@@ -3,10 +3,7 @@
 #include <GL/glew.h>
 
 #include <GL/gl.h>
-#include <glm/mat4x4.hpp>
 #include <rpav/log.hpp>
-
-#define GK_GLM_CONVERSIONS
 
 #include "gk/gk++util.hpp"
 #include "gk/gk.hpp"
@@ -49,7 +46,7 @@ struct gl3_impl : public gl_impl_data {
 };
 
 /* Functions */
-std::ostream& operator<<(std::ostream& os, const glm::mat4& m);
+std::ostream& operator<<(std::ostream& os, const gk::mat4& m);
 
 bool gk_init_gl(gk_context* gk);
 void gk_fini_gl(gk_context* gk);
@@ -89,6 +86,3 @@ void gl3_cmd_rt_unbind(gk_context*, gk_cmd_rt_unbind*);
 
 // tables
 extern const GLenum gk_filter_to_gl[];
-
-// consts
-extern const glm::mat4 I4;

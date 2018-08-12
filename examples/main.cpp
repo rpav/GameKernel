@@ -4,12 +4,8 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 
-#include <glm/gtc/type_ptr.hpp>
-
 #include <rpav/log.hpp>
 #include "example.hpp"
-
-using mat4 = glm::mat4;
 
 SDL_Window *w = NULL;
 SDL_GLContext gl;
@@ -29,14 +25,23 @@ void wait() {
 bool check_input() {
     SDL_Event ev;
     while(SDL_PollEvent(&ev)) {
-        if(ev.type == SDL_KEYDOWN || ev.type == SDL_MOUSEBUTTONDOWN)
-            return true;
+        switch(ev.type) {
+            case SDL_KEYDOWN:
+            case SDL_MOUSEBUTTONDOWN:
+                return true;
+
+            case SDL_WINDOWEVENT:
+                if(ev.window.event == SDL_WINDOWEVENT_CLOSE)
+                    return true;
+
+            default: break;
+        }
     }
     return false;
 }
 
 #undef main
-int main() {
+int main(int argc, const char* argv[]) {
     checkrc(SDL_Init(SDL_INIT_EVERYTHING));
 
     checkrc(SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3));
@@ -60,16 +65,9 @@ int main() {
     say(glGetString(GL_VENDOR), " - ", glGetString(GL_RENDERER));
     say("GL ", major, ".", minor);
 
-    example_main();
+    example_main(argc, argv);
               
     SDL_Quit();
-}
-
-void printm(const mat4 &m) {
-    const float *v = (const float*)glm::value_ptr(m);
-
-    for(int i = 0; i < 4; ++i)
-        say(v[i], " ", v[i+4], " ", v[i+8], " ", v[i+12]);
 }
 
 void init_bundle(gk_bundle *bundle, unsigned int start, int nlists) {
@@ -82,7 +80,7 @@ void init_bundle(gk_bundle *bundle, unsigned int start, int nlists) {
 }
 
 void free_bundle(gk_bundle *bundle) {
-    delete bundle->lists;
+    delete[] bundle->lists;
 }
 
 void init_list(gk_list *list, gk_subsystem sub, int ncmds, gk_cmd **cmds) {
@@ -97,7 +95,7 @@ void init_list(gk_list *list, gk_subsystem sub, int ncmds, gk_cmd **cmds) {
 }
 
 void free_list(gk_list *list) {
-    delete list->cmds;
+    delete[] list->cmds;
 }
 
 void init_path(gk_cmd_path *path, float *pathdef, size_t len) {
