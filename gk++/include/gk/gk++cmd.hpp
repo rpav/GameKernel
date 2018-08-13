@@ -584,11 +584,11 @@ public:
 // Slower but more convenient for one-offs
 class CmdNvgFunction : public CmdTmpl<gk_cmd_nvg_function, GK_CMD_NVG_FUNCTION> {
 public:
-    using function_type = std::function<void(struct NVGcontext*)>;
+    using function_type = std::function<void(NVGcontext*)>;
     function_type _function;
 
 private:
-    static void _callback(struct NVGcontext* nvg, void* data)
+    static void _callback(NVGcontext* nvg, void* data)
     {
         auto* cmd = reinterpret_cast<CmdNvgFunction*>(data);
         cmd->_function(nvg);
@@ -597,6 +597,7 @@ private:
 public:
     CmdNvgFunction(function_type f) : CmdTmpl()
     {
+        _function    = f;
         cmd.function = _callback;
         cmd.data     = this;
     }
