@@ -34,7 +34,4 @@ void gk_destroy_gl3(gk_context* gk)
     delete gl3;
 
     nvgDeleteGL3(gk->nvg);
-
-gl_error:
-    return;
 }

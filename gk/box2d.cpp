@@ -1,34 +1,35 @@
-#include <cstring>
 #include <cmath>
-
+#include <cstring>
+#include <memory>
 #include <new>
-#include <vector>
 #include <set>
 #include <utility>
-#include <memory>
+#include <vector>
 
+#include <GL/glew.h>
+
+#include <GL/gl.h>
 #include <gk/gk.hpp>
-#include <rpav/type_pun.hpp>
 #include <rpav/log.hpp>
+#include <rpav/type_pun.hpp>
 #include <rpav/util.hpp>
 
 #include "Box2D/Box2D.h"
-
-#include <GL/glew.h>
-#include <GL/gl.h>
 #include "nanovg.h"
 
 using namespace rpav;
 
 class GK_B2NvgDraw : public b2Draw {
     gk_context* _gk;
-    int   _w, _h;
-    float _xscale, _yscale;
-    float _linewidth;
-public:
-    GK_B2NvgDraw(gk_context* gk) : _gk(gk), _w(0), _h(0) { }
+    int         _w, _h;
+    float       _xscale, _yscale;
+    float       _linewidth;
 
-    void setSize(int w, int h, float xscale, float yscale) {
+public:
+    GK_B2NvgDraw(gk_context* gk) : _gk(gk), _w(0), _h(0) {}
+
+    void setSize(int w, int h, float xscale, float yscale)
+    {
         _w         = w;
         _h         = h;
         _xscale    = xscale;
@@ -36,11 +37,13 @@ public:
         _linewidth = 1.0f / xscale;
     }
 
-    void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) {
+    void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+    {
         say("draw poly?");
     }
 
-    void DrawSolidPolygon(const b2Vec2* verts, int32 vertexCount, const b2Color& c) {
+    void DrawSolidPolygon(const b2Vec2* verts, int32 vertexCount, const b2Color& c)
+    {
         auto nvg = _gk->nvg;
 
         nvgBeginPath(nvg);
@@ -57,7 +60,8 @@ public:
         nvgStroke(nvg);
     }
 
-    void DrawCircle(const b2Vec2& center, float32 radius, const b2Color& c) {
+    void DrawCircle(const b2Vec2& center, float32 radius, const b2Color& c)
+    {
         auto nvg = _gk->nvg;
 
         nvgBeginPath(nvg);
@@ -67,12 +71,11 @@ public:
         nvgStroke(nvg);
     }
 
-    void DrawSolidCircle(
-        const b2Vec2& center,
-        float32 radius,
-        const b2Vec2& axis,
-        const b2Color& c
-    ) {
+    void DrawSolidCircle(const b2Vec2&  center,
+                         float32        radius,
+                         const b2Vec2&  axis,
+                         const b2Color& c)
+    {
         auto nvg = _gk->nvg;
 
         nvgBeginPath(nvg);
@@ -89,7 +92,8 @@ public:
         nvgStroke(nvg);
     }
 
-    void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& c) {
+    void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& c)
+    {
         auto nvg = _gk->nvg;
         nvgBeginPath(nvg);
         nvgMoveTo(nvg, p1.x, p1.y);
@@ -99,7 +103,8 @@ public:
         nvgStroke(nvg);
     }
 
-    void DrawTransform(const b2Transform& tf) {
+    void DrawTransform(const b2Transform& tf)
+    {
         say("Draw Transform ", tf.p.x, ",", tf.p.y, " ∠ ", tf.q.GetAngle());
     }
 };
@@ -119,11 +124,10 @@ class GK_B2ContactListener : public b2ContactListener {
     GkContactPtrVector _pairs;
 
 public:
-    void begin() {
-        _pairs.clear();
-    }
+    void begin() { _pairs.clear(); }
 
-    ContactPair& add(b2Contact* c) {
+    ContactPair& add(b2Contact* c)
+    {
         b2WorldManifold manifold;
 
         c->GetWorldManifold(&manifold);
@@ -131,11 +135,11 @@ public:
         auto fixA = c->GetFixtureA();
         auto fixB = c->GetFixtureB();
 
-        auto a = (gk_b2_body*) fixA->GetBody()->GetUserData();
-        auto b = (gk_b2_body*) fixB->GetBody()->GetUserData();
+        auto a = (gk_b2_body*)fixA->GetBody()->GetUserData();
+        auto b = (gk_b2_body*)fixB->GetBody()->GetUserData();
 
-        gk_b2_fixture_data* fixDataA = (gk_b2_fixture_data*) fixA->GetUserData();
-        gk_b2_fixture_data* fixDataB = (gk_b2_fixture_data*) fixB->GetUserData();
+        gk_b2_fixture_data* fixDataA = (gk_b2_fixture_data*)fixA->GetUserData();
+        gk_b2_fixture_data* fixDataB = (gk_b2_fixture_data*)fixB->GetUserData();
 
         int idA = 0, idB = 0;
 
@@ -143,27 +147,26 @@ public:
         if(fixDataB) idB = fixDataB->id;
 
         auto&& pair = _pairs.emplace_back(a, b, idA, idB);
-        copy(pair.normal, manifold.normal);
+        memcpy(pair.normal, manifold.normal);
 
         return pair;
     }
 
-    virtual void BeginContact(b2Contact* c) {
-        auto& pair = add(c);
+    virtual void BeginContact(b2Contact* c)
+    {
+        auto& pair   = add(c);
         pair.contact = 1;
     }
-    virtual void EndContact(b2Contact* c) {
+    virtual void EndContact(b2Contact* c)
+    {
         auto& pair   = add(c);
         pair.contact = -1;
     }
-    virtual void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) {
+    virtual void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) {}
+    virtual void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse) {}
 
-    }
-    virtual void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse) {
-
-    }
-
-    void finish(gk_cmd_b2_step* cmd) {
+    void finish(gk_cmd_b2_step* cmd)
+    {
         cmd->collisions  = _pairs.data();
         cmd->ncollisions = _pairs.size();
     }
@@ -175,7 +178,8 @@ struct gk_b2_world_data {
     std::unique_ptr<GK_B2ContactListener> listen;
 };
 
-void gk_process_b2_world_create(gk_context* gk, gk_cmd_b2_world_create* cmd) {
+void gk_process_b2_world_create(gk_context* gk, gk_cmd_b2_world_create* cmd)
+{
     auto data = new gk_b2_world_data;
 
     b2Vec2 gravity(cmd->gravity.x, cmd->gravity.y);
@@ -193,17 +197,19 @@ void gk_process_b2_world_create(gk_context* gk, gk_cmd_b2_world_create* cmd) {
     cmd->world->data = data;
 }
 
-void gk_process_b2_world_destroy(gk_context*, gk_cmd_b2_world_destroy* cmd) {
+void gk_process_b2_world_destroy(gk_context*, gk_cmd_b2_world_destroy* cmd)
+{
     delete cmd->world->data;
     cmd->world->data = nullptr;
 }
 
-void gk_process_b2_body_create(gk_context*, gk_cmd_b2_body_create* cmd) {
+void gk_process_b2_body_create(gk_context*, gk_cmd_b2_body_create* cmd)
+{
     auto&& world = *cmd->world->data->world;
 
     for(size_t i = 0; i < cmd->ndefs; ++i) {
         b2BodyDef def;
-        auto& src = *(cmd->defs[i]);
+        auto&     src = *(cmd->defs[i]);
 
         def.active           = src.active;
         def.allowSleep       = src.allow_sleep;
@@ -219,7 +225,7 @@ void gk_process_b2_body_create(gk_context*, gk_cmd_b2_body_create* cmd) {
         def.linearVelocity.y = src.linear_velocity.y;
         def.position.x       = src.position.x;
         def.position.y       = src.position.y;
-        def.type             = (b2BodyType) src.type;
+        def.type             = (b2BodyType)src.type;
         def.userData         = src.body;
 
         auto* body     = world.CreateBody(&def);
@@ -230,12 +236,14 @@ void gk_process_b2_body_create(gk_context*, gk_cmd_b2_body_create* cmd) {
     }
 }
 
-void gk_process_b2_body_update(gk_context*, gk_cmd_b2_body_update* cmd) {
+void gk_process_b2_body_update(gk_context*, gk_cmd_b2_body_update* cmd)
+{
     auto& body = *cmd->body->data->body;
     body.SetTransform(pun<const b2Vec2>(cmd->translate), cmd->angle);
 }
 
-void gk_process_b2_body_destroy(gk_context*, gk_cmd_b2_body_destroy* cmd) {
+void gk_process_b2_body_destroy(gk_context*, gk_cmd_b2_body_destroy* cmd)
+{
     auto* world = cmd->world->data->world.get();
 
     for(size_t i = 0; i < cmd->nbodies; ++i) {
@@ -246,16 +254,18 @@ void gk_process_b2_body_destroy(gk_context*, gk_cmd_b2_body_destroy* cmd) {
     }
 }
 
-gk_b2_fixture_data* ensure_fixdata(b2FixtureDef* fixdef) {
-    if(fixdef->userData) return (gk_b2_fixture_data*) fixdef->userData;
+gk_b2_fixture_data* ensure_fixdata(b2FixtureDef* fixdef)
+{
+    if(fixdef->userData) return (gk_b2_fixture_data*)fixdef->userData;
 
-    auto data = new gk_b2_fixture_data;
+    auto data        = new gk_b2_fixture_data;
     fixdef->userData = data;
 
     return data;
 }
 
-void gk_process_b2_fixture_create(gk_context*, gk_cmd_b2_fixture_create* cmd) {
+void gk_process_b2_fixture_create(gk_context*, gk_cmd_b2_fixture_create* cmd)
+{
     std::vector<b2Vec2> verts;
     auto                body  = cmd->body->data->body;
     float               scale = (cmd->scale != 0.0f) ? cmd->scale : 1.0f;
@@ -271,7 +281,7 @@ void gk_process_b2_fixture_create(gk_context*, gk_cmd_b2_fixture_create* cmd) {
     auto end = def + cmd->pathlen;
 
     for(; def < end; ++def) {
-        int id = (int) def[0];
+        int id = (int)def[0];
 
         switch(id) {
             case GK_PATH_RECT: {
@@ -336,10 +346,9 @@ void gk_process_b2_fixture_create(gk_context*, gk_cmd_b2_fixture_create* cmd) {
 
             case GK_PATH_FIXTURE_ID: {
                 auto data = ensure_fixdata(&fixdef);
-                data->id = (int) def[1];
+                data->id  = (int)def[1];
                 def++;
-            }
-                break;
+            } break;
 
             case GK_PATH_FILL:
                 if(!fixdef.shape) {
@@ -377,9 +386,10 @@ void gk_process_b2_fixture_create(gk_context*, gk_cmd_b2_fixture_create* cmd) {
     }
 }
 
-static void process_one_fixture(b2Fixture* f, gk_cmd_b2_fixture_update* cmd) {
+static void process_one_fixture(b2Fixture* f, gk_cmd_b2_fixture_update* cmd)
+{
     auto mask = cmd->update;
-    //auto id   = cmd->id;
+    // auto id   = cmd->id;
 
     if(mask & GK_B2_FIXTURE_UPDATE_DENSITY) f->SetDensity(cmd->density);
     if(mask & GK_B2_FIXTURE_UPDATE_ELASTICITY) f->SetRestitution(cmd->elasticity);
@@ -395,15 +405,16 @@ static void process_one_fixture(b2Fixture* f, gk_cmd_b2_fixture_update* cmd) {
     }
 }
 
-void gk_process_b2_fixture_update(gk_context*, gk_cmd_b2_fixture_update* cmd) {
-    auto b = ((gk_b2_body_data*) cmd->body->data)->body;
+void gk_process_b2_fixture_update(gk_context*, gk_cmd_b2_fixture_update* cmd)
+{
+    auto b = ((gk_b2_body_data*)cmd->body->data)->body;
 
     std::vector<b2Fixture*> fixtures;
 
     if(cmd->ids != nullptr) {
         /* FIXME? This is O(n*m) */
         for(auto f = b->GetFixtureList(); f; f = f->GetNext()) {
-            gk_b2_fixture_data* d = (gk_b2_fixture_data*) f->GetUserData();
+            gk_b2_fixture_data* d = (gk_b2_fixture_data*)f->GetUserData();
 
             if(!d) continue;
 
@@ -415,7 +426,7 @@ void gk_process_b2_fixture_update(gk_context*, gk_cmd_b2_fixture_update* cmd) {
         }
     } else {
         for(auto f = b->GetFixtureList(); f; f = f->GetNext()) {
-            gk_b2_fixture_data* d = (gk_b2_fixture_data*) f->GetUserData();
+            gk_b2_fixture_data* d = (gk_b2_fixture_data*)f->GetUserData();
 
             if(!d) {
                 if(cmd->id == -1) {
@@ -436,7 +447,8 @@ void gk_process_b2_fixture_update(gk_context*, gk_cmd_b2_fixture_update* cmd) {
     }
 }
 
-void gk_process_b2_draw_debug(gk_context* gk, gk_cmd_b2_draw_debug* cmd) {
+void gk_process_b2_draw_debug(gk_context* gk, gk_cmd_b2_draw_debug* cmd)
+{
     auto& world = *cmd->world->data->world;
     auto& draw  = *cmd->world->data->draw;
 
@@ -458,127 +470,130 @@ void gk_process_b2_draw_debug(gk_context* gk, gk_cmd_b2_draw_debug* cmd) {
     nvgEndFrame(gk->nvg);
 }
 
-void gk_process_b2_step(gk_context*, gk_cmd_b2_step* cmd) {
+void gk_process_b2_step(gk_context*, gk_cmd_b2_step* cmd)
+{
     auto* world   = cmd->world;
     auto* data    = world->data;
     auto& b2world = *data->world;
     auto& listen  = *data->listen;
     listen.begin();
-    b2world.Step(world->timestep,
-                 world->velocity_iterations,
-                 world->position_iterations);
+    b2world.Step(world->timestep, world->velocity_iterations, world->position_iterations);
     listen.finish(cmd);
 }
 
-void gk_process_b2_iter_bodies(gk_context*, gk_cmd_b2_iter_bodies* cmd) {
+void gk_process_b2_iter_bodies(gk_context*, gk_cmd_b2_iter_bodies* cmd)
+{
     auto& world = *cmd->world->data->world;
 
     for(auto* body = world.GetBodyList(); body; body = body->GetNext()) {
-        auto* b = (gk_b2_body*) body->GetUserData();
-        auto isAwake = b->is_awake = body->IsAwake();
+        auto* b       = (gk_b2_body*)body->GetUserData();
+        auto  isAwake = b->is_awake = body->IsAwake();
 
         if(isAwake) {
-            copy(b->position, body->GetPosition());
+            memcpy(b->position, body->GetPosition());
             b->angle = body->GetAngle();
-            copy(b->velocity, body->GetLinearVelocity());
+            memcpy(b->velocity, body->GetLinearVelocity());
             b->angular_velocity = body->GetAngularVelocity();
         }
     }
 }
 
-void gk_process_b2_force(gk_context*, gk_cmd_b2_force* cmd) {
-    auto* body = cmd->body->data->body;
+void gk_process_b2_force(gk_context*, gk_cmd_b2_force* cmd)
+{
+    auto*    body  = cmd->body->data->body;
     gk::vec2 force = cmd->force;
 
     if(cmd->flags & GK_B2_FORCE_MASS_SCALE) {
         force *= body->GetMass();
     }
 
-    body->ApplyForce(
-        pun<const b2Vec2>(force),
-        pun<const b2Vec2>(cmd->point),
-        cmd->flags & GK_B2_FORCE_WAKE);
+    body->ApplyForce(pun<const b2Vec2>(force), pun<const b2Vec2>(cmd->point),
+                     cmd->flags & GK_B2_FORCE_WAKE);
 }
 
-void gk_process_b2_torque(gk_context*, gk_cmd_b2_torque* cmd) {
+void gk_process_b2_torque(gk_context*, gk_cmd_b2_torque* cmd)
+{
     auto* body = cmd->body->data->body;
 
-    body->ApplyTorque(
-        (cmd->flags & GK_B2_FORCE_MASS_SCALE ? cmd->torque * body->GetMass() : cmd->torque),
-        cmd->flags & GK_B2_FORCE_WAKE);
+    body->ApplyTorque((cmd->flags & GK_B2_FORCE_MASS_SCALE ? cmd->torque * body->GetMass()
+                                                           : cmd->torque),
+                      cmd->flags & GK_B2_FORCE_WAKE);
 }
 
-void gk_process_b2_linear_impulse(gk_context*, gk_cmd_b2_linear_impulse* cmd) {
-    cmd->body->data->body->ApplyLinearImpulse(pun<const b2Vec2>( cmd->impulse),
-                                              pun<const b2Vec2>(cmd->point),
-                                              cmd->wake);
+void gk_process_b2_linear_impulse(gk_context*, gk_cmd_b2_linear_impulse* cmd)
+{
+    cmd->body->data->body->ApplyLinearImpulse(pun<const b2Vec2>(cmd->impulse),
+                                              pun<const b2Vec2>(cmd->point), cmd->wake);
 }
 
-void gk_process_b2_angular_impulse(gk_context*, gk_cmd_b2_angular_impulse* cmd) {
+void gk_process_b2_angular_impulse(gk_context*, gk_cmd_b2_angular_impulse* cmd)
+{
     cmd->body->data->body->ApplyAngularImpulse(cmd->impulse, cmd->wake);
 }
 
-void gk_process_b2_set_velocity(gk_context*, gk_cmd_b2_set_velocity* cmd) {
+void gk_process_b2_set_velocity(gk_context*, gk_cmd_b2_set_velocity* cmd)
+{
     cmd->body->data->body->SetLinearVelocity(pun<const b2Vec2>(cmd->linear));
     cmd->body->data->body->SetAngularVelocity(cmd->angular);
 }
 
-void gk_process_box2d(gk_context* gk, gk_bundle* bundle, gk_list* list) {
+void gk_process_box2d(gk_context* gk, gk_bundle* bundle, gk_list* list)
+{
     for(size_t j = 0; j < list->ncmds; ++j) {
         auto cmd  = list->cmds[j];
         auto type = GK_CMD_TYPE(cmd);
 
         switch(type) {
             case GK_CMD_B2_BODY_CREATE:
-                gk_process_b2_body_create(gk, (gk_cmd_b2_body_create*) cmd);
+                gk_process_b2_body_create(gk, (gk_cmd_b2_body_create*)cmd);
                 break;
 
             case GK_CMD_B2_BODY_UPDATE:
-                gk_process_b2_body_update(gk, (gk_cmd_b2_body_update*) cmd);
+                gk_process_b2_body_update(gk, (gk_cmd_b2_body_update*)cmd);
                 break;
 
             case GK_CMD_B2_BODY_DESTROY:
-                gk_process_b2_body_destroy(gk, (gk_cmd_b2_body_destroy*) cmd);
+                gk_process_b2_body_destroy(gk, (gk_cmd_b2_body_destroy*)cmd);
                 break;
 
             case GK_CMD_B2_FIXTURE_CREATE:
-                gk_process_b2_fixture_create(gk, (gk_cmd_b2_fixture_create*) cmd);
+                gk_process_b2_fixture_create(gk, (gk_cmd_b2_fixture_create*)cmd);
                 break;
 
             case GK_CMD_B2_FIXTURE_UPDATE:
-                gk_process_b2_fixture_update(gk, (gk_cmd_b2_fixture_update*) cmd);
+                gk_process_b2_fixture_update(gk, (gk_cmd_b2_fixture_update*)cmd);
                 break;
 
             case GK_CMD_B2_DRAW_DEBUG:
-                gk_process_b2_draw_debug(gk, (gk_cmd_b2_draw_debug*) cmd);
+                gk_process_b2_draw_debug(gk, (gk_cmd_b2_draw_debug*)cmd);
                 break;
 
             case GK_CMD_B2_STEP:
-                gk_process_b2_step(gk, (gk_cmd_b2_step*) cmd);
+                gk_process_b2_step(gk, (gk_cmd_b2_step*)cmd);
                 break;
 
             case GK_CMD_B2_ITER_BODIES:
-                gk_process_b2_iter_bodies(gk, (gk_cmd_b2_iter_bodies*) cmd);
+                gk_process_b2_iter_bodies(gk, (gk_cmd_b2_iter_bodies*)cmd);
                 break;
 
             case GK_CMD_B2_FORCE:
-                gk_process_b2_force(gk, (gk_cmd_b2_force*) cmd);
+                gk_process_b2_force(gk, (gk_cmd_b2_force*)cmd);
                 break;
 
             case GK_CMD_B2_TORQUE:
-                gk_process_b2_torque(gk, (gk_cmd_b2_torque*) cmd);
+                gk_process_b2_torque(gk, (gk_cmd_b2_torque*)cmd);
                 break;
 
             case GK_CMD_B2_LINEAR_IMPULSE:
-                gk_process_b2_linear_impulse(gk, (gk_cmd_b2_linear_impulse*) cmd);
+                gk_process_b2_linear_impulse(gk, (gk_cmd_b2_linear_impulse*)cmd);
                 break;
 
             case GK_CMD_B2_ANGULAR_IMPULSE:
-                gk_process_b2_angular_impulse(gk, (gk_cmd_b2_angular_impulse*) cmd);
+                gk_process_b2_angular_impulse(gk, (gk_cmd_b2_angular_impulse*)cmd);
                 break;
 
             case GK_CMD_B2_SET_VELOCITY:
-                gk_process_b2_set_velocity(gk, (gk_cmd_b2_set_velocity*) cmd);
+                gk_process_b2_set_velocity(gk, (gk_cmd_b2_set_velocity*)cmd);
                 break;
 
             default:

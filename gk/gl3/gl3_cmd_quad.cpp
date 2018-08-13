@@ -219,7 +219,6 @@ void gl3_cmd_quadsprite(gk_context *gk, gk_bundle *, gk_cmd_quadsprite *cmd) {
 }
 
 void gl3_end_quad(gk_context *gk) {
-    auto gl3 = (gl3_impl*)gk->impl_data;
     gl3_render_quads(gk);
 }
 

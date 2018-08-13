@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include <string.h>
+#include <rpav/util.hpp>
 
 #include "gk/gk++list.hpp"
 #include "gk/gk.h"
@@ -15,7 +15,7 @@ class CmdTmpl : public CmdBase {
 public:
     CmdTmpl(int key = 0)
     {
-        memset(&cmd, 0, sizeof(T));
+        rpav::memzero(cmd);
         gk_cmd* c = (gk_cmd*)&cmd;
         c->type   = ID;
         c->key    = key;
@@ -575,10 +575,10 @@ struct B2World : public gk_b2_world {
             int   velocityIterations = 8,
             int   positionIterations = 3)
     {
-        memset(this, 0, sizeof(*this));
         this->timestep            = timestep;
         this->velocity_iterations = velocityIterations;
         this->position_iterations = positionIterations;
+        this->data                = nullptr;
     }
 };
 
@@ -602,19 +602,35 @@ public:
 
 // gk::B2Body
 struct B2Body : public gk_b2_body {
-    B2Body() { memset(this, 0, sizeof(*this)); }
+    B2Body()
+    {
+        angle            = 0;
+        angular_velocity = 0;
+        is_awake         = false;
+        user_data        = nullptr;
+        data             = nullptr;
+    }
 };
 
 struct B2BodyDef : public gk_b2_bodydef {
-    B2BodyDef(B2Body& b, gk_b2_body_type type = GK_B2_BODY_TYPE_STATIC)
+    B2BodyDef(B2Body& b, gk_b2_body_type type_ = GK_B2_BODY_TYPE_STATIC)
     {
-        memset(this, 0, sizeof(*this));
-        this->body          = &b;
-        this->type          = type;
-        this->active        = true;
-        this->awake         = true;
-        this->gravity_scale = 1.0;
-        this->allow_sleep   = true;
+        type = type_;
+
+        linear_damping   = 0;
+        angle            = 0;
+        angular_velocity = 0;
+        angular_damping  = 0;
+
+        gravity_scale = 1.0;
+
+        active         = true;
+        awake          = true;
+        bullet         = false;
+        fixed_rotation = false;
+        allow_sleep    = true;
+
+        body = &b;
     }
 };
 
