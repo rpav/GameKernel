@@ -44,6 +44,7 @@ typedef enum gk_cmd_type {
     GK_CMD_TEXT,
     GK_CMD_IMAGE_CREATE,
     GK_CMD_IMAGE_DESTROY,
+    GK_CMD_NVG_FUNCTION,
 
     /* Box2D physics */
     GK_CMD_B2_WORLD_CREATE,

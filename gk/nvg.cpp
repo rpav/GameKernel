@@ -70,6 +70,12 @@ void gk_process_nvg(gk_context* gk, gk_bundle* bundle, gk_list_nvg* list_nvg)
                 ensure_nvg_inframe(gk, w, h, r);
                 gk_process_nvg_font_create(gk, (gk_cmd_font_create*)cmd);
                 break;
+            case GK_CMD_NVG_FUNCTION: {
+                ensure_nvg_inframe(gk, w, h, r);
+                auto *fn = reinterpret_cast<gk_cmd_nvg_function*>(cmd);
+                fn->function(nvg, fn->data);
+                break;
+            }
 
             default:
                 ensure_nvg_outframe(gk);

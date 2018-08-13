@@ -90,4 +90,14 @@ typedef struct gk_cmd_text {
     const char *end;
 } gk_cmd_text;
 
+typedef struct gk_cmd_nvg_function {
+    gk_cmd parent;
+
+    // This function gets called with GK's NVG context and your data
+    void (*function)(struct NVGcontext*, void *userdata);
+
+    // User data
+    void *data;
+} gk_cmd_nvg_function;
+
 #endif /* __GAMEKERNEL_NVG_H__ */
