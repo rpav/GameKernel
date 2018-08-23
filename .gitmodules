@@ -1,6 +1,3 @@
 [submodule "third-party/nanovg"]
 	path = third-party/nanovg
 	url = https://github.com/memononen/nanovg.git
-[submodule "third-party/Box2D"]
-	path = third-party/Box2D
-	url = https://github.com/erincatto/Box2D.git
