@@ -56,8 +56,6 @@ set(GK_SOURCE_FILES
   ${GK_SOURCE_GL}
   ${GK_SOURCE_SPRITESHEET}
   ${GK_SOURCE_BOX2D}
-
-  ${PROJ_ROOT}/third-party/nanovg/src/nanovg.c
   )
 
 set(GK_HEADER_FILES
@@ -71,12 +69,16 @@ if(GK_BUILD_SHARED)
   set_target_properties(${LIB_NAME}-shared PROPERTIES OUTPUT_NAME ${LIB_NAME})
   target_include_directories(${LIB_NAME}-shared
     PUBLIC ${PROJ_ROOT}/gk/include
+    PRIVATE ${PROJ_ROOT}/gk/include-int
+    PRIVATE ${PROJ_ROOT}/gk++/include
     )
   target_link_libraries(${LIB_NAME}-shared
     PUBLIC rpav::cxxutils
     PUBLIC rpav::GameKernelCore
     PUBLIC ${GL}
-    PRIVATE Box2D
+    PRIVATE nlohmann::json
+    PRIVATE memononen::nanovg
+    ${GK_OPTIONAL_DEPS}
     )
 
   if(WIN32)
@@ -97,12 +99,16 @@ if(GK_BUILD_STATIC)
   set_target_properties(${LIB_NAME}-static PROPERTIES OUTPUT_NAME ${LIB_NAME})
   target_include_directories(${LIB_NAME}-static
     PUBLIC ${PROJ_ROOT}/gk/include
+    PRIVATE ${PROJ_ROOT}/gk/include-int
+    PRIVATE ${PROJ_ROOT}/gk++/include
     )
   target_link_libraries(${LIB_NAME}-static
     PUBLIC rpav::cxxutils
     PUBLIC rpav::GameKernelCore
     PUBLIC ${GL}
-    PRIVATE Box2D
+    PRIVATE nlohmann::json
+    PRIVATE memononen::nanovg
+    ${GK_OPTIONAL_DEPS}
     )
 
   if(NOT WIN32)

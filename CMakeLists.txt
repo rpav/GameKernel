@@ -50,29 +50,14 @@ else()
 endif()
 
 if(GK_USE_BOX2D)
-  set(BOX2D_BUILD_EXAMPLES OFF CACHE BOOL "turn off Box2D examples")
-  set(BOX2D_BUILD_SHARED OFF CACHE BOOL "turn off Box2D shared")
-  set(BOX2D_BUILD_STATIC ON CACHE BOOL "turn on Box2D static")
-  set(BOX2D_INSTALL OFF CACHE BOOL "don't install Box2D")
-  add_subdirectory(${PROJ_ROOT}/third-party/Box2D/Box2D)
   add_definitions(-DGK_USE_BOX2D=1)
-
-  include_directories(
-    ${PROJ_ROOT}/third-party/Box2D/Box2D
-    )
+  list(APPEND GK_OPTIONAL_DEPS
+    PRIVATE erincatto::Box2D)
 endif()
 
 if(GK_USE_TEXTUREPACKER)
   add_definitions(-DGK_USE_TEXTUREPACKER=1)
 endif()
-
-include_directories(
-  ${PROJ_ROOT}/third-party/nanovg/src
-  ${PROJ_ROOT}/third-party/json
-  ${PROJ_ROOT}/gk/include
-  ${PROJ_ROOT}/gk/include-int
-  ${PROJ_ROOT}/gk++/include
-  )
 
 add_subdirectory(gk)
 

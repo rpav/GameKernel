@@ -107,6 +107,10 @@ public:
     {
         say("Draw Transform ", tf.p.x, ",", tf.p.y, " ∠ ", tf.q.GetAngle());
     }
+
+    void DrawPoint(const b2Vec2& p, float32 size, const b2Color& color) override {
+        say("Draw Point ", p.x, ",", p.y);
+    }
 };
 
 typedef struct gk_b2_contact_pair ContactPair;

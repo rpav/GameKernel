@@ -330,6 +330,11 @@ public:
         return *this;
     }
 
+    inline PathDef& rect(const gk::rect r) {
+        append({GK_PATH_RECT, r.pos.x, r.pos.y, r.size.x, r.size.y});
+        return *this;
+    }
+
     inline PathDef& circle(float x, float y, float r)
     {
         append({GK_PATH_CIRCLE, x, y, r});
