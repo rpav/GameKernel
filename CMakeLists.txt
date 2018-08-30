@@ -37,17 +37,7 @@ if(NOT WIN32)
 endif()
 
 find_package(GLEW REQUIRED)
-if(GLEW_FOUND)
-  include_directories(${GLEW_INCLUDE_DIRS})
-  link_libraries(${GLEW_LIBRARIES})
-  #add_definitions(-DGLEW_STATIC)
-endif()
-
-if(WIN32)
-  set(GK_GL_LIB opengl32.lib)
-else()
-  set(GK_GL_LIB GL)
-endif()
+find_package(OpenGL REQUIRED)
 
 if(GK_USE_BOX2D)
   add_definitions(-DGK_USE_BOX2D=1)

@@ -425,6 +425,11 @@ public:
         return *this;
     }
 
+    inline PathDef& strokeWidth(float f) {
+        append({GK_PATH_STROKE_WIDTH, f});
+        return *this;
+    }
+
     inline PathDef& close()
     {
         append({GK_PATH_CLOSE});
