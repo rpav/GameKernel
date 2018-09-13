@@ -15,6 +15,7 @@ file(GLOB_RECURSE GK_SOURCE_NVG
   )
 
 if(GK_USE_BOX2D)
+  add_definitions(-DGK_USE_BOX2D)
   file(GLOB_RECURSE GK_SOURCE_BOX2D
     ${GK_ROOT}/box2d.cpp
     ${GK_ROOT}/box2d/*.cpp
