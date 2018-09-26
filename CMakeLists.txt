@@ -13,23 +13,6 @@ option(GK_USE_TEXTUREPACKER "Compile in generic TexturePacker JSON support" ON)
 
 ## Everything
 set(PROJ_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-
-set(CMAKE_CXX_FLAGS "")
-set(CMAKE_CXX_FLAGS_DEBUG "-O2 -ggdb")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -ggdb")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-
-set(CMAKE_EXE_LINKER_FLAGS "")
-set(CMAKE_EXE_LINKER_FLAGS_DEBUG "")
-
-if (ENABLE_ASAN)
-  message(STATUS "Address Sanitizer enabled")
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address")
-  set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=address")
-endif ()
-
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
-
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if(NOT WIN32)

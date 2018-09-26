@@ -6,7 +6,6 @@ set(LIB_NAME gk)
 project(${LIB_NAME})
 
 set(GK_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-set(CMAKE_CXX_STANDARD 17)
 
 ### Modules ###############################################################
 
@@ -108,7 +107,7 @@ if(GK_BUILD_STATIC)
     PUBLIC rpav::cxxutils
     PUBLIC rpav::GameKernelCore
     PUBLIC OpenGL::GL
-    PRIVATE GLEW
+    PRIVATE GLEW::GLEW
     PRIVATE nlohmann::json
     PRIVATE memononen::nanovg
     ${GK_OPTIONAL_DEPS}
