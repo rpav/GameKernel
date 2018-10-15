@@ -20,7 +20,7 @@ if(NOT WIN32)
 endif()
 
 find_package(GLEW REQUIRED)
-find_package(OpenGL REQUIRED)
+find_package(OpenGL REQUIRED COMPONENTS OpenGL)
 
 if(GK_USE_BOX2D)
   add_definitions(-DGK_USE_BOX2D=1)

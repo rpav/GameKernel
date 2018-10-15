@@ -75,7 +75,7 @@ if(GK_BUILD_SHARED)
   target_link_libraries(${LIB_NAME}-shared
     PUBLIC rpav::cxxutils
     PUBLIC rpav::GameKernelCore
-    PUBLIC OpenGL
+    PUBLIC OpenGL::OpenGL
     PRIVATE GLEW
     PRIVATE nlohmann::json
     PRIVATE memononen::nanovg
@@ -106,7 +106,7 @@ if(GK_BUILD_STATIC)
   target_link_libraries(${LIB_NAME}-static
     PUBLIC rpav::cxxutils
     PUBLIC rpav::GameKernelCore
-    PUBLIC OpenGL::GL
+    PUBLIC OpenGL::OpenGL
     PRIVATE GLEW::GLEW
     PRIVATE nlohmann::json
     PRIVATE memononen::nanovg
