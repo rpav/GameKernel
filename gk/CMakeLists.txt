@@ -114,7 +114,7 @@ if(GK_BUILD_STATIC)
     )
 
   if(NOT WIN32)
-    cotire(${LIB_NAME}-static)
+    #cotire(${LIB_NAME}-static)
   endif()
 
   if(GK_INSTALL)
