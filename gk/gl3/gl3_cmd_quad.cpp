@@ -4,7 +4,7 @@
 #include <GL/gl.h>
 
 #include <rpav/util.hpp>
-#include <rpav/algorithm.hpp>
+#include <rpav/math.hpp>
 #include <rpav/str/gk.hpp>
 #include <rpav/log.hpp>
 
@@ -17,6 +17,7 @@ using vec3 = gk::vec3;
 using vec2 = gk::vec2;
 
 using namespace rpav;
+using namespace rpav::math;
 
 static const char *shader_geom_quad = R"(
 #version 330 core
