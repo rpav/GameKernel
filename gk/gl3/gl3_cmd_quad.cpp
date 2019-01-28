@@ -4,7 +4,7 @@
 #include <GL/gl.h>
 
 #include <rpav/util.hpp>
-#include <rpav/algorithm.hpp>
+#include <rpav/math.hpp>
 #include <rpav/str/gk.hpp>
 #include <rpav/log.hpp>
 
@@ -17,6 +17,7 @@ using vec3 = gk::vec3;
 using vec2 = gk::vec2;
 
 using namespace rpav;
+using namespace rpav::math;
 
 static const char *shader_geom_quad = R"(
 #version 330 core
@@ -170,7 +171,7 @@ void gl3_begin_quad(gk_context *gk) {
 
 static void gl3_append_quad(gk_context *gk, const mat4 *tfm, gk_quadvert *attr) {
     auto gl3 = (gl3_impl*)gk->impl_data;
-    gk_quadvert *out = (gk_quadvert*)(gl3->quadbuf + (gl3->quadcount * QUADBUF_VALS_PER_VERT * 4));
+    auto *out = (gk_quadvert*)(gl3->quadbuf + (gl3->quadcount * QUADBUF_VALS_PER_VERT * 4));
 
     out[0].vertex = (*tfm) * attr[0].vertex;
     out[1].vertex = (*tfm) * attr[1].vertex;
@@ -207,7 +208,7 @@ static inline void gl3_quad_ensure_state(gk_context *gk, GLuint tex,
 
 void gl3_cmd_quad(gk_context *gk, gk_bundle *, gk_cmd_quad *q) {
     gl3_quad_ensure_state(gk, q->tex, q->pds);
-    gl3_append_quad(gk, (mat4*)&q->tfm, q->attr);
+    gl3_append_quad(gk, (mat4*)&q->tfm, &q->attr[0]);
 }
 
 void gl3_cmd_quadsprite(gk_context *gk, gk_bundle *, gk_cmd_quadsprite *cmd) {
@@ -215,7 +216,7 @@ void gl3_cmd_quadsprite(gk_context *gk, gk_bundle *, gk_cmd_quadsprite *cmd) {
     auto &sprite = cmd->sheet->sprites[cmd->index];
 
     gl3_quad_ensure_state(gk, sheet->tex, cmd->pds);
-    gl3_append_quad(gk, (mat4*)&cmd->tfm, sprite.attr);
+    gl3_append_quad(gk, (mat4*)&cmd->tfm, &sprite.attr[0]);
 }
 
 void gl3_end_quad(gk_context *gk) {
@@ -272,7 +273,7 @@ void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) 
             m = *layer_m * gk::mat4::translate(tr);
             auto &sprite = sheet->sprites[spriteno-1];
 
-            gl3_append_quad(gk, &m, sprite.attr);
+            gl3_append_quad(gk, &m, &sprite.attr[0]);
         }
     }
 }
