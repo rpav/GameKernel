@@ -38,16 +38,17 @@ public:
         source.source = source_;
     }
 
-    gk_shader_source source;
+    gk_shader_source source{};
 };
 
 // gk::ProgramSource
-typedef std::vector<gk_shader_source*> ShaderSourceVector;
+using ShaderSourceVector = std::vector<gk_shader_source *>;
+
 class ProgramSource {
     ShaderSourceVector _shaders;
 
 public:
-    gk_program_source source;
+    gk_program_source source{};
 
     template<typename... Rest>
     inline void add(ShaderSource& src, Rest&... args)
@@ -264,8 +265,8 @@ public:
     }
 };
 
-typedef ProgramDataSetTmpl<gk_program_data_set, true>   ProgramDataSet;
-typedef ProgramDataSetTmpl<gk_program_data_set*, false> ProgramDataSetRef;
+using ProgramDataSet = ProgramDataSetTmpl<gk_program_data_set, true>;
+using ProgramDataSetRef = ProgramDataSetTmpl<gk_program_data_set*, false>;
 
 // gk::SpriteSheet
 class CmdSpriteSheetCreate;
@@ -275,12 +276,11 @@ class SpriteSheet {
     std::map<std::string, int32_t> _name_map;
 
 public:
-    gk_spritesheet* sheet;
+    gk_spritesheet* sheet{nullptr};
 
-    SpriteSheet(gk_spritesheet* sheet = nullptr);
+    SpriteSheet() = default;
+    SpriteSheet(gk_spritesheet* sheet);
     SpriteSheet(CmdSpriteSheetCreate& cmd);
-
-    operator gk_spritesheet*() { return sheet; }
 
     void rereadSheet();
 

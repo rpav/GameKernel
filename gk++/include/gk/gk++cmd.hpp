@@ -7,6 +7,7 @@
 #include <rpav/util.hpp>
 
 #include "gk/gk++list.hpp"
+#include "gk/gk++util.hpp"
 #include "gk/gk.h"
 
 namespace gk {
@@ -16,14 +17,20 @@ public:
     CmdTmpl(int key = 0)
     {
         rpav::memzero(cmd);
-        gk_cmd* c = (gk_cmd*)&cmd;
-        c->type   = ID;
-        c->key    = key;
+        auto* c = (gk_cmd*)&cmd;
+        c->type = ID;
+        c->key  = key;
     }
-    virtual ~CmdTmpl() {}
-    virtual gk_cmd* cmdPtr() { return (gk_cmd*)&cmd; }
 
-    void key(int key) { cmdPtr()->key = key; }
+    gk_cmd* cmdPtr() override
+    {
+        return (gk_cmd*)&cmd;
+    }
+
+    void key(int key)
+    {
+        cmdPtr()->key = key;
+    }
 
     T cmd;
 };
@@ -31,14 +38,20 @@ public:
 /* gk::CmdPass */
 class CmdPass : public CmdTmpl<gk_pass, GK_CMD_PASS> {
 public:
-    CmdPass(unsigned int index, gk_pass_sorting sort = GK_PASS_SORT_NONE) : CmdTmpl()
+    CmdPass(unsigned int index, gk_pass_sorting sort = GK_PASS_SORT_NONE)
     {
         cmd.list_index = index;
         cmd.sort       = sort;
     }
 
-    inline void index(unsigned int index) { cmd.list_index = index; }
-    inline void sort(gk_pass_sorting sort) { cmd.sort = sort; }
+    inline void index(unsigned int index)
+    {
+        cmd.list_index = index;
+    }
+    inline void sort(gk_pass_sorting sort)
+    {
+        cmd.sort = sort;
+    }
 };
 
 /* gk::Passes */
@@ -55,7 +68,10 @@ public:
 
     inline void add() {}
 
-    CmdPass& operator[](size_t i) { return _passes[i]; }
+    CmdPass& operator[](size_t i)
+    {
+        return _passes[i];
+    }
 
     void addToList(ListBase& list) override
     {
@@ -69,7 +85,7 @@ public:
 // gk::CmdClear
 class CmdClear : public CmdTmpl<gk_cmd_clear, GK_CMD_CLEAR> {
 public:
-    CmdClear(uint32_t flags) : CmdTmpl()
+    CmdClear(uint32_t flags)
     {
         cmd.flags = flags;
         cmd.depth = 1.0;
@@ -89,21 +105,21 @@ class CmdTF : public CmdTmpl<T, ID> {
 public:
     CmdTF() : CmdTmpl<T, ID>()
     {
-        gk_cmd_tf* tf = (gk_cmd_tf*)&this->cmd;
-        tf->prior     = nullptr;
-        tf->out       = nullptr;
+        auto* tf  = (gk_cmd_tf*)&this->cmd;
+        tf->prior = nullptr;
+        tf->out   = nullptr;
     }
 
     inline void setOut(gk_mat4& m)
     {
-        gk_cmd_tf* tf = (gk_cmd_tf*)&this->cmd;
-        tf->out       = &m;
+        auto* tf = (gk_cmd_tf*)&this->cmd;
+        tf->out  = &m;
     }
 
     inline void setPrior(const gk_mat4& m)
     {
-        gk_cmd_tf* tf = (gk_cmd_tf*)&this->cmd;
-        tf->prior     = const_cast<gk_mat4*>(&m);
+        auto* tf  = (gk_cmd_tf*)&this->cmd;
+        tf->prior = const_cast<gk_mat4*>(&m);
     }
 };
 
@@ -111,7 +127,6 @@ public:
 class CmdTFOrtho : public CmdTF<gk_cmd_tf_ortho, GK_CMD_TF_ORTHO> {
 public:
     CmdTFOrtho(float left, float right, float bottom, float top, float near, float far)
-        : CmdTF()
     {
         cmd.left   = left;
         cmd.right  = right;
@@ -125,9 +140,10 @@ public:
 // gk::CmdTFTRS
 class CmdTFTRS : public CmdTF<gk_cmd_tf_trs, GK_CMD_TF_TRS> {
 public:
-    CmdTFTRS() : CmdTF() {}
-
-    void translate(const vec3& v) { cmd.translate = v; }
+    void translate(const vec3& v)
+    {
+        cmd.translate = v;
+    }
 
     void rotate(const vec3& axis, float angle)
     {
@@ -154,30 +170,37 @@ public:
 // gk::CmdTFM
 class CmdTFM : public CmdTF<gk_cmd_tf_m, GK_CMD_TF_M> {
 public:
-    CmdTFM(mat4* m = nullptr) : CmdTF() { cmd.m = m; }
+    CmdTFM(mat4* m = nullptr)
+    {
+        cmd.m = m;
+    }
 
-    void setM(mat4* m) { cmd.m = m; }
+    void setM(mat4* m)
+    {
+        cmd.m = m;
+    }
 };
 
 // gk::CmdQuad
 class CmdQuad : public CmdTmpl<gk_cmd_quad, GK_CMD_QUAD> {
 public:
-    CmdQuad(int tex = 0) : CmdTmpl()
+    CmdQuad(int tex = 0)
     {
         cmd.tex = tex;
         cmd.tfm = gk::mat4{};
     }
 
     // For trivial quads
-    CmdQuad(int   tex,
-            float x0,
-            float y0,
-            float x1,
-            float y1,
-            float u0 = 0.0,
-            float v0 = 0.0,
-            float u1 = 1.0,
-            float v1 = 1.0)
+    CmdQuad(
+        int   tex,
+        float x0,
+        float y0,
+        float x1,
+        float y1,
+        float u0 = 0.0,
+        float v0 = 0.0,
+        float u1 = 1.0,
+        float v1 = 1.0)
         : CmdQuad(tex)
     {
         setVertex(0, x0, y0);
@@ -191,7 +214,10 @@ public:
         setUV(3, u1, v0);
     }
 
-    inline void setVertex(int n, gk_vec4& v) { cmd.attr[n].vertex = v; }
+    inline void setVertex(int n, gk_vec4& v)
+    {
+        cmd.attr[n].vertex = v;
+    }
 
     inline void setVertex(int n, float x, float y, float z = 0.0, float w = 1.0)
     {
@@ -201,7 +227,10 @@ public:
         cmd.attr[n].vertex.w = w;
     }
 
-    inline void setUV(int n, gk_vec2& v) { cmd.attr[n].uv = v; }
+    inline void setUV(int n, gk_vec2& v)
+    {
+        cmd.attr[n].uv = v;
+    }
 
     inline void setUV(int n, float u, float v)
     {
@@ -212,19 +241,25 @@ public:
 
 class CmdQuadSprite : public CmdTmpl<gk_cmd_quadsprite, GK_CMD_QUADSPRITE> {
 public:
-    CmdQuadSprite(gk::SpriteSheet& sheet, unsigned int index) : CmdTmpl()
+    CmdQuadSprite() = default;
+
+    CmdQuadSprite(gk::SpriteSheet& sheet, unsigned int index)
     {
         cmd.tfm   = gk::mat4{};
-        cmd.sheet = sheet;
+        cmd.sheet = sheet.sheet;
         cmd.index = index;
     }
 
-    mat4* tfm() { return (mat4*)&cmd.tfm; }
+    void setSheet(gk::SpriteSheet& sheet) {}
+
+    mat4* tfm()
+    {
+        return (mat4*)&cmd.tfm;
+    }
 };
 
 class CmdSpriteLayer : public CmdTmpl<gk_cmd_spritelayer, GK_CMD_SPRITELAYER> {
 public:
-
     std::vector<size_t> sprites;
 
     CmdSpriteLayer(gk_spritelayer_config* config, gk_spritelayer_render* render)
@@ -242,11 +277,14 @@ public:
         cmd.sprites = nullptr;
     }
 
-    void reserve(size_t size) { sprites.reserve(size); }
+    void reserve(size_t size)
+    {
+        sprites.reserve(size);
+    }
 
     void copy(std::vector<size_t> data)
     {
-        sprites    = std::move(data);
+        sprites     = std::move(data);
         cmd.sprites = sprites.data();
     }
 };
@@ -330,7 +368,8 @@ public:
         return *this;
     }
 
-    inline PathDef& rect(const gk::rect r) {
+    inline PathDef& rect(const gk::rect r)
+    {
         append({GK_PATH_RECT, r.pos.x, r.pos.y, r.size.x, r.size.y});
         return *this;
     }
@@ -425,7 +464,8 @@ public:
         return *this;
     }
 
-    inline PathDef& strokeWidth(float f) {
+    inline PathDef& strokeWidth(float f)
+    {
         append({GK_PATH_STROKE_WIDTH, f});
         return *this;
     }
@@ -484,9 +524,6 @@ public:
 
 class CmdPath : public CmdTmpl<gk_cmd_path, GK_CMD_PATH> {
 public:
-    CmdPath() : CmdTmpl() {}
-    virtual ~CmdPath() {}
-
     void setPath(float* pathdef, size_t count)
     {
         cmd.pathdef = pathdef;
@@ -503,7 +540,7 @@ public:
 // gk::CmdFontCreate
 class CmdFontCreate : public CmdTmpl<gk_cmd_font_create, GK_CMD_FONT_CREATE> {
 public:
-    CmdFontCreate(const char* name, const char* filename) : CmdTmpl()
+    CmdFontCreate(const char* name, const char* filename)
     {
         cmd.name     = name;
         cmd.filename = filename;
@@ -513,7 +550,7 @@ public:
 // gk::CmdFontStyle
 class CmdFontStyle : public CmdTmpl<gk_cmd_font_style, GK_CMD_FONT_STYLE> {
 public:
-    CmdFontStyle(float size = 0.0) : CmdTmpl()
+    CmdFontStyle(float size = 0.0)
     {
         cmd.size        = size;
         cmd.spacing     = 1.0;
@@ -525,7 +562,7 @@ public:
 // gk::CmdText
 class CmdText : public CmdTmpl<gk_cmd_text, GK_CMD_TEXT> {
 public:
-    CmdText(const char* string = nullptr, float x = 0.0, float y = 0.0) : CmdTmpl()
+    CmdText(const char* string = nullptr, float x = 0.0, float y = 0.0)
     {
         cmd.str   = string;
         cmd.pos.x = x;
@@ -544,11 +581,12 @@ class CmdImageCreate : public CmdTmpl<gk_cmd_image_create, GK_CMD_IMAGE_CREATE> 
     std::string _filename;
 
 public:
-    CmdImageCreate(const std::string filename,
-                   uint32_t          tex_flags = 0,
-                   gk_tex_filter     min       = GK_TEX_FILTER_LINEAR,
-                   gk_tex_filter     mag       = GK_TEX_FILTER_LINEAR)
-        : CmdTmpl(), _filename(filename)
+    CmdImageCreate(
+        const std::string filename,
+        uint32_t          tex_flags = 0,
+        gk_tex_filter     min       = GK_TEX_FILTER_LINEAR,
+        gk_tex_filter     mag       = GK_TEX_FILTER_LINEAR)
+        : _filename(filename)
     {
         cmd.filename   = _filename.c_str();
         cmd.flags      = tex_flags;
@@ -556,7 +594,10 @@ public:
         cmd.mag_filter = mag;
     }
 
-    int id() const { return cmd.id; }
+    int id() const
+    {
+        return cmd.id;
+    }
 };
 
 // gk::CmdImageDestroy
@@ -565,9 +606,10 @@ class CmdImageDestroy : public CmdTmpl<gk_cmd_image_destroy, GK_CMD_IMAGE_DESTRO
     ImageIDVector ids;
 
 public:
-    CmdImageDestroy() : CmdTmpl() {}
-
-    CmdImageDestroy(CmdImageCreate& create) : CmdImageDestroy() { add(create); }
+    CmdImageDestroy(CmdImageCreate& create)
+    {
+        add(create);
+    }
 
     void add(int id)
     {
@@ -576,14 +618,17 @@ public:
         cmd.nids = ids.size();
     }
 
-    void add(CmdImageCreate& cmd) { add(cmd.id()); }
+    void add(CmdImageCreate& cmd)
+    {
+        add(cmd.id());
+    }
 };
 
 // gk::CmdNvgRawFunction
 class CmdNvgRawFunction : public CmdTmpl<gk_cmd_nvg_function, GK_CMD_NVG_FUNCTION> {
 public:
     using function_type = decltype(gk_cmd_nvg_function::function);
-    CmdNvgRawFunction(function_type f, void* data) : CmdTmpl()
+    CmdNvgRawFunction(function_type f, void* data)
     {
         cmd.function = f;
         cmd.data     = data;
@@ -605,9 +650,9 @@ private:
     }
 
 public:
-    CmdNvgFunction(function_type f) : CmdTmpl()
+    CmdNvgFunction(function_type f)
     {
-        _function    = f;
+        _function    = std::move(f);
         cmd.function = _callback;
         cmd.data     = this;
     }
@@ -615,9 +660,8 @@ public:
 
 // gk::B2World
 struct B2World : public gk_b2_world {
-    B2World(float timestep           = 1.0f / 60.0f,
-            int   velocityIterations = 8,
-            int   positionIterations = 3)
+    B2World(float timestep = 1.0f / 60.0f, int velocityIterations = 8, int positionIterations = 3)
+        : gk_b2_world()
     {
         this->timestep            = timestep;
         this->velocity_iterations = velocityIterations;
@@ -629,7 +673,7 @@ struct B2World : public gk_b2_world {
 /* gk::CmdB2WorldCreate */
 class CmdB2WorldCreate : public CmdTmpl<gk_cmd_b2_world_create, GK_CMD_B2_WORLD_CREATE> {
 public:
-    CmdB2WorldCreate(gk_b2_world& world, const vec2& gravity, bool doSleep) : CmdTmpl()
+    CmdB2WorldCreate(gk_b2_world& world, const vec2& gravity, bool doSleep)
     {
         cmd.world    = &world;
         cmd.gravity  = gravity;
@@ -638,10 +682,12 @@ public:
 };
 
 /* gk::CmdB2WorldDestroy */
-class CmdB2WorldDestroy
-    : public CmdTmpl<gk_cmd_b2_world_destroy, GK_CMD_B2_WORLD_DESTROY> {
+class CmdB2WorldDestroy : public CmdTmpl<gk_cmd_b2_world_destroy, GK_CMD_B2_WORLD_DESTROY> {
 public:
-    CmdB2WorldDestroy(gk_b2_world& world) : CmdTmpl() { cmd.world = &world; }
+    CmdB2WorldDestroy(gk_b2_world& world)
+    {
+        cmd.world = &world;
+    }
 };
 
 // gk::B2Body
@@ -679,12 +725,15 @@ struct B2BodyDef : public gk_b2_bodydef {
 };
 
 // gk::CmdB2BodyCreate
-typedef std::vector<gk_b2_bodydef*> BodydefVector;
+using BodydefVector = std::vector<gk_b2_bodydef *>;
 class CmdB2BodyCreate : public CmdTmpl<gk_cmd_b2_body_create, GK_CMD_B2_BODY_CREATE> {
     BodydefVector defs;
 
 public:
-    CmdB2BodyCreate(gk_b2_world& world) : CmdTmpl() { cmd.world = &world; }
+    CmdB2BodyCreate(gk_b2_world& world)
+    {
+        cmd.world = &world;
+    }
 
     template<typename... Rest>
     inline void add(B2BodyDef& bd, Rest&... args)
@@ -704,7 +753,10 @@ class CmdB2BodyDestroy : public CmdTmpl<gk_cmd_b2_body_destroy, GK_CMD_B2_BODY_D
     std::vector<gk_b2_body*> bodies;
 
 public:
-    CmdB2BodyDestroy(gk_b2_world& world) : CmdTmpl() { cmd.world = &world; }
+    CmdB2BodyDestroy(gk_b2_world& world)
+    {
+        cmd.world = &world;
+    }
 
     template<typename... Rest>
     inline void add(gk_b2_body& bd, Rest&&... args)
@@ -723,14 +775,19 @@ public:
 // gk::CmdB2BodyUpdate
 class CmdB2BodyUpdate : public CmdTmpl<gk_cmd_b2_body_update, GK_CMD_B2_BODY_UPDATE> {
 public:
-    CmdB2BodyUpdate(gk_b2_body& body) : CmdTmpl() { cmd.body = &body; }
+    CmdB2BodyUpdate(gk_b2_body& body)
+    {
+        cmd.body = &body;
+    }
 };
 
 // gk::CmdB2FixtureCreate
-class CmdB2FixtureCreate
-    : public CmdTmpl<gk_cmd_b2_fixture_create, GK_CMD_B2_FIXTURE_CREATE> {
+class CmdB2FixtureCreate : public CmdTmpl<gk_cmd_b2_fixture_create, GK_CMD_B2_FIXTURE_CREATE> {
 public:
-    CmdB2FixtureCreate(gk_b2_body& body) : CmdTmpl() { cmd.body = &body; }
+    CmdB2FixtureCreate(gk_b2_body& body)
+    {
+        cmd.body = &body;
+    }
 
     void setPath(float* pathdef, size_t count)
     {
@@ -746,38 +803,52 @@ public:
 };
 
 // gk::CmdB2FixtureUpdate
-class CmdB2FixtureUpdate
-    : public CmdTmpl<gk_cmd_b2_fixture_update, GK_CMD_B2_FIXTURE_UPDATE> {
+class CmdB2FixtureUpdate : public CmdTmpl<gk_cmd_b2_fixture_update, GK_CMD_B2_FIXTURE_UPDATE> {
 public:
-    CmdB2FixtureUpdate(gk_b2_body& body, int id) : CmdTmpl()
+    CmdB2FixtureUpdate() = default;
+
+    CmdB2FixtureUpdate(gk_b2_body& body, int id)
     {
         setBody(body);
         cmd.id = id;
     }
 
-    CmdB2FixtureUpdate(gk_b2_body& body) : CmdTmpl() { setBody(body); }
+    CmdB2FixtureUpdate(gk_b2_body& body)
+    {
+        setBody(body);
+    }
 
-    CmdB2FixtureUpdate(int id) : CmdTmpl() { cmd.id = id; }
+    CmdB2FixtureUpdate(int id)
+    {
+        cmd.id = id;
+    }
 
-    CmdB2FixtureUpdate() : CmdTmpl() {}
-
-    inline void setBody(gk_b2_body& body) { cmd.body = &body; }
+    inline void setBody(gk_b2_body& body)
+    {
+        cmd.body = &body;
+    }
 };
 
 // gk::CmdB2Step
 class CmdB2Step : public CmdTmpl<gk_cmd_b2_step, GK_CMD_B2_STEP> {
 public:
-    CmdB2Step(gk_b2_world& world) : CmdTmpl() { cmd.world = &world; }
+    CmdB2Step(gk_b2_world& world)
+    {
+        cmd.world = &world;
+    }
 };
 
 class CmdB2IterBodies : public CmdTmpl<gk_cmd_b2_iter_bodies, GK_CMD_B2_ITER_BODIES> {
 public:
-    CmdB2IterBodies(gk_b2_world& world) : CmdTmpl() { cmd.world = &world; }
+    CmdB2IterBodies(gk_b2_world& world)
+    {
+        cmd.world = &world;
+    }
 };
 
 class CmdB2Force : public CmdTmpl<gk_cmd_b2_force, GK_CMD_B2_FORCE> {
 public:
-    CmdB2Force(vec2 force, vec2 point, uint8_t flags = 0) : CmdTmpl()
+    CmdB2Force(vec2 force, vec2 point, uint8_t flags = 0)
     {
         cmd.force = (gk_vec2)force;
         cmd.point = (gk_vec2)point;
@@ -790,30 +861,34 @@ public:
         setBody(body);
     }
 
-    inline void setBody(gk_b2_body& body) { cmd.body = &body; }
+    inline void setBody(gk_b2_body& body)
+    {
+        cmd.body = &body;
+    }
 };
 
 class CmdB2Torque : public CmdTmpl<gk_cmd_b2_torque, GK_CMD_B2_TORQUE> {
 public:
-    CmdB2Torque(float torque, uint8_t flags = 0) : CmdTmpl()
+    CmdB2Torque(float torque, uint8_t flags = 0)
     {
         cmd.torque = torque;
         cmd.flags  = flags;
     }
 
-    CmdB2Torque(gk_b2_body& body, float torque, uint8_t flags = 0)
-        : CmdB2Torque(torque, flags)
+    CmdB2Torque(gk_b2_body& body, float torque, uint8_t flags = 0) : CmdB2Torque(torque, flags)
     {
         setBody(body);
     }
 
-    inline void setBody(gk_b2_body& body) { cmd.body = &body; }
+    inline void setBody(gk_b2_body& body)
+    {
+        cmd.body = &body;
+    }
 };
 
-class CmdB2LinearImpulse
-    : public CmdTmpl<gk_cmd_b2_linear_impulse, GK_CMD_B2_LINEAR_IMPULSE> {
+class CmdB2LinearImpulse : public CmdTmpl<gk_cmd_b2_linear_impulse, GK_CMD_B2_LINEAR_IMPULSE> {
 public:
-    CmdB2LinearImpulse(vec2 impulse, vec2 point, bool wake = true) : CmdTmpl()
+    CmdB2LinearImpulse(vec2 impulse, vec2 point, bool wake = true)
     {
         cmd.impulse = (gk_vec2)impulse;
         cmd.point   = (gk_vec2)point;
@@ -826,13 +901,15 @@ public:
         setBody(body);
     }
 
-    inline void setBody(gk_b2_body& body) { cmd.body = &body; }
+    inline void setBody(gk_b2_body& body)
+    {
+        cmd.body = &body;
+    }
 };
 
-class CmdB2AngularImpulse
-    : public CmdTmpl<gk_cmd_b2_angular_impulse, GK_CMD_B2_ANGULAR_IMPULSE> {
+class CmdB2AngularImpulse : public CmdTmpl<gk_cmd_b2_angular_impulse, GK_CMD_B2_ANGULAR_IMPULSE> {
 public:
-    CmdB2AngularImpulse(float impulse, bool wake = true) : CmdTmpl()
+    CmdB2AngularImpulse(float impulse, bool wake = true)
     {
         cmd.impulse = impulse;
         cmd.wake    = wake;
@@ -844,7 +921,10 @@ public:
         setBody(body);
     }
 
-    inline void setBody(gk_b2_body& body) { cmd.body = &body; }
+    inline void setBody(gk_b2_body& body)
+    {
+        cmd.body = &body;
+    }
 };
 
 class CmdB2SetVelocity : public CmdTmpl<gk_cmd_b2_set_velocity, GK_CMD_B2_SET_VELOCITY> {
@@ -855,18 +935,20 @@ public:
         cmd.angular = angular;
     }
 
-    CmdB2SetVelocity(gk_b2_body& body, vec2 linear, float angular)
-        : CmdB2SetVelocity(linear, angular)
+    CmdB2SetVelocity(gk_b2_body& body, vec2 linear, float angular) : CmdB2SetVelocity(linear, angular)
     {
         setBody(body);
     }
-    inline void setBody(gk_b2_body& body) { cmd.body = &body; }
+    inline void setBody(gk_b2_body& body)
+    {
+        cmd.body = &body;
+    }
 };
 
 // gk::CmdB2DrawDebug
 class CmdB2DrawDebug : public CmdTmpl<gk_cmd_b2_draw_debug, GK_CMD_B2_DRAW_DEBUG> {
 public:
-    CmdB2DrawDebug(gk_b2_world& world, float width, float height) : CmdTmpl()
+    CmdB2DrawDebug(gk_b2_world& world, float width, float height)
     {
         cmd.world        = &world;
         cmd.resolution.x = width;
@@ -877,10 +959,7 @@ public:
 // gk::CmdRtCreate
 class CmdRtCreate : public CmdTmpl<gk_cmd_rt_create, GK_CMD_RT_CREATE> {
 public:
-    CmdRtCreate(uint32_t width,
-                uint32_t height,
-                uint32_t flags = GK_RT_ALPHA | GK_RT_STENCIL)
-        : CmdTmpl()
+    CmdRtCreate(uint32_t width, uint32_t height, uint32_t flags = GK_RT_ALPHA | GK_RT_STENCIL)
     {
         cmd.width  = width;
         cmd.height = height;
@@ -895,7 +974,8 @@ public:
 // gk::CmdRtDestroy
 class CmdRtDestroy : public CmdTmpl<gk_cmd_rt_destroy, GK_CMD_RT_DESTROY> {
 public:
-    CmdRtDestroy() : CmdTmpl() {}
+    CmdRtDestroy() = default;
+
     CmdRtDestroy(CmdRtCreate& create)
     {
         cmd.framebuffer = create.cmd.framebuffer;
@@ -907,9 +987,12 @@ public:
 // gk::CmdRtBind
 class CmdRtBind : public CmdTmpl<gk_cmd_rt_bind, GK_CMD_RT_BIND> {
 public:
-    CmdRtBind() : CmdTmpl() {}
-    CmdRtBind(uint32_t framebuffer) : CmdTmpl() { cmd.framebuffer = framebuffer; }
-    CmdRtBind(CmdRtCreate& create) : CmdTmpl()
+    CmdRtBind() = default;
+    CmdRtBind(uint32_t framebuffer)
+    {
+        cmd.framebuffer = framebuffer;
+    }
+    CmdRtBind(CmdRtCreate& create)
     {
         cmd.framebuffer = create.cmd.framebuffer;
     }
@@ -918,7 +1001,7 @@ public:
 // gk::CmdRtUnbind
 class CmdRtUnbind : public CmdTmpl<gk_cmd_rt_unbind, GK_CMD_RT_UNBIND> {
 public:
-    CmdRtUnbind() : CmdTmpl() {}
+
 };
 
 // gk::CmdProgramCreate
@@ -927,7 +1010,7 @@ class CmdProgramCreate : public CmdTmpl<gk_cmd_program_create, GK_CMD_PROGRAM_CR
     ProgramSourceVector _sources;
 
 public:
-    CmdProgramCreate() : CmdTmpl() {}
+    CmdProgramCreate() = default;
 
     template<typename... Rest>
     inline void add(ProgramSource& bd, Rest&... args)
@@ -949,7 +1032,7 @@ class CmdProgramDestroy : public CmdTmpl<gk_cmd_program_destroy, GK_CMD_PROGRAM_
     ProgramVector _progs;
 
 public:
-    CmdProgramDestroy() : CmdTmpl() {}
+    CmdProgramDestroy() = default;
 
     template<typename... Rest>
     inline void add(gk_program& p, Rest&... args)
@@ -976,13 +1059,16 @@ public:
 };
 
 // gk::CmdUniformQuery
-typedef std::vector<const char*> NameVector;
-typedef std::vector<gk_uniform>  UniformVector;
+using NameVector = std::vector<const char *>;
+using UniformVector = std::vector<gk_uniform>;
 
 struct strcmp_f {
-    bool operator()(const char* a, const char* b) const { return strcmp(a, b) < 0; }
+    bool operator()(const char* a, const char* b) const
+    {
+        return strcmp(a, b) < 0;
+    }
 };
-typedef std::map<const char*, gk_uniform, strcmp_f> UniformNameLocationMap;
+using UniformNameLocationMap = std::map<const char*, gk_uniform, strcmp_f>;
 
 class CmdUniformQuery : public CmdTmpl<gk_cmd_uniform_query, GK_CMD_UNIFORM_QUERY> {
     NameVector             _names;
@@ -990,7 +1076,10 @@ class CmdUniformQuery : public CmdTmpl<gk_cmd_uniform_query, GK_CMD_UNIFORM_QUER
     UniformNameLocationMap _locations;
 
 public:
-    CmdUniformQuery(gk_program& program) : CmdTmpl() { cmd.program = &program; }
+    CmdUniformQuery(gk_program& program)
+    {
+        cmd.program = &program;
+    }
     CmdUniformQuery(ProgramSource& source) : CmdUniformQuery(source.source.program) {}
 
     template<typename... Rest>
@@ -1028,15 +1117,15 @@ public:
 };
 
 // gk::CmdSpriteSheetCreate
-class CmdSpriteSheetCreate
-    : public CmdTmpl<gk_cmd_spritesheet_create, GK_CMD_SPRITESHEET_CREATE> {
+class CmdSpriteSheetCreate : public CmdTmpl<gk_cmd_spritesheet_create, GK_CMD_SPRITESHEET_CREATE> {
     std::string _path;
 
 public:
-    CmdSpriteSheetCreate(gk_spritesheet_format       fmt,
-                         std::string                 path,
-                         gk_spritesheet_create_flags fl = (gk_spritesheet_create_flags)0)
-        : CmdTmpl(), _path(path)
+    CmdSpriteSheetCreate(
+        gk_spritesheet_format       fmt,
+        std::string                 path,
+        gk_spritesheet_create_flags fl = (gk_spritesheet_create_flags)0)
+        : _path(std::move(path))
     {
         cmd.format = fmt;
         cmd.flags  = fl;
@@ -1045,15 +1134,22 @@ public:
 };
 
 // gk::CmdSpriteSheetDestroy
-typedef std::vector<gk_spritesheet*> SpriteSheetVector;
-class CmdSpriteSheetDestroy
-    : public CmdTmpl<gk_cmd_spritesheet_destroy, GK_CMD_SPRITESHEET_DESTROY> {
+using SpriteSheetVector = std::vector<gk_spritesheet *>;
+class CmdSpriteSheetDestroy : public CmdTmpl<gk_cmd_spritesheet_destroy, GK_CMD_SPRITESHEET_DESTROY> {
     SpriteSheetVector sheets;
 
 public:
-    CmdSpriteSheetDestroy(gk_spritesheet* sheet = nullptr) : CmdTmpl() { add(sheet); }
+    CmdSpriteSheetDestroy() = default;
 
-    CmdSpriteSheetDestroy(SpriteSheet& sheet) : CmdTmpl() { add(sheet); }
+    CmdSpriteSheetDestroy(gk_spritesheet* sheet)
+    {
+        add(sheet);
+    }
+
+    CmdSpriteSheetDestroy(SpriteSheet& sheet)
+    {
+        add(sheet.sheet);
+    }
 
     void add(gk_spritesheet* sheet)
     {
@@ -1064,6 +1160,9 @@ public:
         cmd.nsheets = sheets.size();
     }
 
-    void reserve(SpriteSheetVector::size_type size) { sheets.reserve(size); }
+    void reserve(SpriteSheetVector::size_type size)
+    {
+        sheets.reserve(size);
+    }
 };
 } // namespace gk
