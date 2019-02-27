@@ -1,9 +1,10 @@
 #include <algorithm>
+#include <cstdlib>
+#include <cstring>
 #include <fstream>
 
+#include <rpav/dubious/tidy.hpp>
 #include <rpav/log.hpp>
-#include <stdlib.h>
-#include <string.h>
 
 #include "gk/gk.hpp"
 #include "gk/gl.hpp"
@@ -20,10 +21,11 @@ static inline float translate_anchor(float a, float w, float nx, float nw)
     return (p - nx) / nw;
 }
 
-static void parse_texturepacker_frame(const json&  meta,
-                                      const json&  frame,
-                                      gk_sprite*   sprite,
-                                      unsigned int flags)
+static void parse_texturepacker_frame(
+    const json&  meta,
+    const json&  frame,
+    gk_sprite*   sprite,
+    unsigned int flags)
 {
     auto& rect    = frame["frame"];
     auto& srcRect = frame["spriteSourceSize"];
@@ -94,9 +96,10 @@ static void parse_texturepacker_frame(const json&  meta,
     }
 }
 
-void gk_load_ssf_texturepacker_json(gk_context*                gk,
-                                    gk_cmd_spritesheet_create* cmd,
-                                    gk_spritesheet*            sheet)
+void gk_load_ssf_texturepacker_json(
+    gk_context*                gk,
+    gk_cmd_spritesheet_create* cmd,
+    gk_spritesheet*            sheet)
 {
     std::ifstream f(cmd->path);
     json          j;
@@ -122,8 +125,8 @@ void gk_load_ssf_texturepacker_json(gk_context*                gk,
         GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 
     sheet->nsprites = j["frames"].size();
-    sheet->sprites  = (gk_sprite*)malloc(sizeof(gk_sprite) * sheet->nsprites);
-    sheet->names    = (char**)malloc(sizeof(char*) * sheet->nsprites);
+    sheet->sprites  = cast<gk_sprite*>(malloc(sizeof(gk_sprite) * sheet->nsprites));
+    sheet->names    = cast<char**>(malloc(sizeof(char*) * sheet->nsprites));
 
     i = 0;
     for(auto it = frames.begin(); it != frames.end(); ++it, ++i) {
@@ -135,6 +138,4 @@ void gk_load_ssf_texturepacker_json(gk_context*                gk,
 
 gl_error:
     if(sheet->tex) glDeleteTextures(1, &sheet->tex);
-
-    return;
 }

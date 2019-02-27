@@ -6,14 +6,14 @@
 #include "gk/gk.h"
 
 namespace gk {
-    typedef std::vector<gk_list*> ListVector;
-    typedef std::vector<gk_cmd*> CmdVector;
+    using ListVector = std::vector<gk_list *>;
+    using CmdVector = std::vector<gk_cmd *>;
 
     class ListBase;
     
     class CmdBase {
     public:
-        virtual ~CmdBase() {}
+        virtual ~CmdBase() = default;
         virtual gk_cmd* cmdPtr() = 0;
     };
 
@@ -27,7 +27,7 @@ namespace gk {
         CmdVector cmds;
 
     public:
-        virtual ~ListBase() { }
+        virtual ~ListBase() = default;
         virtual gk_list* listPtr() = 0;
 
         void addCmd(CmdBase &cmd) {
@@ -53,11 +53,11 @@ namespace gk {
 
         ListTmpl() {
             memset(&list, 0, sizeof(T));
-            gk_list *l = (gk_list*)&list;
+            auto l = (gk_list*)&list;
             l->sub = SYS;
         }
-        virtual ~ListTmpl() { }
-        virtual gk_list* listPtr() { return (gk_list*)&list; }
+
+        gk_list* listPtr() override { return (gk_list*)&list; }
 
         template<typename...Rest>
         inline void add(CmdBase &cmd, Rest&...args) {
