@@ -284,7 +284,7 @@ public:
 
     void rereadSheet();
 
-    inline size_t lookup(const std::string& name, size_t errval = ~0)
+    inline size_t lookup(const std::string& name, size_t errval = ~0) const
     {
         auto v = _name_map.find(name);
         if(v == _name_map.end()) return errval;
