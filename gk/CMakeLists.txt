@@ -113,10 +113,6 @@ if(GK_BUILD_STATIC)
     ${GK_OPTIONAL_DEPS}
     )
 
-  if(NOT WIN32)
-    #cotire(${LIB_NAME}-static)
-  endif()
-
   if(GK_INSTALL)
     install(TARGETS ${LIB_NAME}-static ARCHIVE DESTINATION lib/)
   endif()

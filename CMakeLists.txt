@@ -15,12 +15,25 @@ option(GK_USE_TEXTUREPACKER "Compile in generic TexturePacker JSON support" ON)
 set(PROJ_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-if(NOT WIN32)
-  include(cotire)
-endif()
+function(FixUsrInclude TARGET)
+  get_target_property(_includes ${TARGET} INTERFACE_INCLUDE_DIRECTORIES)
+  list(REMOVE_ITEM _includes "/usr/include")
+  set_target_properties(${TARGET} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${_includes}")
 
-find_package(GLEW REQUIRED)
+  get_target_property(_deps "${TARGET}" INTERFACE_LINK_LIBRARIES)
+
+  if(NOT "${_deps}" STREQUAL "_deps-NOTFOUND")
+    foreach(_dep ${_deps})
+      FixUsrInclude(${_dep})
+    endforeach()
+  endif()
+endfunction()
+
 find_package(OpenGL REQUIRED COMPONENTS OpenGL)
+find_package(GLEW REQUIRED)
+
+FixUsrInclude(OpenGL::GL)
+FixUsrInclude(GLEW::GLEW)
 
 if(GK_USE_BOX2D)
   add_definitions(-DGK_USE_BOX2D=1)
