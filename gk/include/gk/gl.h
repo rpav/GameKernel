@@ -37,7 +37,7 @@ typedef struct gk_list_gl {
 
 typedef unsigned int gk_texture;
 typedef unsigned int gk_program;
-typedef int gk_uniform;
+typedef int          gk_uniform;
 
 typedef struct gk_program_data_set gk_program_data_set;
 
@@ -55,8 +55,8 @@ typedef struct gk_cmd_clear {
     uint32_t flags;
 
     gk_vec4 color;
-    double depth;               /* GL defaults to 1 */
-    int stencil;                /* GL defaults to 0 */
+    double  depth;   /* GL defaults to 1 */
+    int     stencil; /* GL defaults to 0 */
 } gk_cmd_clear;
 
 /* Quads ************************************************************/
@@ -73,9 +73,9 @@ typedef struct gk_cmd_quad {
     gk_texture tex;
 
     /* Program Data Set.  If this is NULL, the default will be used */
-    gk_program_data_set *pds;
+    gk_program_data_set* pds;
 
-    gk_mat4 tfm;
+    gk_mat4     tfm;
     gk_quadvert attr[4];
 } gk_cmd_quad;
 
@@ -85,32 +85,32 @@ typedef struct gk_sprite {
     gk_quadvert attr[4]; /* Precalculated vertices/UVs */
 
     /* These are for reference */
-    gk_vec2 size;    /* The size of the rectangle in the texture */
-    gk_vec2 vsize;   /* The "virtual" size of the sprite, which may be larger */
-    gk_vec3 anchor;  /* The original anchor, relative to the "virtual" size */
+    gk_vec2 size;   /* The size of the rectangle in the texture */
+    gk_vec2 vsize;  /* The "virtual" size of the sprite, which may be larger */
+    gk_vec3 anchor; /* The original anchor, relative to the "virtual" size */
 } gk_sprite;
 
 typedef struct gk_spritesheet {
-    gk_texture tex;           /* Texture for the sprites */
+    gk_texture tex; /* Texture for the sprites */
 
-    size_t nsprites;
-    gk_sprite *sprites;
+    size_t     nsprites;
+    gk_sprite* sprites;
 
     /* Array of (nsprites) strings naming each correspondingly-indexed
        sprite.  This is filled in by loaders, but otherwise not used
        internally. */
-    char **names;
+    char** names;
 } gk_spritesheet;
 
 typedef struct gk_cmd_quadsprite {
     gk_cmd parent;
 
     /* Program Data Set.  If this is NULL, the default will be used */
-    gk_program_data_set *pds;
+    gk_program_data_set* pds;
 
-    gk_mat4 tfm;
-    gk_spritesheet *sheet;
-    size_t index;
+    gk_mat4         tfm;
+    gk_spritesheet* sheet;
+    size_t          index;
 } gk_cmd_quadsprite;
 
 typedef enum gk_spritelayer_flags {
@@ -119,30 +119,62 @@ typedef enum gk_spritelayer_flags {
 } gk_spritelayer_flags;
 
 typedef struct gk_spritelayer_config {
-    gk_spritesheet *sheet;
+    gk_spritesheet* sheet;
 
-    gk_vec2 layer_size;   // Integer WxH of sprites
-    gk_vec2 sprite_size;  // Uniform sprite size
+    gk_vec2 layer_size;  // Integer WxH of sprites
+    gk_vec2 sprite_size; // Uniform sprite size
 } gk_spritelayer_config;
 
 typedef struct gk_spritelayer_render {
-    gk_program_data_set *pds;  // Null means default
+    gk_program_data_set* pds; // Null means default
 
-    gk_mat4 tfm;         // Transform for the entire layer
-    gk_vec4 bounds;      // x,y w,h for how much to render
-    uint32_t flags;       // gk_spritelayer_flags
+    gk_mat4  tfm;    // Transform for the entire layer
+    gk_vec4  bounds; // x,y w,h for how much to render
+    uint32_t flags;  // gk_spritelayer_flags
 } gk_spritelayer_render;
 
 typedef struct gk_cmd_spritelayer {
     gk_cmd parent;
 
     // Data for rendering etc; many layers can link one config
-    gk_spritelayer_config *config;
-    gk_spritelayer_render *render;
+    gk_spritelayer_config* config;
+    gk_spritelayer_render* render;
 
     // Provide this, a w*h array of sprite indexes for sheet
-    size_t *sprites;
+    uint32_t* sprites;
 } gk_cmd_spritelayer;
+
+/* Spritechunks in a chunklayer are all the same size, as
+   specified in the layer.  They do not have individual
+   transform, render, etc.
+*/
+typedef struct gk_spritechunk {
+    uint32_t* sprites;
+} gk_spritechunk;
+
+typedef struct gk_chunklayer_config {
+    gk_spritesheet* sheet;
+
+    gk_ivec2 chunk_size;  // WxH of each chunk in sprites
+    gk_ivec2 layer_size;  // Layer size *in chunks*
+    gk_vec2  sprite_size; // Uniform sprite size in pixels
+
+    gk_vec2  origin;      // What the lower-left corner of the chunk array represents
+} gk_chunklayer_config;
+
+typedef struct gk_cmd_chunklayer {
+    gk_chunklayer_config*  config;
+    gk_spritelayer_render* render;
+
+    /*
+      This should be an array of chunks.  If a chunk's `sprites` field is null,
+      it will be skipped for rendering.
+
+      There is no `nchunks`; this must have space sufficient for
+      `layer_size.x*layer_size.y`.
+    */
+    gk_spritechunk* chunks;
+} gk_cmd_chunklayer;
 
 /* Render Texture ***************************************************/
 
@@ -154,7 +186,7 @@ typedef struct gk_cmd_spritelayer {
 typedef enum gk_rt_flags {
     GK_RT_ALPHA = 1 << 0,
 
-    GK_RT_DEPTH = 1 << 1,
+    GK_RT_DEPTH   = 1 << 1,
     GK_RT_STENCIL = 1 << 2,
 } gk_rt_flags;
 
@@ -168,15 +200,15 @@ typedef struct gk_cmd_rt_create {
     uint32_t width;
     uint32_t height;
 
-    uint32_t rt_flags;          /* gk_rt_flags */
-    uint32_t tex_flags;         /* gk_tex_flags */
-    uint32_t tex_min_filter;    /* gk_tex_filter */
-    uint32_t tex_mag_filter;    /* gk_tex_filter */
+    uint32_t rt_flags;       /* gk_rt_flags */
+    uint32_t tex_flags;      /* gk_tex_flags */
+    uint32_t tex_min_filter; /* gk_tex_filter */
+    uint32_t tex_mag_filter; /* gk_tex_filter */
 
     /* These are set (based on flags) */
     unsigned int framebuffer;
     unsigned int dsbuffer;
-    gk_texture tex;
+    gk_texture   tex;
 } gk_cmd_rt_create;
 
 typedef struct gk_cmd_rt_destroy {
@@ -185,11 +217,11 @@ typedef struct gk_cmd_rt_destroy {
     /* Anything nonzero will be deleted. */
     unsigned int framebuffer;
     unsigned int dsbuffer;
-    gk_texture tex;
+    gk_texture   tex;
 } gk_cmd_rt_destroy;
 
 typedef struct gk_cmd_rt_bind {
-    gk_cmd parent;
+    gk_cmd       parent;
     unsigned int framebuffer;
 } gk_cmd_rt_bind;
 
@@ -212,12 +244,12 @@ typedef enum gk_shader_type {
 
 typedef struct gk_shader_source {
     gk_shader_type type;
-    const char *source;
+    const char*    source;
 } gk_shader_source;
 
 typedef struct gk_program_source {
-    size_t nsources;
-    gk_shader_source **source;
+    size_t             nsources;
+    gk_shader_source** source;
 
     /* Output */
     gk_program program;
@@ -226,30 +258,30 @@ typedef struct gk_program_source {
 typedef struct gk_cmd_program_create {
     gk_cmd parent;
 
-    size_t nsources;
-    gk_program_source **source;
+    size_t              nsources;
+    gk_program_source** source;
 } gk_cmd_program_create;
 
 typedef struct gk_cmd_program_destroy {
     gk_cmd parent;
 
-    size_t nprograms;
-    gk_program *program;
+    size_t      nprograms;
+    gk_program* program;
 } gk_cmd_shader_destroy;
 
 typedef struct gk_cmd_uniform_query {
     gk_cmd parent;
 
     /* Pass a pointer to the program */
-    gk_program *program;
+    gk_program* program;
 
     /* Pass an array of `nuniforms` strings to query */
-    size_t nuniforms;
-    const char **names;
+    size_t       nuniforms;
+    const char** names;
 
     /* Output; provide an array of gk_uniform with `nuniforms`
        elements */
-    gk_uniform *uniforms;
+    gk_uniform* uniforms;
 } gk_cmd_uniform_query;
 
 typedef enum gk_uniform_value_type {
@@ -266,24 +298,24 @@ typedef enum gk_uniform_value_type {
 } gk_uniform_value_type;
 
 typedef struct gk_uniform_value {
-    gk_uniform location;
+    gk_uniform            location;
     gk_uniform_value_type type;
-    size_t count;
+    size_t                count;
 
     union {
         /* If count > 1 or it's not scalar, use a pointer. */
-        void *data;
+        void* data;
 
         /* If count == 1 and it's a scalar type, use immediate fields. */
-        int i;
+        int          i;
         unsigned int ui;
-        float f;
+        float        f;
     } value;
 } gk_uniform_value;
 
 typedef struct gk_uniform_set {
-    size_t nuniforms;
-    gk_uniform_value *values;
+    size_t            nuniforms;
+    gk_uniform_value* values;
 } gk_uniform_set;
 
 /* A gk_program_data_set is a collection of state necessary for a
@@ -292,17 +324,17 @@ typedef struct gk_uniform_set {
 
    Program data sets may share programs and data.  They are merely
    configurations of state.
- */
+*/
 typedef enum gk_pds_dirty_flags {
     GK_PDS_DIRTY_PROGRAM  = 1 << 0,
     GK_PDS_DIRTY_UNIFORMS = 1 << 1
 } gk_pds_update_flags;
 
 struct gk_program_data_set {
-    uint32_t dirty;             /* gk_pds_dirty_flags */
+    uint32_t dirty; /* gk_pds_dirty_flags */
 
-    gk_program program;
-    gk_uniform_set *uniforms;
+    gk_program      program;
+    gk_uniform_set* uniforms;
 };
 
-#endif  /* __GAMEKERNEL_GL_H__ */
+#endif /* __GAMEKERNEL_GL_H__ */

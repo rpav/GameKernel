@@ -137,10 +137,7 @@ void gk_fini_gl(gk_context* gk)
     };
 }
 
-static void gk_gl_process_begin(gk_context* gk,
-                                gk_bundle*  bundle,
-                                gk_cmd_type type,
-                                gk_cmd*     cmd)
+static void gk_gl_process_begin(gk_context* gk, gk_bundle* bundle, gk_cmd_type type, gk_cmd* cmd)
 {
     switch(type) {
         case GK_CMD_QUAD:
@@ -201,15 +198,13 @@ void gk_process_gl(gk_context* gk, gk_bundle* bundle, gk_list_gl* list_gl)
 {
     auto list = GK_LIST(list_gl);
 
-    if(list_gl->width && list_gl->height)
-        glViewport(0, 0, list_gl->width, list_gl->height);
+    if(list_gl->width && list_gl->height) glViewport(0, 0, list_gl->width, list_gl->height);
 
     for(size_t j = 0; j < list->ncmds; ++j) {
         auto cmd  = list->cmds[j];
         auto type = GK_CMD_TYPE(cmd);
 
-        if(gk->gl.last_cmd != type
-           && gk_gl_process_should_transition(gk->gl.last_cmd, type)) {
+        if(gk->gl.last_cmd != type && gk_gl_process_should_transition(gk->gl.last_cmd, type)) {
             gk_gl_process_end(gk, bundle, gk->gl.last_cmd);
             gk_gl_process_begin(gk, bundle, type, cmd);
             gk->gl.last_cmd = type;
@@ -227,6 +222,9 @@ void gk_process_gl(gk_context* gk, gk_bundle* bundle, gk_list_gl* list_gl)
                 break;
             case GK_CMD_SPRITELAYER:
                 gk->gl.gl_cmd_spritelayer(gk, bundle, (gk_cmd_spritelayer*)cmd);
+                break;
+            case GK_CMD_CHUNKLAYER:
+                gk->gl.gl_cmd_chunklayer(gk, bundle, (gk_cmd_chunklayer*)cmd);
                 break;
 
             default:

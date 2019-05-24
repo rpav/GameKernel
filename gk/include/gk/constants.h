@@ -23,7 +23,8 @@ typedef enum gk_cmd_type {
     GK_CMD_CLEAR,
     GK_CMD_QUAD,
     GK_CMD_QUADSPRITE,
-	GK_CMD_SPRITELAYER,
+    GK_CMD_SPRITELAYER,
+    GK_CMD_CHUNKLAYER,
 
     /* Render Texture */
     GK_CMD_RT_CREATE,

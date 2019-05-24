@@ -260,7 +260,7 @@ public:
 
 class CmdSpriteLayer : public CmdTmpl<gk_cmd_spritelayer, GK_CMD_SPRITELAYER> {
 public:
-    std::vector<size_t> sprites;
+    std::vector<uint32_t> sprites;
 
     CmdSpriteLayer(gk_spritelayer_config* config, gk_spritelayer_render* render)
         : sprites((size_t)config->layer_size.x * (size_t)config->layer_size.y, 0)
@@ -282,7 +282,7 @@ public:
         sprites.reserve(size);
     }
 
-    void copy(std::vector<size_t> data)
+    void copy(std::vector<uint32_t> data)
     {
         sprites     = std::move(data);
         cmd.sprites = sprites.data();

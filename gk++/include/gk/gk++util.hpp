@@ -312,4 +312,5 @@ public:
         flags  = 0;
     }
 };
+
 } // namespace gk

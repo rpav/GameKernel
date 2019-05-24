@@ -31,19 +31,19 @@ out vec2 uv;
 void main() {
     uv = vert_uv[0];
     gl_Position = gl_in[0].gl_Position;
-	//gl_Position = vec4(-1,-1,0,0);
+        //gl_Position = vec4(-1,-1,0,0);
   EmitVertex();
     uv = vert_uv[1];
     gl_Position = gl_in[1].gl_Position;
-	//gl_Position = vec4(-1,1,0,0);
+        //gl_Position = vec4(-1,1,0,0);
   EmitVertex();
     uv = vert_uv[2];
     gl_Position = gl_in[2].gl_Position;
-	//gl_Position = vec4(1,-1,0,0);
+        //gl_Position = vec4(1,-1,0,0);
   EmitVertex();
     uv = vert_uv[3];
     gl_Position = gl_in[3].gl_Position;
-	//gl_Position = vec4(1,1,0,0);
+        //gl_Position = vec4(1,1,0,0);
   EmitVertex();
 
   EndPrimitive();
@@ -111,6 +111,7 @@ void gl3_quad_init(gk_context *gk) {
     gk->gl.gl_cmd_quadsprite = gl3_cmd_quadsprite;
     gk->gl.gl_end_quad = gl3_end_quad;
     gk->gl.gl_cmd_spritelayer = gl3_cmd_spritelayer;
+    gk->gl.gl_cmd_chunklayer = gl3_cmd_chunklayer;
 
     compile_shaders(gl3);
 
@@ -141,7 +142,7 @@ void gl3_render_quads(gk_context *gk) {
     auto gl3 = (gl3_impl*)gk->impl_data;
 
     if(gl3->quadcount > 0) {
-		GL_CHECK(glBufferData(GL_ARRAY_BUFFER,
+                GL_CHECK(glBufferData(GL_ARRAY_BUFFER,
                               gl3->quadcount * (sizeof(float) * QUADBUF_VALS_PER_VERT * 4),
                               gl3->quadbuf, GL_STREAM_DRAW));
         GL_CHECK(glDrawArrays(GL_LINES_ADJACENCY, 0, gl3->quadcount * 4));
@@ -266,14 +267,18 @@ void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) 
 
             index += i;
 
-            size_t spriteno = cmd->sprites[index];
+            auto spriteno = cmd->sprites[index];
 
             if(!spriteno) continue;
-            
+
             m = *layer_m * gk::mat4::translate(tr);
             auto &sprite = sheet->sprites[spriteno-1];
 
             gl3_append_quad(gk, &m, &sprite.attr[0]);
         }
     }
+}
+
+void gl3_cmd_chunklayer(gk_context *gk, gk_bundle *b, gk_cmd_chunklayer *cmd) {
+
 }

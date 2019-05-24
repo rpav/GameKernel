@@ -77,6 +77,7 @@ void gl3_cmd_quadsprite(gk_context*, gk_bundle*, gk_cmd_quadsprite*);
 void gl3_end_quad(gk_context*);
 
 void gl3_cmd_spritelayer(gk_context*, gk_bundle*, gk_cmd_spritelayer*);
+void gl3_cmd_chunklayer(gk_context*, gk_bundle*, gk_cmd_chunklayer*);
 
 void gl3_rt_init(gk_context*);
 void gl3_cmd_rt_create(gk_context*, gk_cmd_rt_create*);
