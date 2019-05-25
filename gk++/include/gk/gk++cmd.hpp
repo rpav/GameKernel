@@ -289,6 +289,17 @@ public:
     }
 };
 
+
+class CmdChunkLayer : public CmdTmpl<gk_cmd_chunklayer, GK_CMD_CHUNKLAYER> {
+public:
+    CmdChunkLayer(gk_chunklayer_config *config, gk_spritelayer_render *render) : CmdTmpl() {
+        cmd.config = config;
+        cmd.render = render;
+    }
+
+
+};
+
 /* gk::CmdPath */
 
 class PathDef : public std::vector<float> {

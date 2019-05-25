@@ -90,6 +90,8 @@ typedef struct gk_sprite {
     gk_vec3 anchor; /* The original anchor, relative to the "virtual" size */
 } gk_sprite;
 
+typedef uint32_t gk_sprite_id;
+
 typedef struct gk_spritesheet {
     gk_texture tex; /* Texture for the sprites */
 
@@ -110,7 +112,7 @@ typedef struct gk_cmd_quadsprite {
 
     gk_mat4         tfm;
     gk_spritesheet* sheet;
-    size_t          index;
+    gk_sprite_id    index;
 } gk_cmd_quadsprite;
 
 typedef enum gk_spritelayer_flags {
@@ -141,7 +143,7 @@ typedef struct gk_cmd_spritelayer {
     gk_spritelayer_render* render;
 
     // Provide this, a w*h array of sprite indexes for sheet
-    uint32_t* sprites;
+    gk_sprite_id* sprites;
 } gk_cmd_spritelayer;
 
 /* Spritechunks in a chunklayer are all the same size, as
@@ -149,7 +151,7 @@ typedef struct gk_cmd_spritelayer {
    transform, render, etc.
 */
 typedef struct gk_spritechunk {
-    uint32_t* sprites;
+    gk_sprite_id* sprites;
 } gk_spritechunk;
 
 typedef struct gk_chunklayer_config {
@@ -163,6 +165,8 @@ typedef struct gk_chunklayer_config {
 } gk_chunklayer_config;
 
 typedef struct gk_cmd_chunklayer {
+    gk_cmd cmd;
+
     gk_chunklayer_config*  config;
     gk_spritelayer_render* render;
 

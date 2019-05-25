@@ -1,15 +1,16 @@
 #pragma once
 
-#include "gk/gk.h"
-
 #include <cmath>
 #include <cstdint>
 #include <cstring>
-#include <gk/core.hpp>
 #include <map>
 #include <string>
 #include <type_traits>
 #include <vector>
+
+#include <gk/core.hpp>
+
+#include "gk/gk.h"
 
 namespace gk {
 
@@ -42,7 +43,7 @@ public:
 };
 
 // gk::ProgramSource
-using ShaderSourceVector = std::vector<gk_shader_source *>;
+using ShaderSourceVector = std::vector<gk_shader_source*>;
 
 class ProgramSource {
     ShaderSourceVector _shaders;
@@ -91,44 +92,37 @@ struct UniformValue : public gk_uniform_value {
         value.data = nullptr;
     }
 
-    UniformValue(gk_uniform location_, float f)
-        : UniformValue(location_, GK_UNIFORM_VALUE_FLOAT)
+    UniformValue(gk_uniform location_, float f) : UniformValue(location_, GK_UNIFORM_VALUE_FLOAT)
     {
         value.f = f;
     }
 
-    UniformValue(gk_uniform location_, int i)
-        : UniformValue(location_, GK_UNIFORM_VALUE_INT)
+    UniformValue(gk_uniform location_, int i) : UniformValue(location_, GK_UNIFORM_VALUE_INT)
     {
         value.i = i;
     }
 
-    UniformValue(gk_uniform location_, unsigned int ui)
-        : UniformValue(location_, GK_UNIFORM_VALUE_UINT)
+    UniformValue(gk_uniform location_, unsigned int ui) : UniformValue(location_, GK_UNIFORM_VALUE_UINT)
     {
         value.ui = ui;
     }
 
-    UniformValue(gk_uniform location_, gk_vec2& v)
-        : UniformValue(location_, GK_UNIFORM_VALUE_VEC2)
+    UniformValue(gk_uniform location_, gk_vec2& v) : UniformValue(location_, GK_UNIFORM_VALUE_VEC2)
     {
         value.data = &v;
     }
 
-    UniformValue(gk_uniform location_, gk_vec3& v)
-        : UniformValue(location_, GK_UNIFORM_VALUE_VEC3)
+    UniformValue(gk_uniform location_, gk_vec3& v) : UniformValue(location_, GK_UNIFORM_VALUE_VEC3)
     {
         value.data = &v;
     }
 
-    UniformValue(gk_uniform location_, gk_vec4& v)
-        : UniformValue(location_, GK_UNIFORM_VALUE_VEC4)
+    UniformValue(gk_uniform location_, gk_vec4& v) : UniformValue(location_, GK_UNIFORM_VALUE_VEC4)
     {
         value.data = &v;
     }
 
-    UniformValue(gk_uniform location_, gk_mat4& v)
-        : UniformValue(location_, GK_UNIFORM_VALUE_MAT4)
+    UniformValue(gk_uniform location_, gk_mat4& v) : UniformValue(location_, GK_UNIFORM_VALUE_MAT4)
     {
         value.data = &v;
     }
@@ -243,14 +237,9 @@ public:
         if(OWN) memset(ptr(pds), 0, sizeof(typename std::decay<T>::type));
     }
 
-    ProgramDataSetTmpl(gk_program program) : ProgramDataSetTmpl()
-    {
-        ptr(pds)->program = program;
-    }
+    ProgramDataSetTmpl(gk_program program) : ProgramDataSetTmpl() { ptr(pds)->program = program; }
 
-    ProgramDataSetTmpl(ProgramSource& program)
-        : ProgramDataSetTmpl(program.source.program)
-    {}
+    ProgramDataSetTmpl(ProgramSource& program) : ProgramDataSetTmpl(program.source.program) {}
 
     void set(gk_program program)
     {
@@ -265,7 +254,7 @@ public:
     }
 };
 
-using ProgramDataSet = ProgramDataSetTmpl<gk_program_data_set, true>;
+using ProgramDataSet    = ProgramDataSetTmpl<gk_program_data_set, true>;
 using ProgramDataSetRef = ProgramDataSetTmpl<gk_program_data_set*, false>;
 
 // gk::SpriteSheet
@@ -311,6 +300,31 @@ public:
         bounds = {0, 0, 0, 0};
         flags  = 0;
     }
+};
+
+class ChunkLayerConfig : public gk_chunklayer_config {
+public:
+    ChunkLayerConfig() { sheet = nullptr; }
+};
+
+class SpriteChunk {
+    gk_spritechunk            _chunk;
+    std::vector<gk_sprite_id> _data;
+
+public:
+    void operator=(std::vector<uint32_t> data)
+    {
+        _data          = std::move(data);
+        _chunk.sprites = _data.data();
+    }
+
+    void resize(size_t size)
+    {
+        _data.resize(size);
+        _chunk.sprites = _data.data();
+    }
+
+    size_t size() const { return _data.size(); }
 };
 
 } // namespace gk

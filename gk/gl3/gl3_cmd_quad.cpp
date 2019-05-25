@@ -1,12 +1,12 @@
 #include <cstring>
 
 #include <GL/glew.h>
-#include <GL/gl.h>
 
-#include <rpav/util.hpp>
+#include <GL/gl.h>
+#include <rpav/log.hpp>
 #include <rpav/math.hpp>
 #include <rpav/str/gk.hpp>
-#include <rpav/log.hpp>
+#include <rpav/util.hpp>
 
 #include "gk/gk.hpp"
 #include "gk/gl.hpp"
@@ -19,7 +19,7 @@ using vec2 = gk::vec2;
 using namespace rpav;
 using namespace rpav::math;
 
-static const char *shader_geom_quad = R"(
+static const char* shader_geom_quad = R"(
 #version 330 core
 
 layout(lines_adjacency) in;
@@ -50,7 +50,7 @@ void main() {
 }
 )";
 
-static const char *shader_vert_quad = R"(
+static const char* shader_vert_quad = R"(
 #version 330 core
 
 layout (location = 0) in vec4 vertex;
@@ -64,7 +64,7 @@ void main() {
 }
 )";
 
-static const char *shader_frag_quad = R"(
+static const char* shader_frag_quad = R"(
 #version 330 core
 
 uniform sampler2D tex;
@@ -79,15 +79,16 @@ void main() {
 }
 )";
 
-const int QUADBUF_QUADS = 1024;
-const int QUADBUF_VALS_PER_VERT = sizeof(gk_quadvert)/sizeof(float);
+const int QUADBUF_QUADS         = 1024;
+const int QUADBUF_VALS_PER_VERT = sizeof(gk_quadvert) / sizeof(float);
 
-static void compile_shaders(gl3_impl *gl3) {
+static void compile_shaders(gl3_impl* gl3)
+{
     gk::GLProgramBuilder build;
 
-    build.add(GL_VERTEX_SHADER, shader_vert_quad,
-              GL_GEOMETRY_SHADER, shader_geom_quad,
-              GL_FRAGMENT_SHADER, shader_frag_quad);
+    build.add(
+        GL_VERTEX_SHADER, shader_vert_quad, GL_GEOMETRY_SHADER, shader_geom_quad, GL_FRAGMENT_SHADER,
+        shader_frag_quad);
     build.link(gl3->quad_program);
 
     // Default program data set
@@ -98,20 +99,21 @@ static void compile_shaders(gl3_impl *gl3) {
     gl3->quad_state.pds.set(gl3->quad_state.default_pds, gl3->quad_state);
 }
 
-void gl3_quad_init(gk_context *gk) {
+void gl3_quad_init(gk_context* gk)
+{
     const size_t szf = sizeof(float);
 
-    auto gl3 = (gl3_impl*)gk->impl_data;
-    auto &qs = gl3->quad_state;
+    auto  gl3 = (gl3_impl*)gk->impl_data;
+    auto& qs  = gl3->quad_state;
 
     gl3->quadbuf = new float[QUADBUF_QUADS * QUADBUF_VALS_PER_VERT * 4];
 
-    gk->gl.gl_begin_quad = gl3_begin_quad;
-    gk->gl.gl_cmd_quad = gl3_cmd_quad;
-    gk->gl.gl_cmd_quadsprite = gl3_cmd_quadsprite;
-    gk->gl.gl_end_quad = gl3_end_quad;
+    gk->gl.gl_begin_quad      = gl3_begin_quad;
+    gk->gl.gl_cmd_quad        = gl3_cmd_quad;
+    gk->gl.gl_cmd_quadsprite  = gl3_cmd_quadsprite;
+    gk->gl.gl_end_quad        = gl3_end_quad;
     gk->gl.gl_cmd_spritelayer = gl3_cmd_spritelayer;
-    gk->gl.gl_cmd_chunklayer = gl3_cmd_chunklayer;
+    gk->gl.gl_cmd_chunklayer  = gl3_cmd_chunklayer;
 
     compile_shaders(gl3);
 
@@ -127,36 +129,37 @@ void gl3_quad_init(gk_context *gk) {
 
     GL_CHECK(glEnableVertexAttribArray(0));
     GL_CHECK(glEnableVertexAttribArray(1));
-    GL_CHECK(glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, QUADBUF_VALS_PER_VERT*szf,
-                                   (void*)0));
-    GL_CHECK(glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, QUADBUF_VALS_PER_VERT*szf,
-                                   (void*)(szf*4)));
+    GL_CHECK(glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, QUADBUF_VALS_PER_VERT * szf, (void*)0));
+    GL_CHECK(
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, QUADBUF_VALS_PER_VERT * szf, (void*)(szf * 4)));
 
     return;
 
- gl_error:
+gl_error:
     return;
 }
 
-void gl3_render_quads(gk_context *gk) {
+void gl3_render_quads(gk_context* gk)
+{
     auto gl3 = (gl3_impl*)gk->impl_data;
 
     if(gl3->quadcount > 0) {
-                GL_CHECK(glBufferData(GL_ARRAY_BUFFER,
-                              gl3->quadcount * (sizeof(float) * QUADBUF_VALS_PER_VERT * 4),
-                              gl3->quadbuf, GL_STREAM_DRAW));
+        GL_CHECK(glBufferData(
+            GL_ARRAY_BUFFER, gl3->quadcount * (sizeof(float) * QUADBUF_VALS_PER_VERT * 4), gl3->quadbuf,
+            GL_STREAM_DRAW));
         GL_CHECK(glDrawArrays(GL_LINES_ADJACENCY, 0, gl3->quadcount * 4));
         gl3->quadcount = 0;
     }
     return;
 
- gl_error:
+gl_error:
     return;
 }
 
-void gl3_begin_quad(gk_context *gk) {
-    auto gl3 = (gl3_impl*)gk->impl_data;
-    auto &config = gl3->quad_state;
+void gl3_begin_quad(gk_context* gk)
+{
+    auto  gl3    = (gl3_impl*)gk->impl_data;
+    auto& config = gl3->quad_state;
 
     config.dirty = true;
     config.apply(gl3->glstate);
@@ -166,32 +169,32 @@ void gl3_begin_quad(gk_context *gk) {
     GL_CHECK(glEnable(GL_BLEND));
     GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
- gl_error:
+gl_error:
     return;
 }
 
-static void gl3_append_quad(gk_context *gk, const mat4 *tfm, gk_quadvert *attr) {
-    auto gl3 = (gl3_impl*)gk->impl_data;
-    auto *out = (gk_quadvert*)(gl3->quadbuf + (gl3->quadcount * QUADBUF_VALS_PER_VERT * 4));
+static void gl3_append_quad(gk_context* gk, const mat4* tfm, gk_quadvert* attr)
+{
+    auto  gl3 = (gl3_impl*)gk->impl_data;
+    auto* out = (gk_quadvert*)(gl3->quadbuf + (gl3->quadcount * QUADBUF_VALS_PER_VERT * 4));
 
     out[0].vertex = (*tfm) * attr[0].vertex;
     out[1].vertex = (*tfm) * attr[1].vertex;
     out[2].vertex = (*tfm) * attr[2].vertex;
     out[3].vertex = (*tfm) * attr[3].vertex;
-    out[0].uv = attr[0].uv;
-    out[1].uv = attr[1].uv;
-    out[2].uv = attr[2].uv;
-    out[3].uv = attr[3].uv;
+    out[0].uv     = attr[0].uv;
+    out[1].uv     = attr[1].uv;
+    out[2].uv     = attr[2].uv;
+    out[3].uv     = attr[3].uv;
 
     gl3->quadcount++;
-    if(gl3->quadcount >= QUADBUF_QUADS)
-        gl3_render_quads(gk);
+    if(gl3->quadcount >= QUADBUF_QUADS) gl3_render_quads(gk);
 }
 
-static inline void gl3_quad_ensure_state(gk_context *gk, GLuint tex,
-                                         gk_program_data_set *pds) {
-    auto gl3 = (gl3_impl*)gk->impl_data;
-    auto &config = gl3->quad_state;
+static inline void gl3_quad_ensure_state(gk_context* gk, GLuint tex, gk_program_data_set* pds)
+{
+    auto  gl3    = (gl3_impl*)gk->impl_data;
+    auto& config = gl3->quad_state;
 
     config.tex.set(tex, config);
 
@@ -207,40 +210,44 @@ static inline void gl3_quad_ensure_state(gk_context *gk, GLuint tex,
     }
 }
 
-void gl3_cmd_quad(gk_context *gk, gk_bundle *, gk_cmd_quad *q) {
+void gl3_cmd_quad(gk_context* gk, gk_bundle*, gk_cmd_quad* q)
+{
     gl3_quad_ensure_state(gk, q->tex, q->pds);
     gl3_append_quad(gk, (mat4*)&q->tfm, &q->attr[0]);
 }
 
-void gl3_cmd_quadsprite(gk_context *gk, gk_bundle *, gk_cmd_quadsprite *cmd) {
-    auto sheet = cmd->sheet;
-    auto &sprite = cmd->sheet->sprites[cmd->index];
+void gl3_cmd_quadsprite(gk_context* gk, gk_bundle*, gk_cmd_quadsprite* cmd)
+{
+    auto  sheet  = cmd->sheet;
+    auto& sprite = cmd->sheet->sprites[cmd->index];
 
     gl3_quad_ensure_state(gk, sheet->tex, cmd->pds);
     gl3_append_quad(gk, (mat4*)&cmd->tfm, &sprite.attr[0]);
 }
 
-void gl3_end_quad(gk_context *gk) {
+void gl3_end_quad(gk_context* gk)
+{
     gl3_render_quads(gk);
 }
 
-void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) {
-    auto *sheet = cmd->config->sheet;
-    auto *cfg   = cmd->config;
-    auto *r     = cmd->render;
+void gl3_cmd_spritelayer(gk_context* gk, gk_bundle* b, gk_cmd_spritelayer* cmd)
+{
+    auto* sheet = cmd->config->sheet;
+    auto* cfg   = cmd->config;
+    auto* r     = cmd->render;
 
     mat4 m;
     vec3 tr;
 
     gl3_quad_ensure_state(gk, sheet->tex, r->pds);
-    auto layer_x = cfg->layer_size.x;
-    auto layer_y = cfg->layer_size.y;
-    auto sx = cfg->sprite_size.x;
-    auto sy = cfg->sprite_size.y;
-    auto *layer_m = (mat4*)&(cmd->render->tfm);
+    auto  layer_x = cfg->layer_size.x;
+    auto  layer_y = cfg->layer_size.y;
+    auto  sx      = cfg->sprite_size.x;
+    auto  sy      = cfg->sprite_size.y;
+    auto& layer_m = cmd->render->tfm;
 
-    int si=0,bx=0;
-    int sj=0,by=0;
+    int si = 0, bx = 0;
+    int sj = 0, by = 0;
 
     if(cmd->render->flags & GK_SPRITELAYER_FLIPX) {
         si = clamp<int>(cfg->layer_size.x - r->bounds.z, 0, cfg->layer_size.x);
@@ -261,9 +268,9 @@ void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) 
             size_t index = 0;
 
             if(r->flags & GK_SPRITELAYER_FLIPY)
-                index = (layer_y-j-1)*layer_x;
+                index = (layer_y - j - 1) * layer_x;
             else
-                index = j*layer_x;
+                index = j * layer_x;
 
             index += i;
 
@@ -271,14 +278,31 @@ void gl3_cmd_spritelayer(gk_context *gk, gk_bundle *b, gk_cmd_spritelayer *cmd) 
 
             if(!spriteno) continue;
 
-            m = *layer_m * gk::mat4::translate(tr);
-            auto &sprite = sheet->sprites[spriteno-1];
+            m            = layer_m * gk::mat4::translate(tr);
+            auto& sprite = sheet->sprites[spriteno - 1];
 
             gl3_append_quad(gk, &m, &sprite.attr[0]);
         }
     }
 }
 
-void gl3_cmd_chunklayer(gk_context *gk, gk_bundle *b, gk_cmd_chunklayer *cmd) {
+void gl3_cmd_chunklayer(gk_context* gk, gk_bundle* b, gk_cmd_chunklayer* cmd)
+{
+    auto* sheet = cmd->config->sheet;
+    auto* cfg   = cmd->config;
+    auto* r     = cmd->render;
 
+    mat4 m;
+    vec2 tr;
+    const auto sizeV2 = vec2{cfg->chunk_size};
+
+    gl3_quad_ensure_state(gk, sheet->tex, r->pds);
+
+    for(int j = 0; j < cfg->chunk_size.y; ++j) {
+        for(int i = 0; i < cfg->chunk_size.x; ++i) {
+            tr = sizeV2 * vec2{(float)i,(float)j};
+
+            say("tr = ", tr);
+        }
+    }
 }
