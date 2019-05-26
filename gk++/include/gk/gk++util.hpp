@@ -307,21 +307,22 @@ public:
     ChunkLayerConfig() { sheet = nullptr; }
 };
 
-class SpriteChunk {
-    gk_spritechunk            _chunk;
+struct SpriteChunk {
     std::vector<gk_sprite_id> _data;
 
 public:
+    gk_spritechunk chunk;
+
     void operator=(std::vector<uint32_t> data)
     {
         _data          = std::move(data);
-        _chunk.sprites = _data.data();
+        chunk.sprites = _data.data();
     }
 
     void resize(size_t size)
     {
         _data.resize(size);
-        _chunk.sprites = _data.data();
+        chunk.sprites = _data.data();
     }
 
     size_t size() const { return _data.size(); }

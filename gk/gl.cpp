@@ -143,6 +143,7 @@ static void gk_gl_process_begin(gk_context* gk, gk_bundle* bundle, gk_cmd_type t
         case GK_CMD_QUAD:
         case GK_CMD_QUADSPRITE:
         case GK_CMD_SPRITELAYER:
+        case GK_CMD_CHUNKLAYER:
             gk->gl.gl_begin_quad(gk);
             return;
 
@@ -155,20 +156,14 @@ static bool gk_gl_process_should_transition(gk_cmd_type last, gk_cmd_type next)
 {
     switch(last) {
         case GK_CMD_QUAD:
-            switch(next) {
-                case GK_CMD_QUADSPRITE:
-                    return false;
-                case GK_CMD_SPRITELAYER:
-                    return false;
-                default:
-                    break;
-            }
-            break;
         case GK_CMD_QUADSPRITE:
+        case GK_CMD_SPRITELAYER:
+        case GK_CMD_CHUNKLAYER:
             switch(next) {
                 case GK_CMD_QUAD:
-                    return false;
+                case GK_CMD_QUADSPRITE:
                 case GK_CMD_SPRITELAYER:
+                case GK_CMD_CHUNKLAYER:
                     return false;
                 default:
                     break;
@@ -186,6 +181,7 @@ static void gk_gl_process_end(gk_context* gk, gk_bundle*, gk_cmd_type type)
         case GK_CMD_QUAD:
         case GK_CMD_QUADSPRITE:
         case GK_CMD_SPRITELAYER:
+        case GK_CMD_CHUNKLAYER:
             gk->gl.gl_end_quad(gk);
             return;
 

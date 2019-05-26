@@ -11,10 +11,11 @@
 #include "gk/gk.hpp"
 #include "gk/gl.hpp"
 
-using mat4 = gk::mat4;
-using vec4 = gk::vec4;
-using vec3 = gk::vec3;
-using vec2 = gk::vec2;
+using mat4  = gk::mat4;
+using vec4  = gk::vec4;
+using vec3  = gk::vec3;
+using vec2  = gk::vec2;
+using ivec2 = gk::ivec2;
 
 using namespace rpav;
 using namespace rpav::math;
@@ -286,23 +287,57 @@ void gl3_cmd_spritelayer(gk_context* gk, gk_bundle* b, gk_cmd_spritelayer* cmd)
     }
 }
 
+static void render_one_chunk(gk_context* gk, gk_cmd_chunklayer* cmd, ivec2 chunk)
+{
+    auto* sheet = cmd->config->sheet;
+    auto* cfg   = cmd->config;
+    auto* r     = cmd->render;
+
+    auto& layer_m = r->tfm;
+
+    auto chunkIndex = chunk.y * cfg->layer_size.y + chunk.x;
+    if(cmd->chunks[chunkIndex].sprites == nullptr) return;
+
+    for(int j = 0; j < cfg->chunk_size.y; ++j) {
+        for(int i = 0; i < cfg->chunk_size.x; ++i) {
+            float fi = i, fj = j;
+            auto  tr = vec2{fi, fj} + vec2(chunk * cfg->chunk_size);
+            tr *= cfg->sprite_size;
+            tr += cfg->origin;
+
+            size_t spriteIndex{};
+
+            if(r->flags & GK_SPRITELAYER_FLIPY)
+                spriteIndex = (cfg->chunk_size.y - j - 1) * cfg->chunk_size.x;
+            else
+                spriteIndex = j * cfg->chunk_size.x;
+
+            spriteIndex += i;
+            auto spriteno = cmd->chunks[chunkIndex].sprites[spriteIndex];
+
+            if(!spriteno) continue;
+
+            auto  m      = layer_m * gk::mat4::translate(tr);
+            auto& sprite = sheet->sprites[spriteno - 1];
+
+            gl3_append_quad(gk, &m, &sprite.attr[0]);
+        }
+    }
+}
+
 void gl3_cmd_chunklayer(gk_context* gk, gk_bundle* b, gk_cmd_chunklayer* cmd)
 {
     auto* sheet = cmd->config->sheet;
     auto* cfg   = cmd->config;
     auto* r     = cmd->render;
 
-    mat4 m;
-    vec2 tr;
     const auto sizeV2 = vec2{cfg->chunk_size};
 
     gl3_quad_ensure_state(gk, sheet->tex, r->pds);
 
-    for(int j = 0; j < cfg->chunk_size.y; ++j) {
-        for(int i = 0; i < cfg->chunk_size.x; ++i) {
-            tr = sizeV2 * vec2{(float)i,(float)j};
-
-            say("tr = ", tr);
+    for(int y = 0; y < cfg->layer_size.y; ++y) {
+        for(int x = 0; x < cfg->layer_size.x; ++x) {
+            render_one_chunk(gk, cmd, {x, y});
         }
     }
 }
