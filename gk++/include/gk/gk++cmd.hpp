@@ -22,15 +22,9 @@ public:
         c->key  = key;
     }
 
-    gk_cmd* cmdPtr() override
-    {
-        return (gk_cmd*)&cmd;
-    }
+    gk_cmd* cmdPtr() override { return (gk_cmd*)&cmd; }
 
-    void key(int key)
-    {
-        cmdPtr()->key = key;
-    }
+    void key(int key) { cmdPtr()->key = key; }
 
     T cmd;
 };
@@ -44,14 +38,8 @@ public:
         cmd.sort       = sort;
     }
 
-    inline void index(unsigned int index)
-    {
-        cmd.list_index = index;
-    }
-    inline void sort(gk_pass_sorting sort)
-    {
-        cmd.sort = sort;
-    }
+    inline void index(unsigned int index) { cmd.list_index = index; }
+    inline void sort(gk_pass_sorting sort) { cmd.sort = sort; }
 };
 
 /* gk::Passes */
@@ -68,10 +56,7 @@ public:
 
     inline void add() {}
 
-    CmdPass& operator[](size_t i)
-    {
-        return _passes[i];
-    }
+    CmdPass& operator[](size_t i) { return _passes[i]; }
 
     void addToList(ListBase& list) override
     {
@@ -140,10 +125,7 @@ public:
 // gk::CmdTFTRS
 class CmdTFTRS : public CmdTF<gk_cmd_tf_trs, GK_CMD_TF_TRS> {
 public:
-    void translate(const vec3& v)
-    {
-        cmd.translate = v;
-    }
+    void translate(const vec3& v) { cmd.translate = v; }
 
     void rotate(const vec3& axis, float angle)
     {
@@ -170,15 +152,9 @@ public:
 // gk::CmdTFM
 class CmdTFM : public CmdTF<gk_cmd_tf_m, GK_CMD_TF_M> {
 public:
-    CmdTFM(mat4* m = nullptr)
-    {
-        cmd.m = m;
-    }
+    CmdTFM(mat4* m = nullptr) { cmd.m = m; }
 
-    void setM(mat4* m)
-    {
-        cmd.m = m;
-    }
+    void setM(mat4* m) { cmd.m = m; }
 };
 
 // gk::CmdQuad
@@ -214,10 +190,7 @@ public:
         setUV(3, u1, v0);
     }
 
-    inline void setVertex(int n, gk_vec4& v)
-    {
-        cmd.attr[n].vertex = v;
-    }
+    inline void setVertex(int n, gk_vec4& v) { cmd.attr[n].vertex = v; }
 
     inline void setVertex(int n, float x, float y, float z = 0.0, float w = 1.0)
     {
@@ -227,10 +200,7 @@ public:
         cmd.attr[n].vertex.w = w;
     }
 
-    inline void setUV(int n, gk_vec2& v)
-    {
-        cmd.attr[n].uv = v;
-    }
+    inline void setUV(int n, gk_vec2& v) { cmd.attr[n].uv = v; }
 
     inline void setUV(int n, float u, float v)
     {
@@ -252,10 +222,7 @@ public:
 
     void setSheet(gk::SpriteSheet& sheet) {}
 
-    mat4* tfm()
-    {
-        return (mat4*)&cmd.tfm;
-    }
+    mat4* tfm() { return (mat4*)&cmd.tfm; }
 };
 
 class CmdSpriteLayer : public CmdTmpl<gk_cmd_spritelayer, GK_CMD_SPRITELAYER> {
@@ -277,10 +244,7 @@ public:
         cmd.sprites = nullptr;
     }
 
-    void reserve(size_t size)
-    {
-        sprites.reserve(size);
-    }
+    void reserve(size_t size) { sprites.reserve(size); }
 
     void copy(std::vector<uint32_t> data)
     {
@@ -289,15 +253,47 @@ public:
     }
 };
 
-
 class CmdChunkLayer : public CmdTmpl<gk_cmd_chunklayer, GK_CMD_CHUNKLAYER> {
+    class Chunk2DRef {
+        CmdChunkLayer* _cmd{};
+        size_t         _x{};
+
+    public:
+        Chunk2DRef(CmdChunkLayer* layer, size_t x) : _cmd{layer}, _x{x} {}
+        gk_sprite_id*& operator[](size_t y) {
+            auto index = y * _cmd->cmd.config->layer_size.x + _x;
+            return _cmd->cmd.chunks[index].sprites;
+        }
+    };
+
+    std::vector<gk_spritechunk> _chunks;
+
 public:
-    CmdChunkLayer(gk_chunklayer_config *config, gk_spritelayer_render *render) : CmdTmpl() {
+    // Note this is *not* set up until you call resize(); if you initialize
+    // with resize().  You should also likely .zero().  You may thus initialize
+    // the config/render pointers without initializing config/render data or
+    // preallocating anything.
+    CmdChunkLayer(gk_chunklayer_config* config, gk_spritelayer_render* render) : CmdTmpl()
+    {
         cmd.config = config;
         cmd.render = render;
+        cmd.chunks = nullptr;
     }
 
+    // Call after config has been set up
+    CmdChunkLayer& resize() {
+        auto& sz = cmd.config->layer_size;
+        _chunks.resize(sz.x * sz.y);
+        cmd.chunks = _chunks.data();
+        return *this;
+    }
 
+    CmdChunkLayer& zero() {
+        for(auto& sc : _chunks) { sc.sprites = nullptr; }
+        return *this;
+    }
+
+    Chunk2DRef operator[](size_t x) { return {this, x}; }
 };
 
 /* gk::CmdPath */
@@ -605,10 +601,7 @@ public:
         cmd.mag_filter = mag;
     }
 
-    int id() const
-    {
-        return cmd.id;
-    }
+    int id() const { return cmd.id; }
 };
 
 // gk::CmdImageDestroy
@@ -617,10 +610,7 @@ class CmdImageDestroy : public CmdTmpl<gk_cmd_image_destroy, GK_CMD_IMAGE_DESTRO
     ImageIDVector ids;
 
 public:
-    CmdImageDestroy(CmdImageCreate& create)
-    {
-        add(create);
-    }
+    CmdImageDestroy(CmdImageCreate& create) { add(create); }
 
     void add(int id)
     {
@@ -629,10 +619,7 @@ public:
         cmd.nids = ids.size();
     }
 
-    void add(CmdImageCreate& cmd)
-    {
-        add(cmd.id());
-    }
+    void add(CmdImageCreate& cmd) { add(cmd.id()); }
 };
 
 // gk::CmdNvgRawFunction
@@ -695,10 +682,7 @@ public:
 /* gk::CmdB2WorldDestroy */
 class CmdB2WorldDestroy : public CmdTmpl<gk_cmd_b2_world_destroy, GK_CMD_B2_WORLD_DESTROY> {
 public:
-    CmdB2WorldDestroy(gk_b2_world& world)
-    {
-        cmd.world = &world;
-    }
+    CmdB2WorldDestroy(gk_b2_world& world) { cmd.world = &world; }
 };
 
 // gk::B2Body
@@ -736,15 +720,12 @@ struct B2BodyDef : public gk_b2_bodydef {
 };
 
 // gk::CmdB2BodyCreate
-using BodydefVector = std::vector<gk_b2_bodydef *>;
+using BodydefVector = std::vector<gk_b2_bodydef*>;
 class CmdB2BodyCreate : public CmdTmpl<gk_cmd_b2_body_create, GK_CMD_B2_BODY_CREATE> {
     BodydefVector defs;
 
 public:
-    CmdB2BodyCreate(gk_b2_world& world)
-    {
-        cmd.world = &world;
-    }
+    CmdB2BodyCreate(gk_b2_world& world) { cmd.world = &world; }
 
     template<typename... Rest>
     inline void add(B2BodyDef& bd, Rest&... args)
@@ -764,10 +745,7 @@ class CmdB2BodyDestroy : public CmdTmpl<gk_cmd_b2_body_destroy, GK_CMD_B2_BODY_D
     std::vector<gk_b2_body*> bodies;
 
 public:
-    CmdB2BodyDestroy(gk_b2_world& world)
-    {
-        cmd.world = &world;
-    }
+    CmdB2BodyDestroy(gk_b2_world& world) { cmd.world = &world; }
 
     template<typename... Rest>
     inline void add(gk_b2_body& bd, Rest&&... args)
@@ -786,19 +764,13 @@ public:
 // gk::CmdB2BodyUpdate
 class CmdB2BodyUpdate : public CmdTmpl<gk_cmd_b2_body_update, GK_CMD_B2_BODY_UPDATE> {
 public:
-    CmdB2BodyUpdate(gk_b2_body& body)
-    {
-        cmd.body = &body;
-    }
+    CmdB2BodyUpdate(gk_b2_body& body) { cmd.body = &body; }
 };
 
 // gk::CmdB2FixtureCreate
 class CmdB2FixtureCreate : public CmdTmpl<gk_cmd_b2_fixture_create, GK_CMD_B2_FIXTURE_CREATE> {
 public:
-    CmdB2FixtureCreate(gk_b2_body& body)
-    {
-        cmd.body = &body;
-    }
+    CmdB2FixtureCreate(gk_b2_body& body) { cmd.body = &body; }
 
     void setPath(float* pathdef, size_t count)
     {
@@ -824,37 +796,22 @@ public:
         cmd.id = id;
     }
 
-    CmdB2FixtureUpdate(gk_b2_body& body)
-    {
-        setBody(body);
-    }
+    CmdB2FixtureUpdate(gk_b2_body& body) { setBody(body); }
 
-    CmdB2FixtureUpdate(int id)
-    {
-        cmd.id = id;
-    }
+    CmdB2FixtureUpdate(int id) { cmd.id = id; }
 
-    inline void setBody(gk_b2_body& body)
-    {
-        cmd.body = &body;
-    }
+    inline void setBody(gk_b2_body& body) { cmd.body = &body; }
 };
 
 // gk::CmdB2Step
 class CmdB2Step : public CmdTmpl<gk_cmd_b2_step, GK_CMD_B2_STEP> {
 public:
-    CmdB2Step(gk_b2_world& world)
-    {
-        cmd.world = &world;
-    }
+    CmdB2Step(gk_b2_world& world) { cmd.world = &world; }
 };
 
 class CmdB2IterBodies : public CmdTmpl<gk_cmd_b2_iter_bodies, GK_CMD_B2_ITER_BODIES> {
 public:
-    CmdB2IterBodies(gk_b2_world& world)
-    {
-        cmd.world = &world;
-    }
+    CmdB2IterBodies(gk_b2_world& world) { cmd.world = &world; }
 };
 
 class CmdB2Force : public CmdTmpl<gk_cmd_b2_force, GK_CMD_B2_FORCE> {
@@ -872,10 +829,7 @@ public:
         setBody(body);
     }
 
-    inline void setBody(gk_b2_body& body)
-    {
-        cmd.body = &body;
-    }
+    inline void setBody(gk_b2_body& body) { cmd.body = &body; }
 };
 
 class CmdB2Torque : public CmdTmpl<gk_cmd_b2_torque, GK_CMD_B2_TORQUE> {
@@ -891,10 +845,7 @@ public:
         setBody(body);
     }
 
-    inline void setBody(gk_b2_body& body)
-    {
-        cmd.body = &body;
-    }
+    inline void setBody(gk_b2_body& body) { cmd.body = &body; }
 };
 
 class CmdB2LinearImpulse : public CmdTmpl<gk_cmd_b2_linear_impulse, GK_CMD_B2_LINEAR_IMPULSE> {
@@ -912,10 +863,7 @@ public:
         setBody(body);
     }
 
-    inline void setBody(gk_b2_body& body)
-    {
-        cmd.body = &body;
-    }
+    inline void setBody(gk_b2_body& body) { cmd.body = &body; }
 };
 
 class CmdB2AngularImpulse : public CmdTmpl<gk_cmd_b2_angular_impulse, GK_CMD_B2_ANGULAR_IMPULSE> {
@@ -932,10 +880,7 @@ public:
         setBody(body);
     }
 
-    inline void setBody(gk_b2_body& body)
-    {
-        cmd.body = &body;
-    }
+    inline void setBody(gk_b2_body& body) { cmd.body = &body; }
 };
 
 class CmdB2SetVelocity : public CmdTmpl<gk_cmd_b2_set_velocity, GK_CMD_B2_SET_VELOCITY> {
@@ -950,10 +895,7 @@ public:
     {
         setBody(body);
     }
-    inline void setBody(gk_b2_body& body)
-    {
-        cmd.body = &body;
-    }
+    inline void setBody(gk_b2_body& body) { cmd.body = &body; }
 };
 
 // gk::CmdB2DrawDebug
@@ -999,20 +941,13 @@ public:
 class CmdRtBind : public CmdTmpl<gk_cmd_rt_bind, GK_CMD_RT_BIND> {
 public:
     CmdRtBind() = default;
-    CmdRtBind(uint32_t framebuffer)
-    {
-        cmd.framebuffer = framebuffer;
-    }
-    CmdRtBind(CmdRtCreate& create)
-    {
-        cmd.framebuffer = create.cmd.framebuffer;
-    }
+    CmdRtBind(uint32_t framebuffer) { cmd.framebuffer = framebuffer; }
+    CmdRtBind(CmdRtCreate& create) { cmd.framebuffer = create.cmd.framebuffer; }
 };
 
 // gk::CmdRtUnbind
 class CmdRtUnbind : public CmdTmpl<gk_cmd_rt_unbind, GK_CMD_RT_UNBIND> {
 public:
-
 };
 
 // gk::CmdProgramCreate
@@ -1070,14 +1005,11 @@ public:
 };
 
 // gk::CmdUniformQuery
-using NameVector = std::vector<const char *>;
+using NameVector    = std::vector<const char*>;
 using UniformVector = std::vector<gk_uniform>;
 
 struct strcmp_f {
-    bool operator()(const char* a, const char* b) const
-    {
-        return strcmp(a, b) < 0;
-    }
+    bool operator()(const char* a, const char* b) const { return strcmp(a, b) < 0; }
 };
 using UniformNameLocationMap = std::map<const char*, gk_uniform, strcmp_f>;
 
@@ -1087,10 +1019,7 @@ class CmdUniformQuery : public CmdTmpl<gk_cmd_uniform_query, GK_CMD_UNIFORM_QUER
     UniformNameLocationMap _locations;
 
 public:
-    CmdUniformQuery(gk_program& program)
-    {
-        cmd.program = &program;
-    }
+    CmdUniformQuery(gk_program& program) { cmd.program = &program; }
     CmdUniformQuery(ProgramSource& source) : CmdUniformQuery(source.source.program) {}
 
     template<typename... Rest>
@@ -1145,22 +1074,16 @@ public:
 };
 
 // gk::CmdSpriteSheetDestroy
-using SpriteSheetVector = std::vector<gk_spritesheet *>;
+using SpriteSheetVector = std::vector<gk_spritesheet*>;
 class CmdSpriteSheetDestroy : public CmdTmpl<gk_cmd_spritesheet_destroy, GK_CMD_SPRITESHEET_DESTROY> {
     SpriteSheetVector sheets;
 
 public:
     CmdSpriteSheetDestroy() = default;
 
-    CmdSpriteSheetDestroy(gk_spritesheet* sheet)
-    {
-        add(sheet);
-    }
+    CmdSpriteSheetDestroy(gk_spritesheet* sheet) { add(sheet); }
 
-    CmdSpriteSheetDestroy(SpriteSheet& sheet)
-    {
-        add(sheet.sheet);
-    }
+    CmdSpriteSheetDestroy(SpriteSheet& sheet) { add(sheet.sheet); }
 
     void add(gk_spritesheet* sheet)
     {
@@ -1171,9 +1094,6 @@ public:
         cmd.nsheets = sheets.size();
     }
 
-    void reserve(SpriteSheetVector::size_type size)
-    {
-        sheets.reserve(size);
-    }
+    void reserve(SpriteSheetVector::size_type size) { sheets.reserve(size); }
 };
 } // namespace gk
