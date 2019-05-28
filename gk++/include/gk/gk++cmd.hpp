@@ -269,6 +269,10 @@ class CmdChunkLayer : public CmdTmpl<gk_cmd_chunklayer, GK_CMD_CHUNKLAYER> {
     std::vector<gk_spritechunk> _chunks;
 
 public:
+    CmdChunkLayer() = default;
+    CmdChunkLayer(const CmdChunkLayer&) = default;
+    CmdChunkLayer(CmdChunkLayer&&) = default;
+
     // Note this is *not* set up until you call resize(); if you initialize
     // with resize().  You should also likely .zero().  You may thus initialize
     // the config/render pointers without initializing config/render data or
