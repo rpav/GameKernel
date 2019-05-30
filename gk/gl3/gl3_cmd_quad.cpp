@@ -287,7 +287,7 @@ void gl3_cmd_spritelayer(gk_context* gk, gk_bundle* b, gk_cmd_spritelayer* cmd)
     }
 }
 
-static void render_one_chunk(gk_context* gk, gk_cmd_chunklayer* cmd, ivec2 chunk)
+static void render_one_chunk(gk_context* gk, gk_cmd_chunklayer* cmd, const gk_spritechunk& chunk)
 {
     auto* sheet = cmd->config->sheet;
     auto* cfg   = cmd->config;
@@ -295,13 +295,10 @@ static void render_one_chunk(gk_context* gk, gk_cmd_chunklayer* cmd, ivec2 chunk
 
     auto& layer_m = r->tfm;
 
-    auto chunkIndex = chunk.y * cfg->layer_size.y + chunk.x;
-    if(cmd->chunks[chunkIndex].sprites == nullptr) return;
-
     for(int j = 0; j < cfg->chunk_size.y; ++j) {
         for(int i = 0; i < cfg->chunk_size.x; ++i) {
             float fi = i, fj = j;
-            auto  tr = vec2{fi, fj} + vec2(chunk * cfg->chunk_size);
+            auto  tr = vec2{fi, fj} + vec2(chunk.offset * cfg->chunk_size);
             tr *= cfg->sprite_size;
             tr += cfg->origin;
 
@@ -313,7 +310,7 @@ static void render_one_chunk(gk_context* gk, gk_cmd_chunklayer* cmd, ivec2 chunk
                 spriteIndex = j * cfg->chunk_size.x;
 
             spriteIndex += i;
-            auto spriteno = cmd->chunks[chunkIndex].sprites[spriteIndex];
+            auto spriteno = chunk.sprites[spriteIndex];
 
             if(!spriteno) continue;
 
@@ -328,16 +325,10 @@ static void render_one_chunk(gk_context* gk, gk_cmd_chunklayer* cmd, ivec2 chunk
 void gl3_cmd_chunklayer(gk_context* gk, gk_bundle* b, gk_cmd_chunklayer* cmd)
 {
     auto* sheet = cmd->config->sheet;
-    auto* cfg   = cmd->config;
-    auto* r     = cmd->render;
 
-    const auto sizeV2 = vec2{cfg->chunk_size};
+    gl3_quad_ensure_state(gk, sheet->tex, cmd->render->pds);
 
-    gl3_quad_ensure_state(gk, sheet->tex, r->pds);
-
-    for(int y = 0; y < cfg->layer_size.y; ++y) {
-        for(int x = 0; x < cfg->layer_size.x; ++x) {
-            render_one_chunk(gk, cmd, {x, y});
-        }
+    for(size_t i = 0; i < cmd->nchunks; ++i) {
+        render_one_chunk(gk, cmd, cmd->chunks[i]);
     }
 }

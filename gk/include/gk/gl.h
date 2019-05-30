@@ -151,6 +151,7 @@ typedef struct gk_cmd_spritelayer {
    transform, render, etc.
 */
 typedef struct gk_spritechunk {
+    gk_ivec2      offset;
     gk_sprite_id* sprites;
 } gk_spritechunk;
 
@@ -158,10 +159,9 @@ typedef struct gk_chunklayer_config {
     gk_spritesheet* sheet;
 
     gk_ivec2 chunk_size;  // WxH of each chunk in sprites
-    gk_ivec2 layer_size;  // Layer size *in chunks*
     gk_vec2  sprite_size; // Uniform sprite size in pixels
 
-    gk_vec2  origin;      // What the lower-left corner of the chunk array represents
+    gk_vec2 origin; // What the lower-left corner of the chunk array represents
 } gk_chunklayer_config;
 
 typedef struct gk_cmd_chunklayer {
@@ -171,12 +171,10 @@ typedef struct gk_cmd_chunklayer {
     gk_spritelayer_render* render;
 
     /*
-      This should be an array of chunks.  If a chunk's `sprites` field is null,
-      it will be skipped for rendering.
-
-      There is no `nchunks`; this must have space sufficient for
-      `layer_size.x*layer_size.y`.
+      This should be an array of chunks of size `nchunks`.  Each chunk specifies its offset
+      from the origin.
     */
+    size_t          nchunks;
     gk_spritechunk* chunks;
 } gk_cmd_chunklayer;
 

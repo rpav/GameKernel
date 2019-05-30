@@ -254,24 +254,12 @@ public:
 };
 
 class CmdChunkLayer : public CmdTmpl<gk_cmd_chunklayer, GK_CMD_CHUNKLAYER> {
-    class Chunk2DRef {
-        CmdChunkLayer* _cmd{};
-        size_t         _x{};
-
-    public:
-        Chunk2DRef(CmdChunkLayer* layer, size_t x) : _cmd{layer}, _x{x} {}
-        gk_sprite_id*& operator[](size_t y) {
-            auto index = y * _cmd->cmd.config->layer_size.x + _x;
-            return _cmd->cmd.chunks[index].sprites;
-        }
-    };
-
     std::vector<gk_spritechunk> _chunks;
 
 public:
-    CmdChunkLayer() = default;
+    CmdChunkLayer()                     = default;
     CmdChunkLayer(const CmdChunkLayer&) = default;
-    CmdChunkLayer(CmdChunkLayer&&) = default;
+    CmdChunkLayer(CmdChunkLayer&&)      = default;
 
     // Note this is *not* set up until you call resize(); if you initialize
     // with resize().  You should also likely .zero().  You may thus initialize
@@ -284,20 +272,23 @@ public:
         cmd.chunks = nullptr;
     }
 
-    // Call after config has been set up
-    CmdChunkLayer& resize() {
-        auto& sz = cmd.config->layer_size;
-        _chunks.resize(sz.x * sz.y);
-        cmd.chunks = _chunks.data();
+    CmdChunkLayer& resize(size_t n)
+    {
+        _chunks.resize(n);
+        cmd.nchunks = n;
+        cmd.chunks  = _chunks.data();
         return *this;
     }
 
-    CmdChunkLayer& zero() {
-        for(auto& sc : _chunks) { sc.sprites = nullptr; }
+    CmdChunkLayer& zero()
+    {
+        for(auto& sc : _chunks) {
+            sc.sprites = nullptr;
+        }
         return *this;
     }
 
-    Chunk2DRef operator[](size_t x) { return {this, x}; }
+    gk_spritechunk& operator[](size_t x) { return _chunks[x]; }
 };
 
 /* gk::CmdPath */
