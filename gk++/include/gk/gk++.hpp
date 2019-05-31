@@ -8,49 +8,60 @@
  */
 
 #include <vector>
-#include "gk/gk.h"
-#include "gk/gk++util.hpp"
-#include "gk/gk++list.hpp"
+
 #include "gk/gk++cmd.hpp"
+#include "gk/gk++list.hpp"
+#include "gk/gk++util.hpp"
+#include "gk/gk.h"
 
 namespace gk {
-    class Bundle {
-        ListVector lists;
-    public:
-        Bundle(unsigned int start = 0, gk_pass_sorting sort = GK_PASS_SORT_NONE);
-        ~Bundle() { }
-        void handleError();
+class Bundle {
+    ListVector lists;
 
-        gk_bundle bundle;
+public:
+    Bundle(unsigned int start = 0, gk_pass_sorting sort = GK_PASS_SORT_NONE);
+    ~Bundle() {}
+    void handleError();
 
-        template<typename...Rest>
-        inline void add(ListBase &list, Rest&...args) {
-            lists.push_back(list.listPtr());
-            add(args...);
-        }
+    gk_bundle bundle;
 
-        inline void add() {
-            bundle.nlists = lists.size();
-            bundle.lists = lists.data();
-        }
-
-        inline void clear() {
-            lists.clear();
-            bundle.nlists = 0;
-            bundle.lists = nullptr;
-        }
-    };
-
-    typedef gk_context Context;
-
-    inline Context* create(gk_impl impl) { return gk_create(impl); }
-    inline void destroy(Context *gk) { gk_destroy(gk); }
-    inline void process(Context *gk, Bundle &bundle) {
-        gk_process(gk, &bundle.bundle);
-        if(bundle.bundle.error.code)
-            bundle.handleError();
+    template<typename... Rest>
+    inline void add(ListBase& list, Rest&... args)
+    {
+        lists.push_back(list.listPtr());
+        add(args...);
     }
+
+    inline void add()
+    {
+        bundle.nlists = lists.size();
+        bundle.lists  = lists.data();
+    }
+
+    inline void clear()
+    {
+        lists.clear();
+        bundle.nlists = 0;
+        bundle.lists  = nullptr;
+    }
+};
+
+typedef gk_context Context;
+
+inline Context* create(gk_impl impl)
+{
+    return gk_create(impl);
 }
+inline void destroy(Context* gk)
+{
+    gk_destroy(gk);
+}
+inline void process(Context* gk, Bundle& bundle)
+{
+    gk_process(gk, &bundle.bundle);
+    if(bundle.bundle.error.code) bundle.handleError();
+}
+} // namespace gk
 
 #define BEGIN_NS_GK namespace gk {
 #define END_NS_GK }

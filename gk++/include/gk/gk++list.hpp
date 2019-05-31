@@ -6,121 +6,125 @@
 #include "gk/gk.h"
 
 namespace gk {
-    using ListVector = std::vector<gk_list *>;
-    using CmdVector = std::vector<gk_cmd *>;
+using ListVector = std::vector<gk_list*>;
+using CmdVector  = std::vector<gk_cmd*>;
 
-    class ListBase;
-    
-    class CmdBase {
-    public:
-        virtual ~CmdBase() = default;
-        virtual gk_cmd* cmdPtr() = 0;
-    };
+class ListBase;
 
-    class MultiCmd {
-    public:
-        virtual void addToList(ListBase&) = 0;
-    };
+class CmdBase {
+public:
+    virtual ~CmdBase()       = default;
+    virtual gk_cmd* cmdPtr() = 0;
+};
 
-    class ListBase {
-    protected:
-        CmdVector cmds;
+class MultiCmd {
+public:
+    virtual void addToList(ListBase&) = 0;
+};
 
-    public:
-        virtual ~ListBase() = default;
-        virtual gk_list* listPtr() = 0;
+class ListBase {
+protected:
+    CmdVector cmds;
 
-        void addCmd(CmdBase &cmd) {
-            cmds.push_back(cmd.cmdPtr());
-        }
+public:
+    virtual ~ListBase()        = default;
+    virtual gk_list* listPtr() = 0;
 
-        void addCmd(MultiCmd &cmds) {
-            cmds.addToList(*this);
-        }
+    void addCmd(CmdBase& cmd) { cmds.push_back(cmd.cmdPtr()); }
 
-        void updateList() {
-            auto l = listPtr();
-            l->ncmds = cmds.size();
-            l->cmds = cmds.data();
-        }
-    };
+    void addCmd(MultiCmd& cmds) { cmds.addToList(*this); }
 
-    template <typename T, gk_subsystem SYS>
-    class ListTmpl : public ListBase {
+    void updateList()
+    {
+        auto l   = listPtr();
+        l->ncmds = cmds.size();
+        l->cmds  = cmds.data();
+    }
+};
 
-    public:
-        T list;
+template<typename T, gk_subsystem SYS>
+class ListTmpl : public ListBase {
 
-        ListTmpl() {
-            memset(&list, 0, sizeof(T));
-            auto l = (gk_list*)&list;
-            l->sub = SYS;
-        }
+public:
+    T list;
 
-        gk_list* listPtr() override { return (gk_list*)&list; }
+    ListTmpl()
+    {
+        memset(&list, 0, sizeof(T));
+        auto l = (gk_list*)&list;
+        l->sub = SYS;
+    }
 
-        template<typename...Rest>
-        inline void add(CmdBase &cmd, Rest&...args) {
-            addCmd(cmd);
-            add(args...);
-        }
+    gk_list* listPtr() override { return (gk_list*)&list; }
 
-        template<typename...Rest>
-        inline void add(MultiCmd &cmds, Rest&...args) {
-            addCmd(cmds);
-            add(args...);
-        }
+    template<typename... Rest>
+    inline void add(CmdBase& cmd, Rest&... args)
+    {
+        addCmd(cmd);
+        add(args...);
+    }
 
-        inline void add() { updateList(); }
+    template<typename... Rest>
+    inline void add(MultiCmd& cmds, Rest&... args)
+    {
+        addCmd(cmds);
+        add(args...);
+    }
 
-        inline void clear() {
-            gk_list *l = listPtr();
-            cmds.clear();
-            l->ncmds = 0;
-            l->cmds = nullptr;
-        }
+    inline void add() { updateList(); }
 
-        inline void reserve(CmdVector::size_type size) {
-            cmds.reserve(size);
-        }
-    };
+    inline void clear()
+    {
+        gk_list* l = listPtr();
+        cmds.clear();
+        l->ncmds = 0;
+        l->cmds  = nullptr;
+    }
 
-    class List : public ListTmpl<gk_list, GK_SUB_CONFIG> {
-    public:
-        List() : ListTmpl() { }
-        virtual ~List() { }
-    };
+    inline void reserve(CmdVector::size_type size) { cmds.reserve(size); }
+};
 
-    class ListGL : public ListTmpl<gk_list_gl, GK_SUB_GL> {
-    public:
-        ListGL(float w = 0, float h = 0) : ListTmpl() {
-            list.width = w;
-            list.height = h;
-        }
-        virtual ~ListGL() { }
-    };
+class List : public ListTmpl<gk_list, GK_SUB_CONFIG> {
+public:
+    List() : ListTmpl() {}
+    virtual ~List() {}
+};
 
-    class ListNvg : public ListTmpl<gk_list_nvg, GK_SUB_NVG> {
-    public:
-        ListNvg() : ListTmpl() { }
-        ListNvg(unsigned int width, unsigned int height, float ratio = 1.0, gk_origin origin = GK_ORIGIN_Y_DOWN)
-            : ListTmpl()
-        {
-            list.width = width;
-            list.height = height;
-            list.ratio = ratio;
-            list.origin = origin;
-        }
-        virtual ~ListNvg() { }
+class ListGL : public ListTmpl<gk_list_gl, GK_SUB_GL> {
+public:
+    ListGL(float w = 0, float h = 0) : ListTmpl()
+    {
+        list.width  = w;
+        list.height = h;
+    }
+    virtual ~ListGL() {}
+};
 
-        void width(unsigned int w) { list.width = w; }
-        void height(unsigned int h) { list.height = h; }
-        void ratio(float r) { list.ratio = r; }
-        void origin(gk_origin o) { list.origin = o; }
-    };
+class ListNvg : public ListTmpl<gk_list_nvg, GK_SUB_NVG> {
+public:
+    ListNvg() : ListTmpl() {}
+    ListNvg(
+        unsigned int width,
+        unsigned int height,
+        float        ratio  = 1.0,
+        gk_origin    origin = GK_ORIGIN_Y_DOWN)
+        : ListTmpl()
+    {
+        list.width  = width;
+        list.height = height;
+        list.ratio  = ratio;
+        list.origin = origin;
+    }
+    virtual ~ListNvg() {}
 
-    class ListB2 : public ListTmpl<gk_list, GK_SUB_BOX2D> {
-    public:
-        ListB2() : ListTmpl() { }
-    };
-}
+    void width(unsigned int w) { list.width = w; }
+    void height(unsigned int h) { list.height = h; }
+    void ratio(float r) { list.ratio = r; }
+    void origin(gk_origin o) { list.origin = o; }
+};
+
+class ListB2 : public ListTmpl<gk_list, GK_SUB_BOX2D> {
+public:
+    ListB2() : ListTmpl() {}
+};
+} // namespace gk
