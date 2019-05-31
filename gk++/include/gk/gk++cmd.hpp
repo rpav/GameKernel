@@ -917,6 +917,12 @@ public:
         cmd.tex_min_filter = GK_TEX_FILTER_LINEAR;
         cmd.tex_mag_filter = GK_TEX_FILTER_LINEAR;
     }
+
+    CmdRtCreate() = default;
+    CmdRtCreate(const CmdRtCreate&) = default;
+    CmdRtCreate(CmdRtCreate&&) = default;
+
+    CmdRtCreate& operator=(const CmdRtCreate&) = default;
 };
 
 // gk::CmdRtDestroy

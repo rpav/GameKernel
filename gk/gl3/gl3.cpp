@@ -28,7 +28,7 @@ void gk_destroy_gl3(gk_context* gk)
 {
     auto gl3 = (gl3_impl*)gk->impl_data;
 
-    gl3->quad_state.clean(gl3->glstate);
+    gl3->state.clean(gl3->glstate);
 
     delete[] gl3->quadbuf;
     delete gl3;

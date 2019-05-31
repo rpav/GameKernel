@@ -16,12 +16,14 @@ void gl3_rt_init(gk_context* gk)
     gk->gl.gl_cmd_rt_unbind  = gl3_cmd_rt_unbind;
 }
 
-void gl3_cmd_rt_create(gk_context*, gk_cmd_rt_create* cmd)
+void gl3_cmd_rt_create(gk_context* gk, gk_cmd_rt_create* cmd)
 {
     GLenum format     = GL_RGB;
     GLenum buffers[1] = {GL_COLOR_ATTACHMENT0};
     GLenum wrap_s     = GL_CLAMP;
     GLenum wrap_t     = GL_CLAMP;
+    auto   gl3        = (gl3_impl*)gk->impl_data;
+    auto&  config     = gl3->state;
 
     GL_CHECK(glGenFramebuffers(1, &cmd->framebuffer));
     GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, cmd->framebuffer));
@@ -31,42 +33,40 @@ void gl3_cmd_rt_create(gk_context*, gk_cmd_rt_create* cmd)
     if(cmd->tex_flags & GK_TEX_REPEATY) wrap_t = GL_REPEAT;
 
     GL_CHECK(glGenTextures(1, &cmd->tex));
-    GL_CHECK(glBindTexture(GL_TEXTURE_2D, cmd->tex));
-    GL_CHECK(glTexImage2D(GL_TEXTURE_2D, 0, format, cmd->width, cmd->height, 0, format,
-                          GL_UNSIGNED_BYTE, 0));
+    config.tex.set(cmd->tex, config);
+    config.tex.apply(gl3->glstate);
+
+    GL_CHECK(
+        glTexImage2D(GL_TEXTURE_2D, 0, format, cmd->width, cmd->height, 0, format, GL_UNSIGNED_BYTE, 0));
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_s));
     GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_t));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                             gk_filter_to_gl[cmd->tex_min_filter]));
-    GL_CHECK(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-                             gk_filter_to_gl[cmd->tex_mag_filter]));
-    GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                                    cmd->tex, 0));
+    GL_CHECK(
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gk_filter_to_gl[cmd->tex_min_filter]));
+    GL_CHECK(
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gk_filter_to_gl[cmd->tex_mag_filter]));
+    GL_CHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, cmd->tex, 0));
     GL_CHECK(glDrawBuffers(1, buffers));
 
     if((cmd->rt_flags & GK_RT_DEPTH) && (cmd->rt_flags & GK_RT_STENCIL)) {
         GL_CHECK(glGenRenderbuffers(1, &cmd->dsbuffer));
         GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, cmd->dsbuffer));
-        GL_CHECK(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, cmd->width,
-                                       cmd->height));
-        GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                                           GL_RENDERBUFFER, cmd->dsbuffer));
-        GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
-                                           GL_RENDERBUFFER, cmd->dsbuffer));
+        GL_CHECK(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, cmd->width, cmd->height));
+        GL_CHECK(glFramebufferRenderbuffer(
+            GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, cmd->dsbuffer));
+        GL_CHECK(glFramebufferRenderbuffer(
+            GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, cmd->dsbuffer));
     } else if(cmd->rt_flags & GK_RT_STENCIL) {
         GL_CHECK(glGenRenderbuffers(1, &cmd->dsbuffer));
         GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, cmd->dsbuffer));
-        GL_CHECK(glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, cmd->width,
-                                       cmd->height));
-        GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
-                                           GL_RENDERBUFFER, cmd->dsbuffer));
+        GL_CHECK(glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, cmd->width, cmd->height));
+        GL_CHECK(glFramebufferRenderbuffer(
+            GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, cmd->dsbuffer));
     } else if(cmd->rt_flags & GK_RT_DEPTH) {
         GL_CHECK(glGenRenderbuffers(1, &cmd->dsbuffer));
         GL_CHECK(glBindRenderbuffer(GL_RENDERBUFFER, cmd->dsbuffer));
-        GL_CHECK(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, cmd->width,
-                                       cmd->height));
-        GL_CHECK(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                                           GL_RENDERBUFFER, cmd->dsbuffer));
+        GL_CHECK(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, cmd->width, cmd->height));
+        GL_CHECK(glFramebufferRenderbuffer(
+            GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, cmd->dsbuffer));
     }
 
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {

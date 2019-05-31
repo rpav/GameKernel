@@ -14,7 +14,7 @@ using namespace rpav;
 
 /* Structs */
 namespace gk {
-struct QuadStateConfig : public GLStateConfigGeneral {
+struct StateConfig : public GLStateConfigGeneral {
     UniformSet     default_uniforms;
     ProgramDataSet default_pds;
 
@@ -23,7 +23,7 @@ struct QuadStateConfig : public GLStateConfigGeneral {
     GLStateVao            vao;
     GLStateBuffer         vbo;
 
-    QuadStateConfig() : tex(0, GL_TEXTURE_2D), pds(default_pds), vbo(BUFFER_ARRAY)
+    StateConfig() : tex(0, GL_TEXTURE_2D), pds(default_pds), vbo(BUFFER_ARRAY)
     {
         add(tex, pds, vao, vbo);
     }
@@ -37,9 +37,10 @@ struct QuadProgram : public GLProgram {
 } // namespace gk
 
 struct gl3_impl : public gl_impl_data {
+    gk::StateConfig state;
+
     // Quads
-    gk::QuadStateConfig quad_state;
-    gk::QuadProgram     quad_program;
+    gk::QuadProgram quad_program;
 
     int    quadcount;
     float* quadbuf;

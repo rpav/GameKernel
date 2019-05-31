@@ -1,5 +1,7 @@
 #pragma once
 
+#include <rpav/log.hpp>
+
 namespace gk {
     // gk::GLStateTex
     class GLStateTex : public GLState {

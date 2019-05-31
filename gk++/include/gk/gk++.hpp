@@ -7,7 +7,10 @@
   This also abuses templates and virtuals a bit to keep code concise.
  */
 
+#include <stdexcept>
 #include <vector>
+
+#include <rpav/ptr.hpp>
 
 #include "gk/gk++cmd.hpp"
 #include "gk/gk++list.hpp"
@@ -15,6 +18,14 @@
 #include "gk/gk.h"
 
 namespace gk {
+
+class Error : public std::runtime_error {
+public:
+    gk_error_code code{};
+
+    Error(gk_error_code code, const char* msg) : runtime_error{msg}, code{code} {}
+};
+
 class Bundle {
     ListVector lists;
 
@@ -46,21 +57,32 @@ public:
     }
 };
 
-typedef gk_context Context;
+struct Context {
+    rpav::ptr<gk_context> ctx;
 
-inline Context* create(gk_impl impl)
-{
-    return gk_create(impl);
-}
-inline void destroy(Context* gk)
-{
-    gk_destroy(gk);
-}
-inline void process(Context* gk, Bundle& bundle)
-{
-    gk_process(gk, &bundle.bundle);
-    if(bundle.bundle.error.code) bundle.handleError();
-}
+    Context(gk_impl impl) { ctx = gk_create(impl); }
+    ~Context() { gk_destroy(ctx); }
+
+    operator gk_context*() { return ctx; }
+    operator const gk_context*() const { return ctx; }
+
+    inline void process(Bundle& bundle)
+    {
+        gk_process(ctx, &bundle.bundle);
+        if(bundle.bundle.error.code) bundle.handleError();
+    }
+
+    inline void process(gk_subsystem system, gk::CmdBase& cmd)
+    {
+        gk_error err;
+        gk_process_one(ctx, system, cmd.cmdPtr(), &err);
+
+        if(err.code != GK_ERROR_NONE) {
+            throw Error{err.code, err.message};
+        }
+    }
+};
+
 } // namespace gk
 
 #define BEGIN_NS_GK namespace gk {

@@ -93,11 +93,11 @@ static void compile_shaders(gl3_impl* gl3)
     build.link(gl3->quad_program);
 
     // Default program data set
-    gl3->quad_state.default_pds.set(gl3->quad_program);
-    gl3->quad_state.default_pds.set(gl3->quad_program.uniforms);
+    gl3->state.default_pds.set(gl3->quad_program);
+    gl3->state.default_pds.set(gl3->quad_program.uniforms);
 
     // Start with the default
-    gl3->quad_state.pds.set(gl3->quad_state.default_pds, gl3->quad_state);
+    gl3->state.pds.set(gl3->state.default_pds, gl3->state);
 }
 
 void gl3_quad_init(gk_context* gk)
@@ -105,7 +105,7 @@ void gl3_quad_init(gk_context* gk)
     const size_t szf = sizeof(float);
 
     auto  gl3 = (gl3_impl*)gk->impl_data;
-    auto& qs  = gl3->quad_state;
+    auto& qs  = gl3->state;
 
     gl3->quadbuf = new float[QUADBUF_QUADS * QUADBUF_VALS_PER_VERT * 4];
 
@@ -160,7 +160,7 @@ gl_error:
 void gl3_begin_quad(gk_context* gk)
 {
     auto  gl3    = (gl3_impl*)gk->impl_data;
-    auto& config = gl3->quad_state;
+    auto& config = gl3->state;
 
     config.dirty = true;
     config.apply(gl3->glstate);
@@ -195,14 +195,14 @@ static void gl3_append_quad(gk_context* gk, const mat4* tfm, gk_quadvert* attr)
 static inline void gl3_quad_ensure_state(gk_context* gk, GLuint tex, gk_program_data_set* pds)
 {
     auto  gl3    = (gl3_impl*)gk->impl_data;
-    auto& config = gl3->quad_state;
+    auto& config = gl3->state;
 
     config.tex.set(tex, config);
 
     if(pds) {
         config.pds.set(pds, config);
     } else {
-        config.pds.set(gl3->quad_state.default_pds, config);
+        config.pds.set(gl3->state.default_pds, config);
     }
 
     if(config.dirty) {
