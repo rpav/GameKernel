@@ -46,23 +46,3 @@ extern "C" GK_API void gk_process(gk_context* gk, gk_bundle* b)
     gk_process_pass(gk, b, &b->start);
     gk->current_bundle = nullptr;
 }
-
-extern "C" GK_API void gk_process_one(gk_context* gk, gk_subsystem sys, gk_cmd* cmd, gk_error* error)
-{
-    gk_bundle b;
-    gk_list   list;
-    gk_cmd**  cmdptr = &cmd;
-
-    list.in_use = 0;
-    list.sub    = sys;
-    list.cmds   = cmdptr;
-    list.ncmds  = 1;
-
-    gk->current_bundle = &b;
-    gk_process_list(gk, &b, &list);
-
-    gk_seterror(gk, GK_ERROR_NONE);
-
-    if(error) *error = b.error;
-    gk->current_bundle = nullptr;
-}

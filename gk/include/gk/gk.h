@@ -53,7 +53,6 @@ extern "C" {
 GK_API gk_context* gk_create(gk_impl impl);
 GK_API void        gk_destroy(gk_context* gk);
 GK_API void        gk_process(gk_context* gk, gk_bundle* bundle);
-GK_API void        gk_process_one(gk_context* gk, gk_subsystem sys, gk_cmd* cmd, gk_error* error);
 
 #ifdef __cplusplus
 }

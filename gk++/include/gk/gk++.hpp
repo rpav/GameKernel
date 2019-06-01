@@ -71,16 +71,6 @@ struct Context {
         gk_process(ctx, &bundle.bundle);
         if(bundle.bundle.error.code) bundle.handleError();
     }
-
-    inline void process(gk_subsystem system, gk::CmdBase& cmd)
-    {
-        gk_error err;
-        gk_process_one(ctx, system, cmd.cmdPtr(), &err);
-
-        if(err.code != GK_ERROR_NONE) {
-            throw Error{err.code, err.message};
-        }
-    }
 };
 
 } // namespace gk
