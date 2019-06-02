@@ -9,7 +9,7 @@ void example_main(int, const char**) {
     glClearColor(0,0,0,1);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    auto gk = gk::create(GK_GL3);
+    auto gk = gk::Context{GK_GL3};
 
     float width = WIDTH/8, height = HEIGHT/8;
 
@@ -39,7 +39,7 @@ void example_main(int, const char**) {
 
     bundle.add(config);
     config.add(rtCreate);
-    gk::process(gk, bundle);
+    gk.process(bundle);
 
     gk::CmdRtBind bind(rtCreate);
     gk::CmdRtDestroy rtDestroy(rtCreate);
@@ -74,9 +74,8 @@ void example_main(int, const char**) {
     bundle.add(gl);
     gl.add(quad, rtDestroy);
 
-    gk::process(gk, bundle);
+    gk.process(bundle);
     swap();
 
     wait();
-    gk::destroy(gk);
 }

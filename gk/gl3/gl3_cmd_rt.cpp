@@ -20,8 +20,8 @@ void gl3_cmd_rt_create(gk_context* gk, gk_cmd_rt_create* cmd)
 {
     GLenum format     = GL_RGB;
     GLenum buffers[1] = {GL_COLOR_ATTACHMENT0};
-    GLenum wrap_s     = GL_CLAMP;
-    GLenum wrap_t     = GL_CLAMP;
+    GLenum wrap_s     = GL_CLAMP_TO_EDGE;
+    GLenum wrap_t     = GL_CLAMP_TO_EDGE;
     auto   gl3        = (gl3_impl*)gk->impl_data;
     auto&  config     = gl3->state;
 

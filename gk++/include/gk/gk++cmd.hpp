@@ -168,15 +168,15 @@ public:
 
     // For trivial quads
     CmdQuad(
-        int   tex,
-        float x0,
-        float y0,
-        float x1,
-        float y1,
-        float u0 = 0.0,
-        float v0 = 0.0,
-        float u1 = 1.0,
-        float v1 = 1.0)
+        unsigned int tex,
+        float        x0,
+        float        y0,
+        float        x1,
+        float        y1,
+        float        u0 = 0.0,
+        float        v0 = 0.0,
+        float        u1 = 1.0,
+        float        v1 = 1.0)
         : CmdQuad(tex)
     {
         setVertex(0, x0, y0);
@@ -184,10 +184,10 @@ public:
         setVertex(2, x0, y1);
         setVertex(3, x1, y1);
 
-        setUV(0, u0, v1);
-        setUV(1, u1, v1);
-        setUV(2, u0, v0);
-        setUV(3, u1, v0);
+        setUV(0, u0, v0);
+        setUV(1, u1, v0);
+        setUV(2, u0, v1);
+        setUV(3, u1, v1);
     }
 
     inline void setVertex(int n, gk_vec4& v) { cmd.attr[n].vertex = v; }
@@ -918,9 +918,9 @@ public:
         cmd.tex_mag_filter = GK_TEX_FILTER_LINEAR;
     }
 
-    CmdRtCreate() = default;
+    CmdRtCreate()                   = default;
     CmdRtCreate(const CmdRtCreate&) = default;
-    CmdRtCreate(CmdRtCreate&&) = default;
+    CmdRtCreate(CmdRtCreate&&)      = default;
 
     CmdRtCreate& operator=(const CmdRtCreate&) = default;
 };
