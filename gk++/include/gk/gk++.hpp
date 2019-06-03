@@ -71,6 +71,15 @@ struct Context {
         gk_process(ctx, &bundle.bundle);
         if(bundle.bundle.error.code) bundle.handleError();
     }
+
+    template<typename L, typename...Ts>
+    inline void process(Ts&...vs) {
+        gk::Bundle b;
+        L list;
+        b.add(list);
+        list.add(vs...);
+        process(b);
+    }
 };
 
 } // namespace gk

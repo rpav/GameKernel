@@ -17,7 +17,7 @@ static const char *shader_geom_quad =
  "void main() {"
  "    uv = vert_uv[0];"
  "    gl_Position = gl_in[0].gl_Position;"
- "  EmitVertex();"
+ "  EmitVertexb();"
  "    uv = vert_uv[1];"
  "    gl_Position = gl_in[1].gl_Position;"
  "  EmitVertex();"

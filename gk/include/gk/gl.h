@@ -275,7 +275,7 @@ typedef struct gk_cmd_uniform_query {
     gk_cmd parent;
 
     /* Pass a pointer to the program */
-    gk_program* program;
+    gk_program program;
 
     /* Pass an array of `nuniforms` strings to query */
     size_t       nuniforms;

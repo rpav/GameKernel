@@ -1,6 +1,6 @@
 #pragma once
 
-#ifndef NDEBUG
+#if 0
 #define GL_CHECK(x) do { x; if(gk_gl_checkerror(#x,__FILE__,__LINE__)) goto gl_error; } while(0)
 #define GL_CHECKERR(x) do { if(gk_gl_checkerror(#x,__FILE__,__LINE__)) goto gl_error; } while(0)
 #else

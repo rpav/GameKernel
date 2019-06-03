@@ -27,6 +27,19 @@ bool gk_gl_checkerror(const char* expr, const char* file, int line)
     return false;
 }
 
+static void glmsg(
+    GLenum        source,
+    GLenum        type,
+    GLuint        id,
+    GLenum        sev,
+    GLsizei       len,
+    const GLchar* msg,
+    const void*)
+{
+    say("GL ", type == GL_DEBUG_TYPE_ERROR ? "Error" : "Message", "[", id, ":", sev, "]: ", msg);
+    if(type == GL_DEBUG_TYPE_ERROR) exit(1);
+}
+
 GLuint gk_gl_compile_shader(GLenum type, const char* text)
 {
     auto shader = glCreateShader(type);
@@ -99,6 +112,9 @@ bool gk_init_gl(gk_context* gk)
     /* GLEW can return INVALID_ENUM */
     while(glGetError() != GL_NO_ERROR)
         ;
+
+    if(GL_ARB_debug_output)
+        glDebugMessageCallback(glmsg, nullptr);
 
     switch(gk->impl) {
         case GK_GL2:
@@ -311,7 +327,7 @@ gl_error:
 
 void gl_cmd_uniform_query(gk_context*, gk_cmd_uniform_query* cmd)
 {
-    auto& program = *cmd->program;
+    auto program = cmd->program;
 
     for(size_t i = 0; i < cmd->nuniforms; ++i) {
         cmd->uniforms[i] = glGetUniformLocation(program, cmd->names[i]);

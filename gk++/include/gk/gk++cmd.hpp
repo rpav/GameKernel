@@ -907,6 +907,10 @@ public:
 // gk::CmdRtCreate
 class CmdRtCreate : public CmdTmpl<gk_cmd_rt_create, GK_CMD_RT_CREATE> {
 public:
+    CmdRtCreate(ivec2 dims, uint32_t flags = GK_RT_ALPHA | GK_RT_STENCIL)
+        : CmdRtCreate(dims.x, dims.y, flags)
+    {}
+
     CmdRtCreate(uint32_t width, uint32_t height, uint32_t flags = GK_RT_ALPHA | GK_RT_STENCIL)
     {
         cmd.width  = width;
@@ -958,6 +962,9 @@ class CmdProgramCreate : public CmdTmpl<gk_cmd_program_create, GK_CMD_PROGRAM_CR
 
 public:
     CmdProgramCreate() = default;
+    CmdProgramCreate(ProgramSource& src) {
+        add(src);
+    }
 
     template<typename... Rest>
     inline void add(ProgramSource& bd, Rest&... args)
@@ -1020,7 +1027,7 @@ class CmdUniformQuery : public CmdTmpl<gk_cmd_uniform_query, GK_CMD_UNIFORM_QUER
     UniformNameLocationMap _locations;
 
 public:
-    CmdUniformQuery(gk_program& program) { cmd.program = &program; }
+    CmdUniformQuery(gk_program program) { cmd.program = program; }
     CmdUniformQuery(ProgramSource& source) : CmdUniformQuery(source.source.program) {}
 
     template<typename... Rest>

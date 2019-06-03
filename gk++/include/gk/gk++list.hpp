@@ -57,17 +57,10 @@ public:
 
     gk_list* listPtr() override { return (gk_list*)&list; }
 
-    template<typename... Rest>
-    inline void add(CmdBase& cmd, Rest&... args)
+    template<typename C, typename... Rest>
+    inline void add(C& cmd, Rest&... args)
     {
         addCmd(cmd);
-        add(args...);
-    }
-
-    template<typename... Rest>
-    inline void add(MultiCmd& cmds, Rest&... args)
-    {
-        addCmd(cmds);
         add(args...);
     }
 

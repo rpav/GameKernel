@@ -28,15 +28,18 @@ inline T* ptr(T* x)
 
 // gk::ShaderSource
 class ShaderSource {
+    std::string _src;
+
 public:
     ShaderSource(gk_shader_type type)
     {
         memset(&source, 0, sizeof(source));
         source.type = type;
     }
-    ShaderSource(gk_shader_type type, const char* source_) : ShaderSource(type)
+    ShaderSource(gk_shader_type type, std::string_view src) : ShaderSource(type)
     {
-        source.source = source_;
+        _src          = std::string{src};
+        source.source = _src.data();
     }
 
     gk_shader_source source{};
@@ -315,7 +318,7 @@ public:
 
     void operator=(std::vector<uint32_t> data)
     {
-        _data          = std::move(data);
+        _data         = std::move(data);
         chunk.sprites = _data.data();
     }
 
