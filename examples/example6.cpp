@@ -69,7 +69,7 @@ void main() {
 void example_main(int, const char**) {
     checkrc(SDL_GL_SetSwapInterval(1));
 
-    auto gk = gk::create(GK_GL3);
+    auto gk = gk::Context{GK_GL3};
 
     float width = WIDTH/8, height = HEIGHT/8;
 
@@ -113,7 +113,7 @@ void example_main(int, const char**) {
 
     bundle.add(config);
     config.add(rtCreate, progCreate, uniforms);
-    gk::process(gk, bundle);
+    gk.process(bundle);
 
     // --- Bind texture, draw something in it
     gk::CmdRtBind bind(rtCreate);
@@ -144,7 +144,7 @@ void example_main(int, const char**) {
 
     nvg.add(fc, fs, text);
     nvg.add(unbind);
-    gk::process(gk, bundle);
+    gk.process(bundle);
 
     // --- Make quad, draw using texture and shader
     bundle.clear();
@@ -172,7 +172,7 @@ void example_main(int, const char**) {
         float delta = clock.delta()/1000.0;
         uniformSet.set(uTIME, delta);
         pds.set(uniformSet);
-        gk::process(gk, bundle);
+        gk.process(bundle);
 
         swap();
         fps.frame();
@@ -180,7 +180,5 @@ void example_main(int, const char**) {
 
     gl.clear();
     gl.add(rtDestroy, progDestroy);
-    gk::process(gk, bundle);
-
-    gk::destroy(gk);
+    gk.process(bundle);
 }
