@@ -247,13 +247,11 @@ public:
     void set(gk_program program)
     {
         ptr(pds)->program = program;
-        ptr(pds)->dirty |= GK_PDS_DIRTY_PROGRAM;
     }
 
     void set(UniformSet& uniforms)
     {
         ptr(pds)->uniforms = &uniforms.uniform_set;
-        ptr(pds)->dirty |= GK_PDS_DIRTY_UNIFORMS;
     }
 };
 

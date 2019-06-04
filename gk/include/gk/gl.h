@@ -327,14 +327,7 @@ typedef struct gk_uniform_set {
    Program data sets may share programs and data.  They are merely
    configurations of state.
 */
-typedef enum gk_pds_dirty_flags {
-    GK_PDS_DIRTY_PROGRAM  = 1 << 0,
-    GK_PDS_DIRTY_UNIFORMS = 1 << 1
-} gk_pds_update_flags;
-
 struct gk_program_data_set {
-    uint32_t dirty; /* gk_pds_dirty_flags */
-
     gk_program      program;
     gk_uniform_set* uniforms;
 };
