@@ -88,8 +88,8 @@ static void compile_shaders(gl3_impl* gl3)
     gk::GLProgramBuilder build;
 
     build.add(
-        GL_VERTEX_SHADER, shader_vert_quad, GL_GEOMETRY_SHADER, shader_geom_quad, GL_FRAGMENT_SHADER,
-        shader_frag_quad);
+        GL_VERTEX_SHADER, shader_vert_quad, GL_GEOMETRY_SHADER, shader_geom_quad,
+        GL_FRAGMENT_SHADER, shader_frag_quad);
     build.link(gl3->quad_program);
 
     // Default program data set
@@ -130,9 +130,10 @@ void gl3_quad_init(gk_context* gk)
 
     GL_CHECK(glEnableVertexAttribArray(0));
     GL_CHECK(glEnableVertexAttribArray(1));
-    GL_CHECK(glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, QUADBUF_VALS_PER_VERT * szf, (void*)0));
-    GL_CHECK(
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, QUADBUF_VALS_PER_VERT * szf, (void*)(szf * 4)));
+    GL_CHECK(glVertexAttribPointer(
+        0, 4, GL_FLOAT, GL_FALSE, QUADBUF_VALS_PER_VERT * szf, (void*)0));
+    GL_CHECK(glVertexAttribPointer(
+        1, 2, GL_FLOAT, GL_FALSE, QUADBUF_VALS_PER_VERT * szf, (void*)(szf * 4)));
 
     return;
 
@@ -145,15 +146,12 @@ void gl3_render_quads(gk_context* gk)
     auto gl3 = (gl3_impl*)gk->impl_data;
 
     if(gl3->quadcount > 0) {
-        GL_CHECK(glBufferData(
-            GL_ARRAY_BUFFER, gl3->quadcount * (sizeof(float) * QUADBUF_VALS_PER_VERT * 4), gl3->quadbuf,
-            GL_STREAM_DRAW));
-        GL_CHECK(glDrawArrays(GL_LINES_ADJACENCY, 0, gl3->quadcount * 4));
+        glBufferData(
+            GL_ARRAY_BUFFER, gl3->quadcount * (sizeof(float) * QUADBUF_VALS_PER_VERT * 4),
+            gl3->quadbuf, GL_STREAM_DRAW);
+        glDrawArrays(GL_LINES_ADJACENCY, 0, gl3->quadcount * 4);
         gl3->quadcount = 0;
     }
-    return;
-
-gl_error:
     return;
 }
 
@@ -167,11 +165,9 @@ void gl3_begin_quad(gk_context* gk)
 
     gl3->quadcount = 0;
 
-    GL_CHECK(glEnable(GL_BLEND));
-    GL_CHECK(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-
-gl_error:
-    return;
+    glEnable(GL_BLEND);
+    glBlendEquation(GL_FUNC_ADD);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
 }
 
 static void gl3_append_quad(gk_context* gk, const mat4* tfm, gk_quadvert* attr)
@@ -287,7 +283,10 @@ void gl3_cmd_spritelayer(gk_context* gk, gk_bundle* b, gk_cmd_spritelayer* cmd)
     }
 }
 
-static void render_one_chunk(gk_context* gk, gk_cmd_chunklayer* cmd, const gk_spritechunk& chunk)
+static void render_one_chunk(
+    gk_context*           gk,
+    gk_cmd_chunklayer*    cmd,
+    const gk_spritechunk& chunk)
 {
     auto* sheet = cmd->config->sheet;
     auto* cfg   = cmd->config;

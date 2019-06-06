@@ -171,6 +171,10 @@ struct UniformValue : public gk_uniform_value {
         type       = GK_UNIFORM_VALUE_MAT4;
         value.data = &v;
     }
+
+    float getFloat() const {
+        return value.f;
+    }
 };
 
 // gk::UniformSet
@@ -227,6 +231,8 @@ public:
     inline void set(size_t index, double v) { _values[index].set((float)v); }
     inline void set(size_t index, int v) { _values[index].set(v); }
     inline void set(size_t index, unsigned int v) { _values[index].set(v); }
+
+    inline float getFloat(size_t index) const { return _values[index].getFloat(); }
 };
 
 // gk::ProgramDataSet
