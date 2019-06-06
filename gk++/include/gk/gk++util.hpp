@@ -95,7 +95,8 @@ struct UniformValue : public gk_uniform_value {
         value.data = nullptr;
     }
 
-    UniformValue(gk_uniform location_, float f) : UniformValue(location_, GK_UNIFORM_VALUE_FLOAT)
+    UniformValue(gk_uniform location_, float f)
+        : UniformValue(location_, GK_UNIFORM_VALUE_FLOAT)
     {
         value.f = f;
     }
@@ -105,27 +106,32 @@ struct UniformValue : public gk_uniform_value {
         value.i = i;
     }
 
-    UniformValue(gk_uniform location_, unsigned int ui) : UniformValue(location_, GK_UNIFORM_VALUE_UINT)
+    UniformValue(gk_uniform location_, unsigned int ui)
+        : UniformValue(location_, GK_UNIFORM_VALUE_UINT)
     {
         value.ui = ui;
     }
 
-    UniformValue(gk_uniform location_, gk_vec2& v) : UniformValue(location_, GK_UNIFORM_VALUE_VEC2)
+    UniformValue(gk_uniform location_, gk_vec2& v)
+        : UniformValue(location_, GK_UNIFORM_VALUE_VEC2)
     {
         value.data = &v;
     }
 
-    UniformValue(gk_uniform location_, gk_vec3& v) : UniformValue(location_, GK_UNIFORM_VALUE_VEC3)
+    UniformValue(gk_uniform location_, gk_vec3& v)
+        : UniformValue(location_, GK_UNIFORM_VALUE_VEC3)
     {
         value.data = &v;
     }
 
-    UniformValue(gk_uniform location_, gk_vec4& v) : UniformValue(location_, GK_UNIFORM_VALUE_VEC4)
+    UniformValue(gk_uniform location_, gk_vec4& v)
+        : UniformValue(location_, GK_UNIFORM_VALUE_VEC4)
     {
         value.data = &v;
     }
 
-    UniformValue(gk_uniform location_, gk_mat4& v) : UniformValue(location_, GK_UNIFORM_VALUE_MAT4)
+    UniformValue(gk_uniform location_, gk_mat4& v)
+        : UniformValue(location_, GK_UNIFORM_VALUE_MAT4)
     {
         value.data = &v;
     }
@@ -172,9 +178,8 @@ struct UniformValue : public gk_uniform_value {
         value.data = &v;
     }
 
-    float getFloat() const {
-        return value.f;
-    }
+    const float& getFloat() const { return value.f; }
+    float&       getFloat() { return value.f; }
 };
 
 // gk::UniformSet
@@ -232,7 +237,8 @@ public:
     inline void set(size_t index, int v) { _values[index].set(v); }
     inline void set(size_t index, unsigned int v) { _values[index].set(v); }
 
-    inline float getFloat(size_t index) const { return _values[index].getFloat(); }
+    inline const float& getFloat(size_t index) const { return _values[index].getFloat(); }
+    inline float&       getFloat(size_t index) { return _values[index].getFloat(); }
 };
 
 // gk::ProgramDataSet
@@ -246,19 +252,16 @@ public:
         if(OWN) memset(ptr(pds), 0, sizeof(typename std::decay<T>::type));
     }
 
-    ProgramDataSetTmpl(gk_program program) : ProgramDataSetTmpl() { ptr(pds)->program = program; }
-
-    ProgramDataSetTmpl(ProgramSource& program) : ProgramDataSetTmpl(program.source.program) {}
-
-    void set(gk_program program)
+    ProgramDataSetTmpl(gk_program program) : ProgramDataSetTmpl()
     {
         ptr(pds)->program = program;
     }
 
-    void set(UniformSet& uniforms)
-    {
-        ptr(pds)->uniforms = &uniforms.uniform_set;
-    }
+    ProgramDataSetTmpl(ProgramSource& program) : ProgramDataSetTmpl(program.source.program) {}
+
+    void set(gk_program program) { ptr(pds)->program = program; }
+
+    void set(UniformSet& uniforms) { ptr(pds)->uniforms = &uniforms.uniform_set; }
 };
 
 using ProgramDataSet    = ProgramDataSetTmpl<gk_program_data_set, true>;
