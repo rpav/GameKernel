@@ -257,7 +257,8 @@ class CmdChunkLayer : public CmdTmpl<gk_cmd_chunklayer, GK_CMD_CHUNKLAYER> {
     std::vector<gk_spritechunk> _chunks;
 
 public:
-    CmdChunkLayer()                     = default;
+    CmdChunkLayer() : CmdTmpl() { cmd.tfm = gk::mat4{}; }
+
     CmdChunkLayer(const CmdChunkLayer&) = default;
     CmdChunkLayer(CmdChunkLayer&&)      = default;
 
@@ -265,7 +266,8 @@ public:
     // with resize().  You should also likely .zero().  You may thus initialize
     // the config/render pointers without initializing config/render data or
     // preallocating anything.
-    CmdChunkLayer(gk_chunklayer_config* config, gk_spritelayer_render* render) : CmdTmpl()
+    CmdChunkLayer(gk_chunklayer_config* config, gk_spritelayer_render* render)
+        : CmdChunkLayer()
     {
         cmd.config = config;
         cmd.render = render;
@@ -653,7 +655,10 @@ public:
 
 // gk::B2World
 struct B2World : public gk_b2_world {
-    B2World(float timestep = 1.0f / 60.0f, int velocityIterations = 8, int positionIterations = 3)
+    B2World(
+        float timestep           = 1.0f / 60.0f,
+        int   velocityIterations = 8,
+        int   positionIterations = 3)
         : gk_b2_world()
     {
         this->timestep            = timestep;
@@ -763,7 +768,8 @@ public:
 };
 
 // gk::CmdB2FixtureCreate
-class CmdB2FixtureCreate : public CmdTmpl<gk_cmd_b2_fixture_create, GK_CMD_B2_FIXTURE_CREATE> {
+class CmdB2FixtureCreate
+    : public CmdTmpl<gk_cmd_b2_fixture_create, GK_CMD_B2_FIXTURE_CREATE> {
 public:
     CmdB2FixtureCreate(gk_b2_body& body) { cmd.body = &body; }
 
@@ -781,7 +787,8 @@ public:
 };
 
 // gk::CmdB2FixtureUpdate
-class CmdB2FixtureUpdate : public CmdTmpl<gk_cmd_b2_fixture_update, GK_CMD_B2_FIXTURE_UPDATE> {
+class CmdB2FixtureUpdate
+    : public CmdTmpl<gk_cmd_b2_fixture_update, GK_CMD_B2_FIXTURE_UPDATE> {
 public:
     CmdB2FixtureUpdate() = default;
 
@@ -835,7 +842,8 @@ public:
         cmd.flags  = flags;
     }
 
-    CmdB2Torque(gk_b2_body& body, float torque, uint8_t flags = 0) : CmdB2Torque(torque, flags)
+    CmdB2Torque(gk_b2_body& body, float torque, uint8_t flags = 0)
+        : CmdB2Torque(torque, flags)
     {
         setBody(body);
     }
@@ -843,7 +851,8 @@ public:
     inline void setBody(gk_b2_body& body) { cmd.body = &body; }
 };
 
-class CmdB2LinearImpulse : public CmdTmpl<gk_cmd_b2_linear_impulse, GK_CMD_B2_LINEAR_IMPULSE> {
+class CmdB2LinearImpulse
+    : public CmdTmpl<gk_cmd_b2_linear_impulse, GK_CMD_B2_LINEAR_IMPULSE> {
 public:
     CmdB2LinearImpulse(vec2 impulse, vec2 point, bool wake = true)
     {
@@ -861,7 +870,8 @@ public:
     inline void setBody(gk_b2_body& body) { cmd.body = &body; }
 };
 
-class CmdB2AngularImpulse : public CmdTmpl<gk_cmd_b2_angular_impulse, GK_CMD_B2_ANGULAR_IMPULSE> {
+class CmdB2AngularImpulse
+    : public CmdTmpl<gk_cmd_b2_angular_impulse, GK_CMD_B2_ANGULAR_IMPULSE> {
 public:
     CmdB2AngularImpulse(float impulse, bool wake = true)
     {
@@ -886,7 +896,8 @@ public:
         cmd.angular = angular;
     }
 
-    CmdB2SetVelocity(gk_b2_body& body, vec2 linear, float angular) : CmdB2SetVelocity(linear, angular)
+    CmdB2SetVelocity(gk_b2_body& body, vec2 linear, float angular)
+        : CmdB2SetVelocity(linear, angular)
     {
         setBody(body);
     }
@@ -962,9 +973,7 @@ class CmdProgramCreate : public CmdTmpl<gk_cmd_program_create, GK_CMD_PROGRAM_CR
 
 public:
     CmdProgramCreate() = default;
-    CmdProgramCreate(ProgramSource& src) {
-        add(src);
-    }
+    CmdProgramCreate(ProgramSource& src) { add(src); }
 
     template<typename... Rest>
     inline void add(ProgramSource& bd, Rest&... args)
@@ -1065,7 +1074,8 @@ public:
 };
 
 // gk::CmdSpriteSheetCreate
-class CmdSpriteSheetCreate : public CmdTmpl<gk_cmd_spritesheet_create, GK_CMD_SPRITESHEET_CREATE> {
+class CmdSpriteSheetCreate
+    : public CmdTmpl<gk_cmd_spritesheet_create, GK_CMD_SPRITESHEET_CREATE> {
     std::string _path;
 
 public:
@@ -1083,7 +1093,8 @@ public:
 
 // gk::CmdSpriteSheetDestroy
 using SpriteSheetVector = std::vector<gk_spritesheet*>;
-class CmdSpriteSheetDestroy : public CmdTmpl<gk_cmd_spritesheet_destroy, GK_CMD_SPRITESHEET_DESTROY> {
+class CmdSpriteSheetDestroy
+    : public CmdTmpl<gk_cmd_spritesheet_destroy, GK_CMD_SPRITESHEET_DESTROY> {
     SpriteSheetVector sheets;
 
 public:

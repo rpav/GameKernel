@@ -292,7 +292,8 @@ static void render_one_chunk(
     auto* cfg   = cmd->config;
     auto* r     = cmd->render;
 
-    auto& layer_m = r->tfm;
+    auto& layer_m  = r->tfm;
+    auto& layer_m2 = cmd->tfm;
 
     for(int j = 0; j < cfg->chunk_size.y; ++j) {
         for(int i = 0; i < cfg->chunk_size.x; ++i) {
@@ -313,7 +314,7 @@ static void render_one_chunk(
 
             if(!spriteno) continue;
 
-            auto  m      = layer_m * gk::mat4::translate(tr);
+            auto  m      = layer_m * layer_m2 * gk::mat4::translate(tr);
             auto& sprite = sheet->sprites[spriteno - 1];
 
             gl3_append_quad(gk, &m, &sprite.attr[0]);

@@ -170,6 +170,7 @@ typedef struct gk_cmd_chunklayer {
 
     // What the lower-left corner of the chunk array represents
     gk_vec2 origin;
+    gk_mat4 tfm; // Secondary transform
 
     /*
       This should be an array of chunks of size `nchunks`.  Each chunk specifies its offset
