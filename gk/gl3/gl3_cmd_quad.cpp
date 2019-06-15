@@ -299,7 +299,7 @@ static void render_one_chunk(
             float fi = i, fj = j;
             auto  tr = vec2{fi, fj} + vec2(chunk.offset * cfg->chunk_size);
             tr *= cfg->sprite_size;
-            tr += cfg->origin;
+            tr += cmd->origin;
 
             size_t spriteIndex{};
 

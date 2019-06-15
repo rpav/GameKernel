@@ -160,8 +160,6 @@ typedef struct gk_chunklayer_config {
 
     gk_ivec2 chunk_size;  // WxH of each chunk in sprites
     gk_vec2  sprite_size; // Uniform sprite size in pixels
-
-    gk_vec2 origin; // What the lower-left corner of the chunk array represents
 } gk_chunklayer_config;
 
 typedef struct gk_cmd_chunklayer {
@@ -169,6 +167,9 @@ typedef struct gk_cmd_chunklayer {
 
     gk_chunklayer_config*  config;
     gk_spritelayer_render* render;
+
+    // What the lower-left corner of the chunk array represents
+    gk_vec2 origin;
 
     /*
       This should be an array of chunks of size `nchunks`.  Each chunk specifies its offset
