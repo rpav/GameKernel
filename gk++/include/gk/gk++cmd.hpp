@@ -1051,7 +1051,7 @@ public:
         cmd.nuniforms = _names.size();
         cmd.names     = _names.data();
 
-        _uniforms.reserve(_names.size());
+        _uniforms.resize(_names.size());
         cmd.uniforms = _uniforms.data();
     }
 
