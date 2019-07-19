@@ -14,20 +14,7 @@ using namespace rpav;
 
 /* Structs */
 namespace gk {
-struct StateConfig : public GLStateConfigGeneral {
-    UniformSet     default_uniforms;
-    ProgramDataSet default_pds;
 
-    GLStateTex            tex;
-    GLStateProgramDataSet pds;
-    GLStateVao            vao;
-    GLStateBuffer         vbo;
-
-    StateConfig() : tex(0, GL_TEXTURE_2D), pds(default_pds), vbo(BUFFER_ARRAY)
-    {
-        add(tex, pds, vao, vbo);
-    }
-};
 
 struct QuadProgram : public GLProgram {
     GLuint uTEX;
@@ -37,8 +24,6 @@ struct QuadProgram : public GLProgram {
 } // namespace gk
 
 struct gl3_impl : public gl_impl_data {
-    gk::StateConfig state;
-
     // Quads
     gk::QuadProgram quad_program;
 
@@ -62,6 +47,7 @@ void gl_cmd_clear(gk_context* gk, gk_cmd_clear* cmd);
 void gl_cmd_program_create(gk_context* gk, gk_cmd_program_create* cmd);
 void gl_cmd_program_destroy(gk_context* gk, gk_cmd_program_destroy* cmd);
 void gl_cmd_uniform_query(gk_context* gk, gk_cmd_uniform_query* cmd);
+void gl_cmd_default_pds(gk_context* gk, gk_cmd_default_pds* cmd);
 
 /* GL2 */
 void gk_create_gl2(gk_context* gk);
@@ -85,6 +71,8 @@ void gl3_cmd_rt_create(gk_context*, gk_cmd_rt_create*);
 void gl3_cmd_rt_destroy(gk_context*, gk_cmd_rt_destroy*);
 void gl3_cmd_rt_bind(gk_context*, gk_cmd_rt_bind*);
 void gl3_cmd_rt_unbind(gk_context*, gk_cmd_rt_unbind*);
+
+void gl3_cmd_default_pds(gk_context*, gk_cmd_default_pds*);
 
 // tables
 extern const GLenum gk_filter_to_gl[];

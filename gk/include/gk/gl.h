@@ -288,6 +288,13 @@ typedef struct gk_cmd_uniform_query {
     gk_uniform* uniforms;
 } gk_cmd_uniform_query;
 
+typedef struct gk_cmd_default_pds {
+    gk_cmd parent;
+    /* Reset the PDS to default; do this if you delete the last-used PDS.
+       Yes this is a bit of a hack.
+     */
+} gk_cmd_default_pds;
+
 typedef enum gk_uniform_value_type {
     GK_UNIFORM_VALUE_FLOAT,
     GK_UNIFORM_VALUE_INT,

@@ -36,7 +36,8 @@ static void glmsg(
     const GLchar* msg,
     const void*)
 {
-    say("GL ", type == GL_DEBUG_TYPE_ERROR ? "Error" : "Message", "[", id, ":", sev, "]: ", msg);
+    say("GL ", type == GL_DEBUG_TYPE_ERROR ? "Error" : "Message", "[", id, ":", sev,
+        "]: ", msg);
     if(type == GL_DEBUG_TYPE_ERROR) exit(1);
 }
 
@@ -113,8 +114,7 @@ bool gk_init_gl(gk_context* gk)
     while(glGetError() != GL_NO_ERROR)
         ;
 
-    if(GL_ARB_debug_output)
-        glDebugMessageCallback(glmsg, nullptr);
+    if(GL_ARB_debug_output) glDebugMessageCallback(glmsg, nullptr);
 
     switch(gk->impl) {
         case GK_GL2:
@@ -153,7 +153,11 @@ void gk_fini_gl(gk_context* gk)
     };
 }
 
-static void gk_gl_process_begin(gk_context* gk, gk_bundle* bundle, gk_cmd_type type, gk_cmd* cmd)
+static void gk_gl_process_begin(
+    gk_context* gk,
+    gk_bundle*  bundle,
+    gk_cmd_type type,
+    gk_cmd*     cmd)
 {
     switch(type) {
         case GK_CMD_QUAD:
@@ -216,7 +220,8 @@ void gk_process_gl(gk_context* gk, gk_bundle* bundle, gk_list_gl* list_gl)
         auto cmd  = list->cmds[j];
         auto type = GK_CMD_TYPE(cmd);
 
-        if(gk->gl.last_cmd != type && gk_gl_process_should_transition(gk->gl.last_cmd, type)) {
+        if(gk->gl.last_cmd != type
+           && gk_gl_process_should_transition(gk->gl.last_cmd, type)) {
             gk_gl_process_end(gk, bundle, gk->gl.last_cmd);
             gk_gl_process_begin(gk, bundle, type, cmd);
             gk->gl.last_cmd = type;
@@ -332,4 +337,10 @@ void gl_cmd_uniform_query(gk_context*, gk_cmd_uniform_query* cmd)
     for(size_t i = 0; i < cmd->nuniforms; ++i) {
         cmd->uniforms[i] = glGetUniformLocation(program, cmd->names[i]);
     }
+}
+
+void gl_cmd_default_pds(gk_context* gk, gk_cmd_default_pds* cmd)
+{
+    auto& state = gk->impl_data->state;
+    state.pds.set(state.default_pds, state);
 }

@@ -1,9 +1,9 @@
 #include <algorithm>
+
 #include <rpav/log.hpp>
 
-#include "gk/gk.hpp"
-
 #include "gk/b2.hpp"
+#include "gk/gk.hpp"
 #include "gk/gl.hpp"
 #include "gk/nvg.hpp"
 #include "gk/spritesheet.hpp"
@@ -47,8 +47,14 @@ bool gk_haserror(gk_context* gk)
     return gk->current_bundle && (gk->current_bundle->error.code != GK_ERROR_NONE);
 }
 
-static bool pass_asc_f(gk_cmd* a, gk_cmd* b) { return a->key < b->key; }
-static bool pass_desc_f(gk_cmd* a, gk_cmd* b) { return b->key < a->key; }
+static bool pass_asc_f(gk_cmd* a, gk_cmd* b)
+{
+    return a->key < b->key;
+}
+static bool pass_desc_f(gk_cmd* a, gk_cmd* b)
+{
+    return b->key < a->key;
+}
 
 bool gk_process_pass(gk_context* gk, gk_bundle* b, gk_pass* pass)
 {
@@ -129,10 +135,7 @@ void gk_process_config(gk_context* gk, gk_bundle* b, gk_list* list)
     }
 }
 
-bool gk_process_cmd_general(const char* listname,
-                            gk_context* gk,
-                            gk_bundle*  b,
-                            gk_cmd*     cmd)
+bool gk_process_cmd_general(const char* listname, gk_context* gk, gk_bundle* b, gk_cmd* cmd)
 {
 
     switch(GK_CMD_TYPE(cmd)) {
@@ -162,6 +165,9 @@ bool gk_process_cmd_general(const char* listname,
             break;
         case GK_CMD_UNIFORM_QUERY:
             gl_cmd_uniform_query(gk, (gk_cmd_uniform_query*)cmd);
+            break;
+        case GK_CMD_DEFAULT_PDS:
+            gl_cmd_default_pds(gk, (gk_cmd_default_pds*)cmd);
             break;
 
         case GK_CMD_IMAGE_CREATE:

@@ -36,6 +36,7 @@ typedef enum gk_cmd_type {
     GK_CMD_PROGRAM_CREATE,
     GK_CMD_PROGRAM_DESTROY,
     GK_CMD_UNIFORM_QUERY,
+    GK_CMD_DEFAULT_PDS,
 
     /* NanoVG */
     GK_CMD_FONT_CREATE,

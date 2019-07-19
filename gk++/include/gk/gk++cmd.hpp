@@ -1073,6 +1073,8 @@ public:
     }
 };
 
+class CmdDefaultPDS : public CmdTmpl<gk_cmd_default_pds, GK_CMD_DEFAULT_PDS> {};
+
 // gk::CmdSpriteSheetCreate
 class CmdSpriteSheetCreate
     : public CmdTmpl<gk_cmd_spritesheet_create, GK_CMD_SPRITESHEET_CREATE> {
