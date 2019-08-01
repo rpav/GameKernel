@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include <rpav/ptr.hpp>
 #include <rpav/util.hpp>
 
 #include "gk/gk++list.hpp"
@@ -291,6 +292,12 @@ public:
     }
 
     gk_spritechunk& operator[](size_t x) { return _chunks[x]; }
+
+    /* This is inefficient, linear in the number of chunks.  This isn't so bad you can't look
+       up the occasional tile.  Just don't do it for every tile... if you need that, iterate
+       the chunks!
+    */
+    rpav::ptr<gk_sprite_id> get(gk::ivec2 v);
 };
 
 /* gk::CmdPath */
