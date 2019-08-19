@@ -3,7 +3,7 @@
 #include <cstring>
 #include <fstream>
 
-#include <rpav/dubious/tidy.hpp>
+#include <rpav/tidy.hpp>
 #include <rpav/log.hpp>
 
 #include "gk/gk.hpp"
