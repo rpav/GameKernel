@@ -48,7 +48,8 @@ SpriteSheet::SpriteSheet(CmdSpriteSheetCreate& cmd) : sheet(cmd.cmd.sheet)
 
 rpav::ptr<gk_sprite_id> CmdChunkLayer::get(gk::ivec2 v)
 {
-    v -= ivec2{cmd.origin};
+    // .. not sure this div is generally correct ..
+    v -= ivec2{cmd.origin / cmd.config->sprite_size};
 
     auto size = cmd.config->chunk_size;
 
