@@ -9,7 +9,7 @@ void example_main(int, const char**) {
     // Don't want unbounded framerate (at least right now)
     checkrc(SDL_GL_SetSwapInterval(1));
 
-    auto gk = gk::create(GK_GL3);
+    auto gk = gk::Context(GK_GL3);
 
     gk::Bundle bundle(0);
     gk::ListB2 phys;
@@ -90,7 +90,7 @@ void example_main(int, const char**) {
              force);
 
     // Go
-    gk::process(gk, bundle);
+    gk.process(bundle);
 
     // -- Simulate --
     phys.clear();
@@ -102,7 +102,7 @@ void example_main(int, const char**) {
         glClearColor(0,0,0,1);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        gk::process(gk, bundle);
+        gk.process(bundle);
 
         if(step.cmd.ncollisions > 0) {
             for(int i = 0; i < step.cmd.ncollisions; ++i) {
@@ -118,7 +118,5 @@ void example_main(int, const char**) {
 
     phys.clear();
     phys.add(destroyWorld);
-    gk::process(gk, bundle);
-
-    gk::destroy(gk);
+    gk.process(bundle);
 }

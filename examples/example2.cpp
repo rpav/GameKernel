@@ -88,21 +88,21 @@ public:
         _cmd.tex = tex;
         _cmd.pds = nullptr;
 
-        _cmd.attr[0].vertex.set(-0.5, -0.5, 0, 1);
-        _cmd.attr[1].vertex.set(0.5, -0.5, 0, 1);
-        _cmd.attr[2].vertex.set(-0.5, 0.5, 0, 1);
-        _cmd.attr[3].vertex.set(0.5, 0.5, 0, 1);
+        _cmd.attr[0].vertex = {-0.5, -0.5, 0, 1};
+        _cmd.attr[1].vertex = {0.5, -0.5, 0, 1};
+        _cmd.attr[2].vertex = {-0.5, 0.5, 0, 1};
+        _cmd.attr[3].vertex = {0.5, 0.5, 0, 1};
 
-        _cmd.attr[0].uv.set(0, 1);
-        _cmd.attr[1].uv.set(1, 1);
-        _cmd.attr[2].uv.set(0, 0);
-        _cmd.attr[3].uv.set(1, 0);
+        _cmd.attr[0].uv = {0, 1};
+        _cmd.attr[1].uv = {1, 1};
+        _cmd.attr[2].uv = {0, 0};
+        _cmd.attr[3].uv = {1, 0};
     }
 
     void draw(const mat4& m)
     {
         tf.parent.prior = (gk_mat4*)&m;
-        tf.scale.set(scale * size.x, scale * size.y, 1);
+        tf.scale = {scale * size.x, scale * size.y, 1};
         Cmds.add((gk_cmd*)&tf);
         Cmds.add((gk_cmd*)&_cmd);
     }

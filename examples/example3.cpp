@@ -45,10 +45,10 @@ void example_main(int, const char**) {
     gk_process(gk, &b);
 
     // Find our animation
-    int f_min = 0, f_max = 0;
+    gk_sprite_id f_min = 0, f_max = 0;
     std::map<std::string,int> frames;
 
-    for(int i = 0; i < c.sheet->nsprites; ++i)
+    for(size_t i = 0; i < c.sheet->nsprites; ++i)
         frames[c.sheet->names[i]] = i;
 
     // Note this assumes these are in order; in our case they are, but
@@ -65,7 +65,7 @@ void example_main(int, const char**) {
     tf.parent.prior = (gk_mat4*)&proj;
     tf.parent.out = &qs.tfm;
     tf.flags = 0;
-    tf.translate.set(0, 0, 0);
+    tf.translate = {0, 0, 0};
 
 
     GK_CMD_TYPE(&qs) = GK_CMD_QUADSPRITE;
@@ -91,7 +91,7 @@ void example_main(int, const char**) {
 
         usleep(120000);
     } while(!check_input());
-    
+
     // Destroy the sheet.
     GK_CMD_TYPE(&d) = GK_CMD_SPRITESHEET_DESTROY;
     gk_spritesheet* sheets[] = { c.sheet };

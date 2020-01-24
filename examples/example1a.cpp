@@ -9,8 +9,8 @@ void example_main(int argc, const char** argv) {
     glClearColor(0,0,0,1);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    auto gk = gk::create(GK_GL3);
-    
+    auto gk = gk::Context{GK_GL3};
+
     gk::Bundle bundle(0);
     gk::ListNvg nvg(1280, 720, 1.0);
 
@@ -37,9 +37,8 @@ void example_main(int argc, const char** argv) {
 
     nvg.add(fc, fs, text);
 
-    gk::process(gk, bundle);
+    gk.process(bundle);
     swap();
 
     wait();
-    gk::destroy(gk);
 }

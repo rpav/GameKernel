@@ -8,7 +8,7 @@
 
 using namespace rpav;
 
-void example_main() {
+void example_main(int, const char**) {
     glClearColor(0,0,0,1);
     glClear(GL_COLOR_BUFFER_BIT);
 
