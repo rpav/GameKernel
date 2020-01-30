@@ -246,10 +246,16 @@ public:
     }
 
     void reserve(size_t size) { sprites.reserve(size); }
+    void resize(size_t size) { sprites.resize(size); }
 
     void copy(std::vector<uint32_t> data)
     {
         sprites     = std::move(data);
+        cmd.sprites = sprites.data();
+    }
+
+    void fill(uint32_t v) {
+        std::fill(sprites.begin(), sprites.end(), v);
         cmd.sprites = sprites.data();
     }
 };
