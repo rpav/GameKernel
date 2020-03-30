@@ -44,7 +44,7 @@ file(GLOB_RECURSE GK_INT_HEADER_GLOB
 
 file(GLOB_RECURSE GK_EXT_HEADER_GLOB
   ${GK_ROOT}/include/**/*.h
-)
+  )
 
 set(GK_SOURCE_FILES
   c-api.cpp
@@ -73,12 +73,12 @@ if(GK_BUILD_SHARED)
     PRIVATE ${PROJ_ROOT}/gk++/include
     )
   target_link_libraries(${LIB_NAME}-shared
-    PUBLIC rpav::cxxutils
-    PUBLIC rpav::GameKernelCore
+    PUBLIC rpav_cxxutils::rpav_cxxutils
+    PUBLIC GameKernelCore::GameKernelCore
     PUBLIC OpenGL::GL
     PRIVATE GLEW
-    PRIVATE nlohmann::json
-    PRIVATE memononen::nanovg
+    PRIVATE nlohmann_json::nlohmann_json
+    PRIVATE nanovg::nanovg
     ${GK_OPTIONAL_DEPS}
     )
 
@@ -104,12 +104,12 @@ if(GK_BUILD_STATIC)
     PRIVATE ${PROJ_ROOT}/gk++/include
     )
   target_link_libraries(${LIB_NAME}-static
-    PUBLIC rpav::cxxutils
-    PUBLIC rpav::GameKernelCore
+    PUBLIC rpav_cxxutils::rpav_cxxutils
+    PUBLIC GameKernelCore::GameKernelCore
     PUBLIC OpenGL::GL
-    PRIVATE GLEW::GLEW
-    PRIVATE nlohmann::json
-    PRIVATE memononen::nanovg
+    PRIVATE GLEW
+    PRIVATE nlohmann_json::nlohmann_json
+    PRIVATE nanovg::nanovg
     ${GK_OPTIONAL_DEPS}
     )
 
