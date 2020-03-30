@@ -1,14 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 
-### Basic config ##########################################################
-
-set(LIB_NAME gk++)
-project(${LIB_NAME})
-
 set(GKPP_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-set(CMAKE_CXX_STANDARD 17)
-
-### Modules ###############################################################
 
 file(GLOB_RECURSE GKPP_SOURCE_GLOB
   ${GKPP_ROOT}/*.cpp
@@ -34,42 +26,44 @@ set(GKPP_HEADER_FILES
 source_group("Header Files\\Core" FILES ${GKPP_HEADER_CORE})
 
 if(GK_BUILD_SHARED)
-  add_library(${LIB_NAME}-shared SHARED ${GKPP_SOURCE_FILES} ${GKPP_HEADER_FILES})
-  set_target_properties(${LIB_NAME}-shared PROPERTIES OUTPUT_NAME ${LIB_NAME})
-  target_include_directories(${LIB_NAME}-shared
+  add_library(gk++-shared SHARED ${GKPP_SOURCE_FILES} ${GKPP_HEADER_FILES})
+  set_target_properties(gk++-shared PROPERTIES OUTPUT_NAME gk++)
+  target_include_directories(gk++-shared
     PUBLIC ${PROJ_ROOT}/gk++/include
     )
-  target_link_libraries(${LIB_NAME}-shared
-    PUBLIC rpav_cxxutils::rpav_cxxutils
+  target_cxx_std(gk++-shared 17)
+  target_link_libraries(gk++-shared
+    PUBLIC CONAN_PKG::rpav_cxxutils
     PUBLIC gk-shared
     )
 
   if(GK_INSTALL)
     if(WIN32)
-      install(TARGETS ${LIB_NAME}-shared RUNTIME DESTINATION lib/)
+      install(TARGETS gk++-shared RUNTIME DESTINATION lib/)
     else()
-      install(TARGETS ${LIB_NAME}-shared LIBRARY DESTINATION lib/)
+      install(TARGETS gk++-shared LIBRARY DESTINATION lib/)
     endif()
   endif()
 endif()
 
 if(GK_BUILD_STATIC)
-  add_library(${LIB_NAME}-static STATIC ${GKPP_SOURCE_FILES} ${GKPP_HEADER_FILES})
-  set_target_properties(${LIB_NAME}-static PROPERTIES OUTPUT_NAME ${LIB_NAME})
-  target_include_directories(${LIB_NAME}-static
+  add_library(gk++-static STATIC ${GKPP_SOURCE_FILES} ${GKPP_HEADER_FILES})
+  set_target_properties(gk++-static PROPERTIES OUTPUT_NAME gk++)
+  target_include_directories(gk++-static
     PUBLIC ${PROJ_ROOT}/gk++/include
     )
-  target_link_libraries(${LIB_NAME}-static
-    PUBLIC rpav_cxxutils::rpav_cxxutils
+  target_cxx_std(gk++-static 17)
+  target_link_libraries(gk++-static
+    PUBLIC CONAN_PKG::rpav_cxxutils
     PUBLIC gk-static
     )
 
   if(NOT WIN32)
-    #cotire(${LIB_NAME}-static)
+    #cotire(gk++-static)
   endif()
 
   if(GK_INSTALL)
-    install(TARGETS ${LIB_NAME}-static ARCHIVE DESTINATION lib/)
+    install(TARGETS gk++-static ARCHIVE DESTINATION lib/)
   endif()
 endif()
 
