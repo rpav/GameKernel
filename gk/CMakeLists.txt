@@ -1,13 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 
-### Basic config ##########################################################
-
-set(LIB_NAME gk)
-project(${LIB_NAME})
-
 set(GK_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-
-### Modules ###############################################################
 
 file(GLOB_RECURSE GK_SOURCE_NVG
   ${GK_ROOT}/nvg.cpp
@@ -44,7 +37,7 @@ file(GLOB_RECURSE GK_INT_HEADER_GLOB
 
 file(GLOB_RECURSE GK_EXT_HEADER_GLOB
   ${GK_ROOT}/include/**/*.h
-)
+  )
 
 set(GK_SOURCE_FILES
   c-api.cpp
@@ -65,20 +58,21 @@ set(GK_HEADER_FILES
   )
 
 if(GK_BUILD_SHARED)
-  add_library(${LIB_NAME}-shared SHARED ${GK_SOURCE_FILES} ${GK_HEADER_FILES})
-  set_target_properties(${LIB_NAME}-shared PROPERTIES OUTPUT_NAME ${LIB_NAME})
-  target_include_directories(${LIB_NAME}-shared
+  add_library(gk-shared SHARED ${GK_SOURCE_FILES} ${GK_HEADER_FILES})
+  set_target_properties(gk-shared PROPERTIES OUTPUT_NAME gk)
+  target_include_directories(gk-shared
     PUBLIC ${PROJ_ROOT}/gk/include
     PRIVATE ${PROJ_ROOT}/gk/include-int
     PRIVATE ${PROJ_ROOT}/gk++/include
     )
-  target_link_libraries(${LIB_NAME}-shared
-    PUBLIC rpav::cxxutils
-    PUBLIC rpav::GameKernelCore
+  target_cxx_std(gk-shared 17)
+  target_link_libraries(gk-shared
+    PUBLIC CONAN_PKG::rpav_cxxutils
+    PUBLIC CONAN_PKG::GameKernelCore
     PUBLIC OpenGL::GL
     PRIVATE GLEW
-    PRIVATE nlohmann::json
-    PRIVATE memononen::nanovg
+    PRIVATE CONAN_PKG::nlohmann_json
+    PRIVATE CONAN_PKG::nanovg
     ${GK_OPTIONAL_DEPS}
     )
 
@@ -88,33 +82,34 @@ if(GK_BUILD_SHARED)
 
   if(GK_INSTALL)
     if(WIN32)
-      install(TARGETS ${LIB_NAME}-shared RUNTIME DESTINATION lib/)
+      install(TARGETS gk-shared RUNTIME DESTINATION lib/)
     else()
-      install(TARGETS ${LIB_NAME}-shared LIBRARY DESTINATION lib/)
+      install(TARGETS gk-shared LIBRARY DESTINATION lib/)
     endif()
   endif()
 endif()
 
 if(GK_BUILD_STATIC)
-  add_library(${LIB_NAME}-static STATIC ${GK_SOURCE_FILES} ${GK_HEADER_FILES})
-  set_target_properties(${LIB_NAME}-static PROPERTIES OUTPUT_NAME ${LIB_NAME})
-  target_include_directories(${LIB_NAME}-static
+  add_library(gk-static STATIC ${GK_SOURCE_FILES} ${GK_HEADER_FILES})
+  set_target_properties(gk-static PROPERTIES OUTPUT_NAME gk)
+  target_include_directories(gk-static
     PUBLIC ${PROJ_ROOT}/gk/include
     PRIVATE ${PROJ_ROOT}/gk/include-int
     PRIVATE ${PROJ_ROOT}/gk++/include
     )
-  target_link_libraries(${LIB_NAME}-static
-    PUBLIC rpav::cxxutils
-    PUBLIC rpav::GameKernelCore
+  target_cxx_std(gk-static 17)
+  target_link_libraries(gk-static
+    PUBLIC CONAN_PKG::rpav_cxxutils
+    PUBLIC CONAN_PKG::GameKernelCore
     PUBLIC OpenGL::GL
-    PRIVATE GLEW::GLEW
-    PRIVATE nlohmann::json
-    PRIVATE memononen::nanovg
+    PRIVATE GLEW
+    PRIVATE CONAN_PKG::nlohmann_json
+    PRIVATE CONAN_PKG::nanovg
     ${GK_OPTIONAL_DEPS}
     )
 
   if(GK_INSTALL)
-    install(TARGETS ${LIB_NAME}-static ARCHIVE DESTINATION lib/)
+    install(TARGETS gk-static ARCHIVE DESTINATION lib/)
   endif()
 endif()
 

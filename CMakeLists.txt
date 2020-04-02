@@ -1,5 +1,13 @@
 cmake_minimum_required(VERSION 3.2)
 
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup(TARGETS)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
+if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+  include(cxx_features)
+endif()
+
 # Build options
 option(GK_INSTALL "Install GK (or not)" ON)
 option(GK_BUILD_STATIC "Build static library" ON)
@@ -38,7 +46,7 @@ FixUsrInclude(GLEW::GLEW)
 if(GK_USE_BOX2D)
   add_definitions(-DGK_USE_BOX2D=1)
   list(APPEND GK_OPTIONAL_DEPS
-    PRIVATE erincatto::Box2D)
+    PRIVATE CONAN_PKG::Box2D)
 endif()
 
 if(GK_USE_TEXTUREPACKER)

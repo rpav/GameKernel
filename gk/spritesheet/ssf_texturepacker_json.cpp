@@ -3,13 +3,14 @@
 #include <cstring>
 #include <fstream>
 
+#include <nlohmann/json.hpp>
+
 #include <rpav/tidy.hpp>
 #include <rpav/log.hpp>
 
 #include "gk/gk.hpp"
 #include "gk/gl.hpp"
 #include "gk/spritesheet.hpp"
-#include "json.hpp"
 #include "nanovg.h"
 
 using namespace rpav;
