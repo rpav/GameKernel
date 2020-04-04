@@ -1,12 +1,17 @@
 cmake_minimum_required(VERSION 3.2)
-
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup(TARGETS)
+project(GameKernel)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
-if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
-  include(cxx_features)
-endif()
+include(flag_me)
+include(cxx_features)
+include(cmake-conan/conan)
+
+conan_cmake_run(
+  CONANFILE ../conanfile.py
+  SETTINGS compiler.libcxx=${CXX_STDLIB})
+
+include(${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup(TARGETS)
 
 # Build options
 option(GK_INSTALL "Install GK (or not)" ON)
