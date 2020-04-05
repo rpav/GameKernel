@@ -67,3 +67,5 @@ endif()
 if(GK_BUILD_EXAMPLES)
   add_subdirectory(examples)
 endif()
+
+FlagPostSetup()
