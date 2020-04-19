@@ -1,10 +1,8 @@
-cmake_minimum_required(VERSION 3.2)
-project(GameKernel)
+cmake_minimum_required(VERSION 3.17)
+list(APPEND CMAKE_MODULE_PATH "$ENV{HOME}/vcs/CMakeFiles")
+include(setup)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
-include(flag_me)
-include(cxx_features)
-include(cmake-conan/conan)
+project(GameKernel)
 
 conan_cmake_run(
   CONANFILE ../conanfile.py
@@ -68,4 +66,4 @@ if(GK_BUILD_EXAMPLES)
   add_subdirectory(examples)
 endif()
 
-FlagPostSetup()
+SetupPost()

@@ -1,3 +1,0 @@
-[submodule "CMake"]
-	path = CMake
-	url = ssh://git@git.mephle.net:10022/rpav/CMakeFiles.git
