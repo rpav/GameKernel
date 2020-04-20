@@ -6,6 +6,7 @@ project(GameKernel)
 
 conan_cmake_run(
   CONANFILE ../conanfile.py
+  PROFILE ${TOOLCHAIN}-${CMAKE_BUILD_TYPE}
   SETTINGS compiler.libcxx=${CXX_STDLIB})
 
 include(${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
