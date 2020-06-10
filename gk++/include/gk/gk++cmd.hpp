@@ -68,6 +68,18 @@ public:
     }
 };
 
+// gk::CmdFunction
+class CmdFunction : public CmdTmpl<gk_cmd_function, GK_CMD_FUNCTION> {
+public:
+    using function_type = decltype(gk_cmd_function::function);
+    CmdFunction(function_type f, void* data)
+    {
+        cmd.function = f;
+        cmd.data     = data;
+    }
+};
+
+
 // gk::CmdClear
 class CmdClear : public CmdTmpl<gk_cmd_clear, GK_CMD_CLEAR> {
 public:

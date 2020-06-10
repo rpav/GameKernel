@@ -135,12 +135,20 @@ void gk_process_config(gk_context* gk, gk_bundle* b, gk_list* list)
     }
 }
 
+void gk_process_function(gk_context* gk, gk_bundle* b, gk_cmd_function *cmd) {
+    cmd->function(cmd->data);
+}
+
 bool gk_process_cmd_general(const char* listname, gk_context* gk, gk_bundle* b, gk_cmd* cmd)
 {
 
     switch(GK_CMD_TYPE(cmd)) {
         case GK_CMD_PASS:
             gk_process_pass(gk, b, (gk_pass*)cmd);
+            break;
+
+        case GK_CMD_FUNCTION:
+            gk_process_function(gk, b, (gk_cmd_function*)cmd);
             break;
 
         case GK_CMD_TF_TRS:

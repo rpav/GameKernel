@@ -54,4 +54,13 @@ typedef struct gk_bundle {
 
 typedef struct gk_context gk_context;
 
+typedef struct gk_cmd_function {
+    gk_cmd cmd;
+
+    void (*function)(void *userdata);
+
+    // User data
+    void *data;
+} gk_cmd_function;
+
 #endif /* __GAMEKERNEL_CORE_H__ */
