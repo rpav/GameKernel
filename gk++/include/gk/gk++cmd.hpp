@@ -79,7 +79,6 @@ public:
     }
 };
 
-
 // gk::CmdClear
 class CmdClear : public CmdTmpl<gk_cmd_clear, GK_CMD_CLEAR> {
 public:
@@ -266,7 +265,8 @@ public:
         cmd.sprites = sprites.data();
     }
 
-    void fill(uint32_t v) {
+    void fill(uint32_t v)
+    {
         std::fill(sprites.begin(), sprites.end(), v);
         cmd.sprites = sprites.data();
     }
@@ -285,8 +285,7 @@ public:
     // with resize().  You should also likely .zero().  You may thus initialize
     // the config/render pointers without initializing config/render data or
     // preallocating anything.
-    CmdChunkLayer(gk_chunklayer_config* config, gk_spritelayer_render* render)
-        : CmdChunkLayer()
+    CmdChunkLayer(gk_chunklayer_config* config, gk_spritelayer_render* render) : CmdChunkLayer()
     {
         cmd.config = config;
         cmd.render = render;
@@ -680,11 +679,7 @@ public:
 
 // gk::B2World
 struct B2World : public gk_b2_world {
-    B2World(
-        float timestep           = 1.0f / 60.0f,
-        int   velocityIterations = 8,
-        int   positionIterations = 3)
-        : gk_b2_world()
+    B2World(float timestep = 1.0f / 60.0f, int velocityIterations = 8, int positionIterations = 3) : gk_b2_world()
     {
         this->timestep            = timestep;
         this->velocity_iterations = velocityIterations;
@@ -793,8 +788,7 @@ public:
 };
 
 // gk::CmdB2FixtureCreate
-class CmdB2FixtureCreate
-    : public CmdTmpl<gk_cmd_b2_fixture_create, GK_CMD_B2_FIXTURE_CREATE> {
+class CmdB2FixtureCreate : public CmdTmpl<gk_cmd_b2_fixture_create, GK_CMD_B2_FIXTURE_CREATE> {
 public:
     CmdB2FixtureCreate(gk_b2_body& body) { cmd.body = &body; }
 
@@ -812,8 +806,7 @@ public:
 };
 
 // gk::CmdB2FixtureUpdate
-class CmdB2FixtureUpdate
-    : public CmdTmpl<gk_cmd_b2_fixture_update, GK_CMD_B2_FIXTURE_UPDATE> {
+class CmdB2FixtureUpdate : public CmdTmpl<gk_cmd_b2_fixture_update, GK_CMD_B2_FIXTURE_UPDATE> {
 public:
     CmdB2FixtureUpdate() = default;
 
@@ -850,8 +843,7 @@ public:
         cmd.flags = flags;
     }
 
-    CmdB2Force(gk_b2_body& body, vec2 force, vec2 point, uint8_t flags = 0)
-        : CmdB2Force(force, point, flags)
+    CmdB2Force(gk_b2_body& body, vec2 force, vec2 point, uint8_t flags = 0) : CmdB2Force(force, point, flags)
     {
         setBody(body);
     }
@@ -867,17 +859,12 @@ public:
         cmd.flags  = flags;
     }
 
-    CmdB2Torque(gk_b2_body& body, float torque, uint8_t flags = 0)
-        : CmdB2Torque(torque, flags)
-    {
-        setBody(body);
-    }
+    CmdB2Torque(gk_b2_body& body, float torque, uint8_t flags = 0) : CmdB2Torque(torque, flags) { setBody(body); }
 
     inline void setBody(gk_b2_body& body) { cmd.body = &body; }
 };
 
-class CmdB2LinearImpulse
-    : public CmdTmpl<gk_cmd_b2_linear_impulse, GK_CMD_B2_LINEAR_IMPULSE> {
+class CmdB2LinearImpulse : public CmdTmpl<gk_cmd_b2_linear_impulse, GK_CMD_B2_LINEAR_IMPULSE> {
 public:
     CmdB2LinearImpulse(vec2 impulse, vec2 point, bool wake = true)
     {
@@ -895,8 +882,7 @@ public:
     inline void setBody(gk_b2_body& body) { cmd.body = &body; }
 };
 
-class CmdB2AngularImpulse
-    : public CmdTmpl<gk_cmd_b2_angular_impulse, GK_CMD_B2_ANGULAR_IMPULSE> {
+class CmdB2AngularImpulse : public CmdTmpl<gk_cmd_b2_angular_impulse, GK_CMD_B2_ANGULAR_IMPULSE> {
 public:
     CmdB2AngularImpulse(float impulse, bool wake = true)
     {
@@ -904,8 +890,7 @@ public:
         cmd.wake    = wake;
     }
 
-    CmdB2AngularImpulse(gk_b2_body& body, float impulse, bool wake = true)
-        : CmdB2AngularImpulse(impulse, wake)
+    CmdB2AngularImpulse(gk_b2_body& body, float impulse, bool wake = true) : CmdB2AngularImpulse(impulse, wake)
     {
         setBody(body);
     }
@@ -921,8 +906,7 @@ public:
         cmd.angular = angular;
     }
 
-    CmdB2SetVelocity(gk_b2_body& body, vec2 linear, float angular)
-        : CmdB2SetVelocity(linear, angular)
+    CmdB2SetVelocity(gk_b2_body& body, vec2 linear, float angular) : CmdB2SetVelocity(linear, angular)
     {
         setBody(body);
     }
@@ -943,20 +927,19 @@ public:
 // gk::CmdRtCreate
 class CmdRtCreate : public CmdTmpl<gk_cmd_rt_create, GK_CMD_RT_CREATE> {
 public:
-    CmdRtCreate(ivec2 dims, uint32_t flags = GK_RT_ALPHA | GK_RT_STENCIL)
-        : CmdRtCreate(dims.x, dims.y, flags)
-    {}
-
-    CmdRtCreate(uint32_t width, uint32_t height, uint32_t flags = GK_RT_ALPHA | GK_RT_STENCIL)
+    CmdRtCreate(ivec2 size, uint32_t flags = GK_RT_ALPHA | GK_RT_STENCIL)
     {
-        cmd.width  = width;
-        cmd.height = height;
+        cmd.size = size;
 
         cmd.rt_flags = flags;
 
         cmd.tex_min_filter = GK_TEX_FILTER_LINEAR;
         cmd.tex_mag_filter = GK_TEX_FILTER_LINEAR;
     }
+
+    CmdRtCreate(uint32_t width, uint32_t height, uint32_t flags = GK_RT_ALPHA | GK_RT_STENCIL)
+        : CmdRtCreate(ivec2(width, height), flags)
+    {}
 
     CmdRtCreate()                   = default;
     CmdRtCreate(const CmdRtCreate&) = default;
@@ -983,12 +966,20 @@ class CmdRtBind : public CmdTmpl<gk_cmd_rt_bind, GK_CMD_RT_BIND> {
 public:
     CmdRtBind() = default;
     CmdRtBind(uint32_t framebuffer) { cmd.framebuffer = framebuffer; }
-    CmdRtBind(CmdRtCreate& create) { cmd.framebuffer = create.cmd.framebuffer; }
+    CmdRtBind(CmdRtCreate& create)
+    {
+        cmd.framebuffer = create.cmd.framebuffer;
+        cmd.viewport    = gk::irect{gk::ivec2{0, 0}, create.cmd.size};
+    }
 };
 
 // gk::CmdRtUnbind
 class CmdRtUnbind : public CmdTmpl<gk_cmd_rt_unbind, GK_CMD_RT_UNBIND> {
 public:
+    CmdRtUnbind() = default;
+    CmdRtUnbind(gk::irect viewport) {
+        cmd.viewport = viewport;
+    }
 };
 
 // gk::CmdProgramCreate
@@ -1101,8 +1092,7 @@ public:
 class CmdDefaultPDS : public CmdTmpl<gk_cmd_default_pds, GK_CMD_DEFAULT_PDS> {};
 
 // gk::CmdSpriteSheetCreate
-class CmdSpriteSheetCreate
-    : public CmdTmpl<gk_cmd_spritesheet_create, GK_CMD_SPRITESHEET_CREATE> {
+class CmdSpriteSheetCreate : public CmdTmpl<gk_cmd_spritesheet_create, GK_CMD_SPRITESHEET_CREATE> {
     std::string _path;
 
 public:
@@ -1120,8 +1110,7 @@ public:
 
 // gk::CmdSpriteSheetDestroy
 using SpriteSheetVector = std::vector<gk_spritesheet*>;
-class CmdSpriteSheetDestroy
-    : public CmdTmpl<gk_cmd_spritesheet_destroy, GK_CMD_SPRITESHEET_DESTROY> {
+class CmdSpriteSheetDestroy : public CmdTmpl<gk_cmd_spritesheet_destroy, GK_CMD_SPRITESHEET_DESTROY> {
     SpriteSheetVector sheets;
 
 public:

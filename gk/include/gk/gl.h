@@ -201,8 +201,7 @@ typedef enum gk_rt_flags {
 typedef struct gk_cmd_rt_create {
     gk_cmd parent;
 
-    uint32_t width;
-    uint32_t height;
+    gk_ivec2 size;
 
     uint32_t rt_flags;       /* gk_rt_flags */
     uint32_t tex_flags;      /* gk_tex_flags */
@@ -227,10 +226,12 @@ typedef struct gk_cmd_rt_destroy {
 typedef struct gk_cmd_rt_bind {
     gk_cmd       parent;
     unsigned int framebuffer;
+    gk_irect     viewport;
 } gk_cmd_rt_bind;
 
 typedef struct gk_cmd_rt_unbind {
-    gk_cmd parent;
+    gk_cmd   parent;
+    gk_irect viewport;
 } gk_cmd_rt_unbind;
 
 /* Shaders **********************************************************/

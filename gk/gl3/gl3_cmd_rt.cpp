@@ -36,7 +36,7 @@ void gl3_cmd_rt_create(gk_context* gk, gk_cmd_rt_create* cmd)
     config.tex.set(cmd->tex, config);
     config.tex.apply(gl3->glstate);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, format, cmd->width, cmd->height, 0, format, GL_UNSIGNED_BYTE, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, format, cmd->size.x, cmd->size.y, 0, format, GL_UNSIGNED_BYTE, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_s);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_t);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gk_filter_to_gl[cmd->tex_min_filter]);
@@ -47,18 +47,18 @@ void gl3_cmd_rt_create(gk_context* gk, gk_cmd_rt_create* cmd)
     if((cmd->rt_flags & GK_RT_DEPTH) && (cmd->rt_flags & GK_RT_STENCIL)) {
         glGenRenderbuffers(1, &cmd->dsbuffer);
         glBindRenderbuffer(GL_RENDERBUFFER, cmd->dsbuffer);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, cmd->width, cmd->height);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, cmd->size.x, cmd->size.y);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, cmd->dsbuffer);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, cmd->dsbuffer);
     } else if(cmd->rt_flags & GK_RT_STENCIL) {
         glGenRenderbuffers(1, &cmd->dsbuffer);
         glBindRenderbuffer(GL_RENDERBUFFER, cmd->dsbuffer);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, cmd->width, cmd->height);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_STENCIL_INDEX8, cmd->size.x, cmd->size.y);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, cmd->dsbuffer);
     } else if(cmd->rt_flags & GK_RT_DEPTH) {
         glGenRenderbuffers(1, &cmd->dsbuffer);
         glBindRenderbuffer(GL_RENDERBUFFER, cmd->dsbuffer);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, cmd->width, cmd->height);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, cmd->size.x, cmd->size.y);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, cmd->dsbuffer);
     }
 
@@ -86,10 +86,15 @@ void gl3_cmd_rt_destroy(gk_context*, gk_cmd_rt_destroy* cmd)
 
 void gl3_cmd_rt_bind(gk_context*, gk_cmd_rt_bind* cmd)
 {
+    auto v = cmd->viewport;
+
     glBindFramebuffer(GL_FRAMEBUFFER, cmd->framebuffer);
+    glViewport(v.pos.x, v.pos.y, v.size.x, v.size.y);
 }
 
-void gl3_cmd_rt_unbind(gk_context*, gk_cmd_rt_unbind*)
+void gl3_cmd_rt_unbind(gk_context*, gk_cmd_rt_unbind* cmd)
 {
+    auto v = cmd->viewport;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(v.pos.x, v.pos.y, v.size.x, v.size.y);
 }
