@@ -10,6 +10,7 @@
 #include "gk/gk++list.hpp"
 #include "gk/gk++util.hpp"
 #include "gk/gk.h"
+#include "gk/path.h"
 
 namespace gk {
 template<typename T, gk_cmd_type ID>
@@ -495,6 +496,22 @@ public:
     inline PathDef& strokeWidth(float f)
     {
         append({GK_PATH_STROKE_WIDTH, f});
+        return *this;
+    }
+
+    inline PathDef& miterLimit(float f)
+    {
+        append({GK_PATH_MITER_LIMIT, f});
+        return *this;
+    }
+
+    inline PathDef& lineJoin(int join) {
+        append({GK_PATH_LINE_JOIN, float(join)});
+        return *this;
+    }
+
+    inline PathDef& lineCap(int cap) {
+        append({GK_PATH_LINE_CAP, float(cap)});
         return *this;
     }
 
