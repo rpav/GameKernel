@@ -12,7 +12,7 @@ void example_main(int argc, const char** argv) {
     auto gk = gk::Context{GK_GL3};
 
     gk::Bundle bundle(0);
-    gk::ListNvg nvg(1280, 720, 1.0);
+    gk::ListNvg nvg({0,0,1280, 720});
 
     gk::CmdPath path;
     gk::PathDef pathdef = {

@@ -4,15 +4,7 @@
 /******************************************************************
  * NanoVG
  ******************************************************************/
-typedef struct gk_list_nvg {
-    gk_list parent;
-
-    int width;
-    int height;
-    float ratio;
-
-    gk_origin origin;
-} gk_list_nvg;
+typedef gk_list_gl gk_list_nvg;
 
 typedef struct gk_cmd_font_create {
     gk_cmd parent;

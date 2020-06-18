@@ -28,9 +28,9 @@ void example_main(int, const char**) {
                         GK_PATH_FILL_COLOR_RGBA, 255, 192, 0, 255,
                         GK_PATH_FILL,
                         GK_PATH_FILL_COLOR_RGBA, 0, 0, 255, 255 };
-
-    nvg.width = 1280;
-    nvg.height = 720;
+    nvg.origin = GK_ORIGIN_Y_UP;
+    nvg.viewport.size.x = 1280;
+    nvg.viewport.size.y = 720;
     nvg.ratio = 1.0;
 
     init_bundle(&bundle, 0, 1);

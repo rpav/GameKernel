@@ -82,7 +82,7 @@ typedef enum gk_subsystem {
     GK_SUB_NULL,
     GK_SUB_CONFIG,
     GK_SUB_GL,
-    GK_SUB_NVG,
+    GK_SUB_NVG = GK_SUB_GL,
     GK_SUB_BOX2D,
 
     /* Last core subsystem ID */
@@ -113,5 +113,11 @@ typedef enum gk_error_code {
     /* End of the line */
     GK_ERROR_MAX
 } gk_error_code;
+
+/* This currently only works in limited form with NanoVG */
+typedef enum gk_origin {
+    GK_ORIGIN_Y_DOWN = 0,
+    GK_ORIGIN_Y_UP   = 1 << 0,
+} gk_origin;
 
 #endif  /* __GAMEKERNEL_CORECONST_H__ */

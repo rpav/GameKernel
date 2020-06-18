@@ -80,41 +80,24 @@ public:
 class List : public ListTmpl<gk_list, GK_SUB_CONFIG> {
 public:
     List() : ListTmpl() {}
-    virtual ~List() {}
 };
 
 class ListGL : public ListTmpl<gk_list_gl, GK_SUB_GL> {
 public:
-    ListGL(float w = 0, float h = 0) : ListTmpl()
+    ListGL(gk::irect viewport = {}) : ListTmpl()
     {
-        list.width  = w;
-        list.height = h;
+        list.viewport = viewport;
+        list.ratio    = 1.0f;
+        list.origin   = GK_ORIGIN_Y_UP;
     }
-    virtual ~ListGL() {}
-};
 
-class ListNvg : public ListTmpl<gk_list_nvg, GK_SUB_NVG> {
-public:
-    ListNvg() : ListTmpl() {}
-    ListNvg(
-        unsigned int width,
-        unsigned int height,
-        float        ratio  = 1.0,
-        gk_origin    origin = GK_ORIGIN_Y_DOWN)
-        : ListTmpl()
-    {
-        list.width  = width;
-        list.height = height;
-        list.ratio  = ratio;
-        list.origin = origin;
-    }
-    virtual ~ListNvg() {}
-
-    void width(unsigned int w) { list.width = w; }
-    void height(unsigned int h) { list.height = h; }
+    void width(unsigned int w) { list.viewport.size.x = w; }
+    void height(unsigned int h) { list.viewport.size.y = h; }
     void ratio(float r) { list.ratio = r; }
     void origin(gk_origin o) { list.origin = o; }
 };
+
+using ListNvg = ListGL;
 
 class ListB2 : public ListTmpl<gk_list, GK_SUB_BOX2D> {
 public:

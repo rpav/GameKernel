@@ -11,10 +11,10 @@ void example_main(int, const char**) {
 
     auto gk = gk::Context{GK_GL3};
 
-    float width = WIDTH/8, height = HEIGHT/8;
+    int32_t width = WIDTH/8, height = HEIGHT/8;
 
     gk::Bundle bundle(0);
-    gk::ListNvg nvg(width, height, 1.0);
+    gk::ListNvg nvg({0, 0, width, height});
 
     gk::CmdClear clear(0, 0, 0);
     gk::CmdPath path;
@@ -68,7 +68,7 @@ void example_main(int, const char**) {
     nvg.add(fc, fs, text);
     nvg.add(unbind);
 
-    gk::ListGL gl(WIDTH, HEIGHT);
+    gk::ListGL gl({0, 0, WIDTH, HEIGHT});
     gk::CmdQuad quad(rtCreate.cmd.tex, -0.8, -0.8, 0.8, 0.8);
 
     bundle.add(gl);

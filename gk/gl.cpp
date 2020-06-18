@@ -3,19 +3,22 @@
 #include <GL/glew.h>
 
 #include <GL/gl.h>
+#include <GL/glu.h>
 #include <rpav/log.hpp>
 
 #include "gk/gk.hpp"
 #include "gk/gl.hpp"
+#include "gk/nvg.hpp"
 
 using namespace rpav;
 
-const GLenum gk_filter_to_gl[] = {GL_NEAREST,
-                                  GL_LINEAR,
-                                  GL_NEAREST_MIPMAP_NEAREST,
-                                  GL_LINEAR_MIPMAP_NEAREST,
-                                  GL_NEAREST_MIPMAP_LINEAR,
-                                  GL_LINEAR_MIPMAP_LINEAR};
+const GLenum gk_filter_to_gl[] =
+    {GL_NEAREST,
+     GL_LINEAR,
+     GL_NEAREST_MIPMAP_NEAREST,
+     GL_LINEAR_MIPMAP_NEAREST,
+     GL_NEAREST_MIPMAP_LINEAR,
+     GL_LINEAR_MIPMAP_LINEAR};
 
 bool gk_gl_checkerror(const char* expr, const char* file, int line)
 {
@@ -27,17 +30,9 @@ bool gk_gl_checkerror(const char* expr, const char* file, int line)
     return false;
 }
 
-static void glmsg(
-    GLenum        source,
-    GLenum        type,
-    GLuint        id,
-    GLenum        sev,
-    GLsizei       len,
-    const GLchar* msg,
-    const void*)
+static void glmsg(GLenum source, GLenum type, GLuint id, GLenum sev, GLsizei len, const GLchar* msg, const void*)
 {
-    say("GL ", type == GL_DEBUG_TYPE_ERROR ? "Error" : "Message", "[", id, ":", sev,
-        "]: ", msg);
+    say("GL ", type == GL_DEBUG_TYPE_ERROR ? "Error" : "Message", "[", id, ":", sev, "]: ", msg);
     if(type == GL_DEBUG_TYPE_ERROR) exit(1);
 }
 
@@ -114,20 +109,17 @@ bool gk_init_gl(gk_context* gk)
     while(glGetError() != GL_NO_ERROR)
         ;
 
-    if(GL_ARB_debug_output) glDebugMessageCallback(glmsg, nullptr);
+    if(GL_ARB_debug_output) {
+        glDebugMessageCallback(glmsg, nullptr);
+    } else {
+        wlog("GL_ARB_debug_output not supported");
+    }
 
     switch(gk->impl) {
-        case GK_GL2:
-            gk_create_gl2(gk);
-            break;
+        case GK_GL2: gk_create_gl2(gk); break;
+        case GK_GL3: gk_create_gl3(gk); break;
 
-        case GK_GL3:
-            gk_create_gl3(gk);
-            break;
-
-        default:
-            say("GK error: Unknown impl: ", gk->impl);
-            return false;
+        default: say("GK error: Unknown impl: ", gk->impl); return false;
     };
 
     gk->nvg_inframe = false;
@@ -140,35 +132,22 @@ bool gk_init_gl(gk_context* gk)
 void gk_fini_gl(gk_context* gk)
 {
     switch(gk->impl) {
-        case GK_GL2:
-            gk_destroy_gl2(gk);
-            break;
+        case GK_GL2: gk_destroy_gl2(gk); break;
+        case GK_GL3: gk_destroy_gl3(gk); break;
 
-        case GK_GL3:
-            gk_destroy_gl3(gk);
-            break;
-
-        default:
-            say("GK warning: Unknown impl: ", gk->impl);
+        default: say("GK warning: Unknown impl: ", gk->impl);
     };
 }
 
-static void gk_gl_process_begin(
-    gk_context* gk,
-    gk_bundle*  bundle,
-    gk_cmd_type type,
-    gk_cmd*     cmd)
+static void gk_gl_process_begin(gk_context* gk, gk_bundle* bundle, gk_cmd_type type, gk_cmd* cmd)
 {
     switch(type) {
         case GK_CMD_QUAD:
         case GK_CMD_QUADSPRITE:
         case GK_CMD_SPRITELAYER:
-        case GK_CMD_CHUNKLAYER:
-            gk->gl.gl_begin_quad(gk);
-            return;
+        case GK_CMD_CHUNKLAYER: gk->gl.gl_begin_quad(gk); return;
 
-        default:
-            return;
+        default: return;
     }
 }
 
@@ -183,14 +162,28 @@ static bool gk_gl_process_should_transition(gk_cmd_type last, gk_cmd_type next)
                 case GK_CMD_QUAD:
                 case GK_CMD_QUADSPRITE:
                 case GK_CMD_SPRITELAYER:
-                case GK_CMD_CHUNKLAYER:
-                    return false;
-                default:
-                    break;
+                case GK_CMD_CHUNKLAYER: return false;
+                default: break;
             }
             break;
-        default:
-            break;
+
+        case GK_CMD_PATH:
+        case GK_CMD_TEXT:
+        case GK_CMD_FONT_FACE:
+        case GK_CMD_FONT_STYLE:
+        case GK_CMD_FONT_CREATE:
+        case GK_CMD_NVG_FUNCTION:
+            switch(next) {
+                case GK_CMD_PATH:
+                case GK_CMD_TEXT:
+                case GK_CMD_FONT_FACE:
+                case GK_CMD_FONT_STYLE:
+                case GK_CMD_FONT_CREATE:
+                case GK_CMD_NVG_FUNCTION: return false;
+                default: return true;
+            }
+
+        default: break;
     }
     return true;
 }
@@ -201,55 +194,77 @@ static void gk_gl_process_end(gk_context* gk, gk_bundle*, gk_cmd_type type)
         case GK_CMD_QUAD:
         case GK_CMD_QUADSPRITE:
         case GK_CMD_SPRITELAYER:
-        case GK_CMD_CHUNKLAYER:
-            gk->gl.gl_end_quad(gk);
-            return;
+        case GK_CMD_CHUNKLAYER: gk->gl.gl_end_quad(gk); return;
 
-        default:
-            return;
+        default: return;
     }
 }
 
 void gk_process_gl(gk_context* gk, gk_bundle* bundle, gk_list_gl* list_gl)
 {
     auto list = GK_LIST(list_gl);
+    auto nvg  = gk->nvg;
+    auto w    = list_gl->viewport.size.x;
+    auto h    = list_gl->viewport.size.y;
+    auto r    = list_gl->ratio;
 
-    if(list_gl->width && list_gl->height) glViewport(0, 0, list_gl->width, list_gl->height);
+    if(list_gl->viewport.size)
+        glViewport(
+            list_gl->viewport.pos.x, list_gl->viewport.pos.y, list_gl->viewport.size.x, list_gl->viewport.size.y);
 
     for(size_t j = 0; j < list->ncmds; ++j) {
         auto cmd  = list->cmds[j];
         auto type = GK_CMD_TYPE(cmd);
 
-        if(gk->gl.last_cmd != type
-           && gk_gl_process_should_transition(gk->gl.last_cmd, type)) {
+        if(gk->gl.last_cmd != type && gk_gl_process_should_transition(gk->gl.last_cmd, type)) {
             gk_gl_process_end(gk, bundle, gk->gl.last_cmd);
+            ensure_nvg_outframe(gk);
             gk_gl_process_begin(gk, bundle, type, cmd);
             gk->gl.last_cmd = type;
         }
 
         switch(type) {
-            case GK_CMD_CLEAR:
-                gl_cmd_clear(gk, (gk_cmd_clear*)cmd);
+            case GK_CMD_CLEAR: gl_cmd_clear(gk, (gk_cmd_clear*)cmd); break;
+            case GK_CMD_QUAD: gk->gl.gl_cmd_quad(gk, bundle, (gk_cmd_quad*)cmd); break;
+            case GK_CMD_QUADSPRITE: gk->gl.gl_cmd_quadsprite(gk, bundle, (gk_cmd_quadsprite*)cmd); break;
+            case GK_CMD_SPRITELAYER: gk->gl.gl_cmd_spritelayer(gk, bundle, (gk_cmd_spritelayer*)cmd); break;
+            case GK_CMD_CHUNKLAYER: gk->gl.gl_cmd_chunklayer(gk, bundle, (gk_cmd_chunklayer*)cmd); break;
+
+            case GK_CMD_PATH:
+                ensure_nvg_inframe(gk, w, h, r);
+                gk_process_nvg_path(gk, bundle, list_gl, (gk_cmd_path*)cmd);
                 break;
-            case GK_CMD_QUAD:
-                gk->gl.gl_cmd_quad(gk, bundle, (gk_cmd_quad*)cmd);
+            case GK_CMD_TEXT:
+                ensure_nvg_inframe(gk, w, h, r);
+                gk_process_nvg_text(gk, list_gl, (gk_cmd_text*)cmd);
                 break;
-            case GK_CMD_QUADSPRITE:
-                gk->gl.gl_cmd_quadsprite(gk, bundle, (gk_cmd_quadsprite*)cmd);
+            case GK_CMD_FONT_FACE:
+                ensure_nvg_inframe(gk, w, h, r);
+                gk_process_nvg_font_face(gk, (gk_cmd_font_face*)cmd);
                 break;
-            case GK_CMD_SPRITELAYER:
-                gk->gl.gl_cmd_spritelayer(gk, bundle, (gk_cmd_spritelayer*)cmd);
+            case GK_CMD_FONT_STYLE:
+                ensure_nvg_inframe(gk, w, h, r);
+                gk_process_nvg_font_style(gk, (gk_cmd_font_style*)cmd);
                 break;
-            case GK_CMD_CHUNKLAYER:
-                gk->gl.gl_cmd_chunklayer(gk, bundle, (gk_cmd_chunklayer*)cmd);
+            case GK_CMD_FONT_CREATE:
+                ensure_nvg_inframe(gk, w, h, r);
+                gk_process_nvg_font_create(gk, (gk_cmd_font_create*)cmd);
                 break;
+            case GK_CMD_NVG_FUNCTION: {
+                ensure_nvg_inframe(gk, w, h, r);
+                auto* fn = reinterpret_cast<gk_cmd_nvg_function*>(cmd);
+                fn->function(nvg, fn->data);
+                break;
+            }
 
             default:
+                ensure_nvg_outframe(gk);
                 gk_process_cmd_general("GK_LIST_GL", gk, bundle, cmd);
                 break;
         }
     }
 
+    ensure_nvg_outframe(gk);
     gk_gl_process_end(gk, bundle, gk->gl.last_cmd);
     gk->gl.last_cmd = GK_CMD_NULL;
     glFlush();
@@ -281,14 +296,15 @@ gl_error:
     return;
 }
 
-static const GLenum gk_to_gl_shader[] = {GL_VERTEX_SHADER,
-                                         GL_TESS_CONTROL_SHADER,
-                                         GL_TESS_EVALUATION_SHADER,
-                                         GL_GEOMETRY_SHADER,
-                                         GL_FRAGMENT_SHADER,
-                                         GL_COMPUTE_SHADER,
+static const GLenum gk_to_gl_shader[] =
+    {GL_VERTEX_SHADER,
+     GL_TESS_CONTROL_SHADER,
+     GL_TESS_EVALUATION_SHADER,
+     GL_GEOMETRY_SHADER,
+     GL_FRAGMENT_SHADER,
+     GL_COMPUTE_SHADER,
 
-                                         0};
+     0};
 
 static void build_one_program(gk_context* gk, gk_program_source* progsrc)
 {
@@ -332,7 +348,8 @@ gl_error:
 
 void gl_cmd_uniform_query(gk_context*, gk_cmd_uniform_query* cmd)
 {
-    auto program = cmd->program;
+    auto program = *cmd->program;
+    say("prog = ", program);
 
     for(size_t i = 0; i < cmd->nuniforms; ++i) {
         cmd->uniforms[i] = glGetUniformLocation(program, cmd->names[i]);

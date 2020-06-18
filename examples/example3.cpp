@@ -21,7 +21,7 @@ void example_main(int, const char**) {
     gk_cmd_spritesheet_create c;
     gk_cmd_spritesheet_destroy d;
 
-    l.width = l.height = 0;
+    l.viewport.size.x = l.viewport.size.y = 0;
 
     //mat4 proj = glm::ortho<float>(0, WIDTH, HEIGHT, 0, -1, 1);
     mat4 proj = gk::mat4::ortho(0, WIDTH, 0, HEIGHT, -1, 1);

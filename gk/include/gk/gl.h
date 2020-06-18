@@ -32,7 +32,10 @@ typedef struct gk_list_gl {
     gk_list parent;
 
     /* If nonzero, set the viewport */
-    float width, height;
+    gk_irect viewport;
+
+    float     ratio;  // Pixel ratio, used by NVG
+    gk_origin origin; // Confusingly-named axis orientation, used by NVG
 } gk_list_gl;
 
 typedef unsigned int gk_texture;
@@ -278,7 +281,7 @@ typedef struct gk_cmd_uniform_query {
     gk_cmd parent;
 
     /* Pass a pointer to the program */
-    gk_program program;
+    gk_program* program;
 
     /* Pass an array of `nuniforms` strings to query */
     size_t       nuniforms;

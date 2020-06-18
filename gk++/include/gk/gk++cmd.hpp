@@ -1052,7 +1052,7 @@ class CmdUniformQuery : public CmdTmpl<gk_cmd_uniform_query, GK_CMD_UNIFORM_QUER
     UniformNameLocationMap _locations;
 
 public:
-    CmdUniformQuery(gk_program program) { cmd.program = program; }
+    CmdUniformQuery(gk_program& program) { cmd.program = &program; }
     CmdUniformQuery(ProgramSource& source) : CmdUniformQuery(source.source.program) {}
 
     template<typename... Rest>

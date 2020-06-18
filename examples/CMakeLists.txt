@@ -67,3 +67,13 @@ if(GK_BUILD_GKPP)
     PRIVATE ${GL}
     PRIVATE gk++-static)
 endif()
+
+if(WIN32)
+  # add directory junction command here
+  message(WARNING "add directory junction command")
+else()
+  add_custom_command(TARGET gk_example3
+    POST_BUILD
+    COMMAND ln -snf ${CMAKE_SOURCE_DIR}/examples/res ${CMAKE_CURRENT_BINARY_DIR}/../bin
+    )
+endif()

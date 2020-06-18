@@ -127,7 +127,7 @@ void example_main(int argc, const char* argv[])
 
     gk_bundle  bundle_render;
     gk_list_gl list_spr;
-    list_spr.width = list_spr.height = 0;
+    list_spr.viewport.size.x = list_spr.viewport.size.y = 0;
 
     /* Configure/load image */
     init_bundle(&bundle_cfg, 0, 1);

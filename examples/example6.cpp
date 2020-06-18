@@ -17,7 +17,7 @@ static const char *shader_geom_quad =
  "void main() {"
  "    uv = vert_uv[0];"
  "    gl_Position = gl_in[0].gl_Position;"
- "  EmitVertexb();"
+ "  EmitVertex();"
  "    uv = vert_uv[1];"
  "    gl_Position = gl_in[1].gl_Position;"
  "  EmitVertex();"
@@ -71,10 +71,10 @@ void example_main(int, const char**) {
 
     auto gk = gk::Context{GK_GL3};
 
-    float width = WIDTH/8, height = HEIGHT/8;
+    int32_t width = WIDTH/8, height = HEIGHT/8;
 
     gk::Bundle bundle(0);
-    gk::ListNvg nvg(width, height, 1.0);
+    gk::ListNvg nvg({0, 0, width, height});
 
     // Create texture etc
     gk::CmdClear clear(0, 0, 0);
@@ -115,6 +115,8 @@ void example_main(int, const char**) {
     config.add(rtCreate, progCreate, uniforms);
     gk.process(bundle);
 
+    say("program = ", progCreate.cmd.source[0]->program);
+
     // --- Bind texture, draw something in it
     gk::CmdRtBind bind(rtCreate);
     gk::CmdRtDestroy rtDestroy(rtCreate);
@@ -136,7 +138,7 @@ void example_main(int, const char**) {
 
     path.setPath(pathdef);
 
-    gk::CmdFontCreate fc("black_chancery", "../examples/res/black_chancery.ttf");
+    gk::CmdFontCreate fc("black_chancery", "res/black_chancery.ttf");
     gk::CmdFontStyle fs(40);
     gk::CmdText text("hello world", 0, height/2);
 
@@ -149,7 +151,7 @@ void example_main(int, const char**) {
     // --- Make quad, draw using texture and shader
     bundle.clear();
 
-    gk::ListGL gl(WIDTH, HEIGHT);
+    gk::ListGL gl({0, 0, WIDTH, HEIGHT});
 
     gk::UniformSet uniformSet;
     auto uTIME = uniformSet.add(uniforms.find("time"), 0.0);
