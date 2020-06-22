@@ -45,7 +45,7 @@ public:
 };
 
 /* gk::Passes */
-class Passes : public MultiCmd {
+class Passes {
     std::vector<CmdPass> _passes;
 
 public:
@@ -60,7 +60,7 @@ public:
 
     CmdPass& operator[](size_t i) { return _passes[i]; }
 
-    void addToList(ListBase& list) override
+    void addToList(ListBase& list)
     {
         for(auto& cmd : _passes) {
             list.addCmd(cmd);

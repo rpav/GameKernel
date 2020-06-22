@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstring>
+#include <type_traits>
 #include <vector>
 
 #include "gk/gk.h"
@@ -17,11 +18,6 @@ public:
     virtual gk_cmd* cmdPtr() = 0;
 };
 
-class MultiCmd {
-public:
-    virtual void addToList(ListBase&) = 0;
-};
-
 class ListBase {
 protected:
     CmdVector cmds;
@@ -30,9 +26,14 @@ public:
     virtual ~ListBase()        = default;
     virtual gk_list* listPtr() = 0;
 
-    void addCmd(CmdBase& cmd) { cmds.push_back(cmd.cmdPtr()); }
-
-    void addCmd(MultiCmd& cmds) { cmds.addToList(*this); }
+    template<typename T>
+    void addCmd(T& cmd) {
+        if constexpr(std::is_base_of_v<CmdBase, T>) {
+            cmds.push_back(cmd.cmdPtr());
+        } else {
+            cmd.addToList(*this);
+        }
+    }
 
     void updateList()
     {
