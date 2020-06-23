@@ -6,6 +6,7 @@
 #include <GL/glu.h>
 #include <rpav/log.hpp>
 
+#include "gk/constants.h"
 #include "gk/gk.hpp"
 #include "gk/gl.hpp"
 #include "gk/glstate.hpp"
@@ -152,6 +153,43 @@ static void gk_gl_process_begin(gk_context* gk, gk_bundle* bundle, gk_cmd_type t
     }
 }
 
+static bool gk_gl_process_should_transition(gk_cmd_type last, gk_cmd_type next)
+{
+    switch(last) {
+        case GK_CMD_QUAD:
+        case GK_CMD_QUADSPRITE:
+        case GK_CMD_SPRITELAYER:
+        case GK_CMD_CHUNKLAYER:
+            switch(next) {
+                case GK_CMD_QUAD:
+                case GK_CMD_QUADSPRITE:
+                case GK_CMD_SPRITELAYER:
+                case GK_CMD_CHUNKLAYER: return false;
+                default: break;
+            }
+            break;
+
+        case GK_CMD_PATH:
+        case GK_CMD_TEXT:
+        case GK_CMD_FONT_FACE:
+        case GK_CMD_FONT_STYLE:
+        case GK_CMD_FONT_CREATE:
+        case GK_CMD_NVG_FUNCTION:
+            switch(next) {
+                case GK_CMD_PATH:
+                case GK_CMD_TEXT:
+                case GK_CMD_FONT_FACE:
+                case GK_CMD_FONT_STYLE:
+                case GK_CMD_FONT_CREATE:
+                case GK_CMD_NVG_FUNCTION: return false;
+                default: return true;
+            }
+
+        default: break;
+    }
+    return true;
+}
+
 static void gk_gl_process_end(gk_context* gk, gk_bundle*, gk_cmd_type type)
 {
     switch(type) {
@@ -164,75 +202,13 @@ static void gk_gl_process_end(gk_context* gk, gk_bundle*, gk_cmd_type type)
     }
 }
 
-static void gk_gl_process_transition(gk_context* gk, gk_bundle* bundle, gk_cmd* cmd, gk_list_gl* list_gl)
-{
-    auto next = GK_CMD_TYPE(cmd);
-    auto last = gk->gl.last_cmd;
-
-    auto w = list_gl->viewport.size.x;
-    auto h = list_gl->viewport.size.y;
-    auto r = list_gl->ratio;
-
-    switch(last) {
-        case GK_CMD_QUAD:
-        case GK_CMD_QUADSPRITE:
-        case GK_CMD_SPRITELAYER:
-        case GK_CMD_CHUNKLAYER:
-            switch(next) {
-                case GK_CMD_QUAD:
-                case GK_CMD_QUADSPRITE:
-                case GK_CMD_SPRITELAYER:
-                case GK_CMD_CHUNKLAYER: break;
-
-                case GK_CMD_PATH:
-                case GK_CMD_TEXT:
-                case GK_CMD_FONT_FACE:
-                case GK_CMD_FONT_STYLE:
-                case GK_CMD_FONT_CREATE:
-                case GK_CMD_NVG_FUNCTION:
-                    gk_gl_process_end(gk, bundle, gk->gl.last_cmd);
-                    ensure_nvg_inframe(gk, w, h, r);
-                    break;
-
-                default: gk_gl_process_end(gk, bundle, gk->gl.last_cmd); break;
-            }
-            break;
-
-        case GK_CMD_PATH:
-        case GK_CMD_TEXT:
-        case GK_CMD_FONT_FACE:
-        case GK_CMD_FONT_STYLE:
-        case GK_CMD_FONT_CREATE:
-        case GK_CMD_NVG_FUNCTION:
-            switch(next) {
-                case GK_CMD_QUAD:
-                case GK_CMD_QUADSPRITE:
-                case GK_CMD_SPRITELAYER:
-                case GK_CMD_CHUNKLAYER:
-                    ensure_nvg_outframe(gk);
-                    gk_gl_process_begin(gk, bundle, next, cmd);
-                    break;
-
-                case GK_CMD_PATH:
-                case GK_CMD_TEXT:
-                case GK_CMD_FONT_FACE:
-                case GK_CMD_FONT_STYLE:
-                case GK_CMD_FONT_CREATE:
-                case GK_CMD_NVG_FUNCTION: break;
-
-                default: ensure_nvg_outframe(gk); break;
-            }
-
-        default: break;
-    }
-
-    gk->gl.last_cmd = next;
-}
-
 void gk_process_gl(gk_context* gk, gk_bundle* bundle, gk_list_gl* list_gl)
 {
     auto list = GK_LIST(list_gl);
     auto nvg  = gk->nvg;
+    auto w    = list_gl->viewport.size.x;
+    auto h    = list_gl->viewport.size.y;
+    auto r    = list_gl->ratio;
 
     if(list_gl->viewport.size)
         glViewport(
@@ -242,8 +218,11 @@ void gk_process_gl(gk_context* gk, gk_bundle* bundle, gk_list_gl* list_gl)
         auto cmd  = list->cmds[j];
         auto type = GK_CMD_TYPE(cmd);
 
-        if(gk->gl.last_cmd != type) {
-            gk_gl_process_transition(gk, bundle, cmd, list_gl);
+        if(gk->gl.last_cmd != type && gk_gl_process_should_transition(gk->gl.last_cmd, type)) {
+            gk_gl_process_end(gk, bundle, gk->gl.last_cmd);
+            ensure_nvg_outframe(gk);
+            gk_gl_process_begin(gk, bundle, type, cmd);
+            gk->gl.last_cmd = type;
         }
 
         switch(type) {
@@ -258,18 +237,37 @@ void gk_process_gl(gk_context* gk, gk_bundle* bundle, gk_list_gl* list_gl)
                 gk_gl_reset_state(gk);
                 break;
 
-            case GK_CMD_PATH: gk_process_nvg_path(gk, bundle, list_gl, (gk_cmd_path*)cmd); break;
-            case GK_CMD_TEXT: gk_process_nvg_text(gk, list_gl, (gk_cmd_text*)cmd); break;
-            case GK_CMD_FONT_FACE: gk_process_nvg_font_face(gk, (gk_cmd_font_face*)cmd); break;
-            case GK_CMD_FONT_STYLE: gk_process_nvg_font_style(gk, (gk_cmd_font_style*)cmd); break;
-            case GK_CMD_FONT_CREATE: gk_process_nvg_font_create(gk, (gk_cmd_font_create*)cmd); break;
+            case GK_CMD_PATH:
+                ensure_nvg_inframe(gk, w, h, r);
+                gk_process_nvg_path(gk, bundle, list_gl, (gk_cmd_path*)cmd);
+                break;
+            case GK_CMD_TEXT:
+                ensure_nvg_inframe(gk, w, h, r);
+                gk_process_nvg_text(gk, list_gl, (gk_cmd_text*)cmd);
+                break;
+            case GK_CMD_FONT_FACE:
+                ensure_nvg_inframe(gk, w, h, r);
+                gk_process_nvg_font_face(gk, (gk_cmd_font_face*)cmd);
+                break;
+            case GK_CMD_FONT_STYLE:
+                ensure_nvg_inframe(gk, w, h, r);
+                gk_process_nvg_font_style(gk, (gk_cmd_font_style*)cmd);
+                break;
+            case GK_CMD_FONT_CREATE:
+                ensure_nvg_inframe(gk, w, h, r);
+                gk_process_nvg_font_create(gk, (gk_cmd_font_create*)cmd);
+                break;
             case GK_CMD_NVG_FUNCTION: {
+                ensure_nvg_inframe(gk, w, h, r);
                 auto* fn = reinterpret_cast<gk_cmd_nvg_function*>(cmd);
                 fn->function(nvg, fn->data);
                 break;
             }
 
-            default: gk_process_cmd_general("GK_LIST_GL", gk, bundle, cmd); break;
+            default:
+                ensure_nvg_outframe(gk);
+                gk_process_cmd_general("GK_LIST_GL", gk, bundle, cmd);
+                break;
         }
     }
 
