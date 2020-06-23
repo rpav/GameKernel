@@ -72,4 +72,6 @@ bool gk_process_pass(gk_context* gk, gk_bundle* b, gk_pass* pass);
 bool gk_process_list(gk_context* gk, gk_bundle* b, gk_list* list);
 void gk_process_config(gk_context* gk, gk_bundle* b, gk_list* pass);
 
+void gk_process_function(gk_context* gk, gk_bundle* b, gk_cmd_function *cmd);
+
 bool gk_process_cmd_general(const char* listname, gk_context* gk, gk_bundle* b, gk_cmd* cmd);
