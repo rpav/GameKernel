@@ -3,7 +3,7 @@
 
 typedef struct gk_cmd {
     gk_cmd_type type;
-    int32_t key;
+    uint32_t key;
 } gk_cmd;
 
 #define GK_CMD(x) ((gk_cmd*)(x))
