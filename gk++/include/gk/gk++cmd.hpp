@@ -34,7 +34,7 @@ public:
 /* gk::CmdPass */
 class CmdPass : public CmdTmpl<gk_pass, GK_CMD_PASS> {
 public:
-    CmdPass(unsigned int index, gk_pass_sorting sort = GK_PASS_SORT_NONE)
+    CmdPass(unsigned int index = 0, gk_pass_sorting sort = GK_PASS_SORT_NONE)
     {
         cmd.list_index = index;
         cmd.sort       = sort;
@@ -481,6 +481,12 @@ public:
         return *this;
     }
 
+    inline PathDef& fillColor(const gk::vec4& c)
+    {
+        append({GK_PATH_FILL_COLOR_RGBAF, c.x, c.y, c.z, c.w});
+        return *this;
+    }
+
     inline PathDef& strokeColorF(float r, float g, float b, float a = 1.0)
     {
         append({GK_PATH_STROKE_COLOR_RGBAF, r, g, b, a});
@@ -490,6 +496,12 @@ public:
     inline PathDef& strokeColor(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255)
     {
         append({GK_PATH_STROKE_COLOR_RGBA, (float)r, (float)g, (float)b, (float)a});
+        return *this;
+    }
+
+    inline PathDef& strokeColor(const gk::vec4& c)
+    {
+        append({GK_PATH_STROKE_COLOR_RGBAF, c.x, c.y, c.z, c.w});
         return *this;
     }
 
@@ -505,12 +517,14 @@ public:
         return *this;
     }
 
-    inline PathDef& lineJoin(int join) {
+    inline PathDef& lineJoin(int join)
+    {
         append({GK_PATH_LINE_JOIN, float(join)});
         return *this;
     }
 
-    inline PathDef& lineCap(int cap) {
+    inline PathDef& lineCap(int cap)
+    {
         append({GK_PATH_LINE_CAP, float(cap)});
         return *this;
     }
@@ -994,9 +1008,7 @@ public:
 class CmdRtUnbind : public CmdTmpl<gk_cmd_rt_unbind, GK_CMD_RT_UNBIND> {
 public:
     CmdRtUnbind() = default;
-    CmdRtUnbind(gk::irect viewport) {
-        cmd.viewport = viewport;
-    }
+    CmdRtUnbind(gk::irect viewport) { cmd.viewport = viewport; }
 };
 
 // gk::CmdProgramCreate
