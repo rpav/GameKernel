@@ -180,6 +180,9 @@ struct UniformValue : public gk_uniform_value {
 
     const float& getFloat() const { return value.f; }
     float&       getFloat() { return value.f; }
+
+    const int& getInt() const { return value.i; }
+    int&       getInt() { return value.i; }
 };
 
 // gk::UniformSet
@@ -239,6 +242,9 @@ public:
 
     inline const float& getFloat(size_t index) const { return _values[index].getFloat(); }
     inline float&       getFloat(size_t index) { return _values[index].getFloat(); }
+
+    inline const int& getInt(size_t index) const { return _values[index].getInt(); }
+    inline int&       getInt(size_t index) { return _values[index].getInt(); }
 };
 
 // gk::ProgramDataSet
@@ -252,10 +258,7 @@ public:
         if(OWN) memset(ptr(pds), 0, sizeof(typename std::decay<T>::type));
     }
 
-    ProgramDataSetTmpl(gk_program program) : ProgramDataSetTmpl()
-    {
-        ptr(pds)->program = program;
-    }
+    ProgramDataSetTmpl(gk_program program) : ProgramDataSetTmpl() { ptr(pds)->program = program; }
 
     ProgramDataSetTmpl(ProgramSource& program) : ProgramDataSetTmpl(program.source.program) {}
 
