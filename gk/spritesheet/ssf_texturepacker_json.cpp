@@ -47,7 +47,7 @@ static void parse_texturepacker_frame(
 
     sprite->size   = {w, h};
     sprite->vsize  = {vw, vh};
-    sprite->anchor = {ax, ay, 0};
+    sprite->anchor = {ax, ay};
 
     float nax = translate_anchor(ax, vw, srcRect["x"], w);
     float nay = translate_anchor(ay, vh, srcRect["y"], h);

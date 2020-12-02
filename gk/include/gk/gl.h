@@ -90,7 +90,7 @@ typedef struct gk_sprite {
     /* These are for reference */
     gk_vec2 size;   /* The size of the rectangle in the texture */
     gk_vec2 vsize;  /* The "virtual" size of the sprite, which may be larger */
-    gk_vec3 anchor; /* The original anchor, relative to the "virtual" size */
+    gk_vec2 anchor; /* The original anchor, relative to the "virtual" size */
 } gk_sprite;
 
 typedef uint32_t gk_sprite_id;
