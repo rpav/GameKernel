@@ -88,8 +88,7 @@ static void compile_shaders(gl3_impl* gl3)
     gk::GLProgramBuilder build;
 
     build.add(
-        GL_VERTEX_SHADER, shader_vert_quad, GL_GEOMETRY_SHADER, shader_geom_quad,
-        GL_FRAGMENT_SHADER, shader_frag_quad);
+        GL_VERTEX_SHADER, shader_vert_quad, GL_GEOMETRY_SHADER, shader_geom_quad, GL_FRAGMENT_SHADER, shader_frag_quad);
     build.link(gl3->quad_program);
 
     // Default program data set
@@ -130,10 +129,8 @@ void gl3_quad_init(gk_context* gk)
 
     GL_CHECK(glEnableVertexAttribArray(0));
     GL_CHECK(glEnableVertexAttribArray(1));
-    GL_CHECK(glVertexAttribPointer(
-        0, 4, GL_FLOAT, GL_FALSE, QUADBUF_VALS_PER_VERT * szf, (void*)0));
-    GL_CHECK(glVertexAttribPointer(
-        1, 2, GL_FLOAT, GL_FALSE, QUADBUF_VALS_PER_VERT * szf, (void*)(szf * 4)));
+    GL_CHECK(glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, QUADBUF_VALS_PER_VERT * szf, (void*)0));
+    GL_CHECK(glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, QUADBUF_VALS_PER_VERT * szf, (void*)(szf * 4)));
 
     return;
 
@@ -147,8 +144,8 @@ void gl3_render_quads(gk_context* gk)
 
     if(gl3->quadcount > 0) {
         glBufferData(
-            GL_ARRAY_BUFFER, gl3->quadcount * (sizeof(float) * QUADBUF_VALS_PER_VERT * 4),
-            gl3->quadbuf, GL_STREAM_DRAW);
+            GL_ARRAY_BUFFER, gl3->quadcount * (sizeof(float) * QUADBUF_VALS_PER_VERT * 4), gl3->quadbuf,
+            GL_STREAM_DRAW);
         glDrawArrays(GL_LINES_ADJACENCY, 0, gl3->quadcount * 4);
         gl3->quadcount = 0;
     }
@@ -283,10 +280,7 @@ void gl3_cmd_spritelayer(gk_context* gk, gk_bundle* b, gk_cmd_spritelayer* cmd)
     }
 }
 
-static void render_one_chunk(
-    gk_context*           gk,
-    gk_cmd_chunklayer*    cmd,
-    const gk_spritechunk& chunk)
+static void render_one_chunk(gk_context* gk, gk_cmd_chunklayer* cmd, const gk_spritechunk& chunk)
 {
     auto* sheet = cmd->config->sheet;
     auto* cfg   = cmd->config;
@@ -295,10 +289,24 @@ static void render_one_chunk(
     auto& layer_m  = r->tfm;
     auto& layer_m2 = cmd->tfm;
 
+    auto chunkPos = vec2(chunk.offset * cfg->chunk_size);
+
+    // Center-point culling
+    if(cfg->visibleRect.size) {
+        auto center = (chunkPos + cmd->origin) + ((vec2(cfg->chunk_size) * cfg->sprite_size) / 2.0f);
+
+        // Note we only transform by layer_m2 here, because this is correct in tile space
+        auto tfCenter4 = layer_m2 * vec4(center, 0, 1);
+        auto tfCenter  = vec2(tfCenter4.x, tfCenter4.y);
+
+        auto cull = !cfg->visibleRect.contains(tfCenter);
+
+        if(cull) return;
+    }
+
     for(int j = 0; j < cfg->chunk_size.y; ++j) {
         for(int i = 0; i < cfg->chunk_size.x; ++i) {
-            float fi = i, fj = j;
-            auto  tr = vec2{fi, fj} + vec2(chunk.offset * cfg->chunk_size);
+            auto tr = vec2(i, j) + chunkPos;
             tr *= cfg->sprite_size;
             tr += cmd->origin;
 

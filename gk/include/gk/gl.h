@@ -163,6 +163,20 @@ typedef struct gk_chunklayer_config {
 
     gk_ivec2 chunk_size;  // WxH of each chunk in sprites
     gk_vec2  sprite_size; // Uniform sprite size in pixels
+
+    // Simple culling can be done by circle-in-rect (i.e. point-in-rect)
+    // comparison, which reduces to finding the final transform for a single
+    // point for each chunk, vs OBB compares or worse.  This is slightly
+    // suboptimal culling for very cheap, and works regardless of layer
+    // orientation.  It does however work best with square chunks.
+
+    // To add radius:
+    //   visibleRect.pos  -= vec2(r,r);
+    //   visibleRect.size += vec2(r,r) * 2.0f;
+
+    // This will only be triggered if visibleRect.size is nonzero
+
+    gk_rect visibleRect; // "World space" visible rect
 } gk_chunklayer_config;
 
 typedef struct gk_cmd_chunklayer {
