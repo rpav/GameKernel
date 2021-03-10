@@ -37,18 +37,18 @@ public:
         _linewidth = 1.0f / xscale;
     }
 
-    void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color)
+    void DrawPolygon(const b2Vec2* vertices, b2int32 vertexCount, const b2Color& color)
     {
         say("draw poly?");
     }
 
-    void DrawSolidPolygon(const b2Vec2* verts, int32 vertexCount, const b2Color& c)
+    void DrawSolidPolygon(const b2Vec2* verts, b2int32 vertexCount, const b2Color& c)
     {
         auto nvg = _gk->nvg;
 
         nvgBeginPath(nvg);
         nvgMoveTo(nvg, verts[0].x, verts[0].y);
-        for(int32 i = 1; i < vertexCount; ++i) {
+        for(b2int32 i = 1; i < vertexCount; ++i) {
             auto& vert = verts[i];
             nvgLineTo(nvg, vert.x, vert.y);
         }
@@ -60,7 +60,7 @@ public:
         nvgStroke(nvg);
     }
 
-    void DrawCircle(const b2Vec2& center, float32 radius, const b2Color& c)
+    void DrawCircle(const b2Vec2& center, b2float32 radius, const b2Color& c)
     {
         auto nvg = _gk->nvg;
 
@@ -72,7 +72,7 @@ public:
     }
 
     void DrawSolidCircle(const b2Vec2&  center,
-                         float32        radius,
+                         b2float32        radius,
                          const b2Vec2&  axis,
                          const b2Color& c)
     {
@@ -108,7 +108,7 @@ public:
         say("Draw Transform ", tf.p.x, ",", tf.p.y, " ∠ ", tf.q.GetAngle());
     }
 
-    void DrawPoint(const b2Vec2& p, float32 size, const b2Color& color) override {
+    void DrawPoint(const b2Vec2& p, b2float32 size, const b2Color& color) override {
         say("Draw Point ", p.x, ",", p.y);
     }
 };

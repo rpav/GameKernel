@@ -1,16 +1,14 @@
 cmake_minimum_required(VERSION 3.17)
-list(APPEND CMAKE_MODULE_PATH "$ENV{HOME}/vcs/CMakeFiles")
-include(setup)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
+include(pkg/CMakeSetup)
 
 project(GameKernel)
 
-conan_cmake_run(
-  CONANFILE ../conanfile.py
-  PROFILE ${TOOLCHAIN}-${BUILD_CONFIG}
-  SETTINGS compiler.libcxx=${CXX_STDLIB})
-
-include(${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup(TARGETS)
+include(pkg/Box2D)
+include(pkg/GameKernelCore)
+include(pkg/nanovg)
+include(pkg/rpav_cxxutils)
+include(pkg/nlohmann_json)
 
 # Build options
 option(GK_INSTALL "Install GK (or not)" ON)
@@ -20,7 +18,7 @@ option(GK_BUILD_GKPP "Build GK++ library (required for some examples)" ON)
 option(GK_BUILD_EXAMPLES "Build examples" ON)
 
 # Optional functionality
-option(GK_USE_BOX2D "Compile in Box2D support" ON)
+#option(GK_USE_BOX2D "Compile in Box2D support" OFF) # Box2D support needs updated
 option(GK_USE_TEXTUREPACKER "Compile in generic TexturePacker JSON support" ON)
 
 ## Everything
@@ -50,7 +48,7 @@ FixUsrInclude(GLEW::GLEW)
 if(GK_USE_BOX2D)
   add_definitions(-DGK_USE_BOX2D=1)
   list(APPEND GK_OPTIONAL_DEPS
-    PRIVATE CONAN_PKG::Box2D)
+    PRIVATE Box2D)
 endif()
 
 if(GK_USE_TEXTUREPACKER)

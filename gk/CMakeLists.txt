@@ -67,12 +67,12 @@ if(GK_BUILD_SHARED)
     )
   target_cxx_std(gk-shared 17)
   target_link_libraries(gk-shared
-    PUBLIC CONAN_PKG::rpav_cxxutils
-    PUBLIC CONAN_PKG::GameKernelCore
+    PUBLIC rpav_cxxutils
+    PUBLIC GameKernelCore
     PUBLIC OpenGL::GL
     PRIVATE GLEW
-    PRIVATE CONAN_PKG::nlohmann_json
-    PRIVATE CONAN_PKG::nanovg
+    PRIVATE nlohmann_json
+    PRIVATE nanovg
     ${GK_OPTIONAL_DEPS}
     )
 
@@ -99,12 +99,12 @@ if(GK_BUILD_STATIC)
     )
   target_cxx_std(gk-static 17)
   target_link_libraries(gk-static
-    PUBLIC CONAN_PKG::rpav_cxxutils
-    PUBLIC CONAN_PKG::GameKernelCore
+    PUBLIC rpav_cxxutils
+    PUBLIC GameKernelCore
     PUBLIC OpenGL::GL
     PRIVATE GLEW
-    PRIVATE CONAN_PKG::nlohmann_json
-    PRIVATE CONAN_PKG::nanovg
+    PRIVATE nlohmann_json
+    PRIVATE nanovg
     ${GK_OPTIONAL_DEPS}
     )
 

@@ -2,8 +2,8 @@
 
 #include <rpav/log.hpp>
 
-#include "gk/b2.hpp"
 #include "gk/gk.hpp"
+#include "gk/b2.hpp"
 #include "gk/gl.hpp"
 #include "gk/nvg.hpp"
 #include "gk/spritesheet.hpp"
